@@ -14,6 +14,6 @@ const count = ref(0)
   <h1>{{ msg }}</h1>
 
   <div class="card">
-    <button class="text-lg" type="button" @click="count++">count is {{ count }}</button>
+    <button class="text-lg text-lime-500" type="button" @click="count++">count is {{ count }}</button>
   </div>
 </template>
