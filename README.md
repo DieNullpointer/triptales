@@ -10,10 +10,10 @@ https://github.com/DieNullpointer/triptales.git
 
 | Name                        | Email                    | Aufgabenbereich |
 | --------------------------- | ------------------------ | --------------- |
-| Bastian _Seidl_, 3CHIF      | sei20375@spengergasse.at | -               |
-| Maximilian _Schwarz_, 3CHIF | sch22834@spengergasse.at | -               |
-| Philip _Schrenk_, 3CHIF     | sch22538@spengergasse.at | -               |
-| Louis _Muhr_, 3CHIF         | muh22378@spengergasse.at | -               |
+| Bastian _Seidl_, 4CHIF      | sei20375@spengergasse.at | -               |
+| Maximilian _Schwarz_, 4CHIF | sch22834@spengergasse.at | -               |
+| Philip _Schrenk_, 4CHIF     | sch22538@spengergasse.at | -               |
+| Louis _Muhr_, 4CHIF         | muh22378@spengergasse.at | -               |
 
 
 ## Kurzbeschreibung:
