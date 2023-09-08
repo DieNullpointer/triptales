@@ -9,9 +9,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TripTales.Webapi", "src\Tri
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TripTales.Application", "src\TripTales.Application\TripTales.Application.csproj", "{B2C94E6F-8AEB-4F65-97DB-603504F795B4}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{3E4BB36F-7860-43B7-99E0-09D89966C0BF}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{B97FD169-7E65-4688-8BD0-32FAF79AB2B4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TripTales.ApplicationTest", "test\TripTales.ApplicationTest\TripTales.ApplicationTest.csproj", "{B75A319F-D8DD-4ED9-A334-2A1FE4AAC8B0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TripTales.Application.Tests", "test\TripTales.Application.Tests\TripTales.Application.Tests.csproj", "{5252A8C9-EACF-492F-BF88-C9F0551FF217}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -30,14 +30,14 @@ Global
 		{B2C94E6F-8AEB-4F65-97DB-603504F795B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B2C94E6F-8AEB-4F65-97DB-603504F795B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B2C94E6F-8AEB-4F65-97DB-603504F795B4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B75A319F-D8DD-4ED9-A334-2A1FE4AAC8B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B75A319F-D8DD-4ED9-A334-2A1FE4AAC8B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B75A319F-D8DD-4ED9-A334-2A1FE4AAC8B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B75A319F-D8DD-4ED9-A334-2A1FE4AAC8B0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5252A8C9-EACF-492F-BF88-C9F0551FF217}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5252A8C9-EACF-492F-BF88-C9F0551FF217}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5252A8C9-EACF-492F-BF88-C9F0551FF217}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5252A8C9-EACF-492F-BF88-C9F0551FF217}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{9BE8D8A1-2A40-4214-B462-6E389F2D92BC} = {8F356700-94D7-4BEC-8EC1-4884C1720301}
 		{B2C94E6F-8AEB-4F65-97DB-603504F795B4} = {8F356700-94D7-4BEC-8EC1-4884C1720301}
-		{B75A319F-D8DD-4ED9-A334-2A1FE4AAC8B0} = {3E4BB36F-7860-43B7-99E0-09D89966C0BF}
+		{5252A8C9-EACF-492F-BF88-C9F0551FF217} = {B97FD169-7E65-4688-8BD0-32FAF79AB2B4}
 	EndGlobalSection
 EndGlobal
