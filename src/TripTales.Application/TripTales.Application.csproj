@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
+	<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
 
   <ItemGroup>
@@ -10,6 +11,12 @@
     <PackageReference Include="Bogus" Version="34.*" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="6.*" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="6.*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Model\" />
+    <Folder Include="Infrastructure\" />
+    <Folder Include="Services\" />
   </ItemGroup>
 
 </Project>
