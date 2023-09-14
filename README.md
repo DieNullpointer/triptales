@@ -21,8 +21,9 @@ Unser Project soll eine Social Media App darstellen mit der man Bilder oder Vide
 Diese Bilder sollen nach Urlaub und nach Tag sortiert sein.
 ## Farben:
 wir werden folgende Farben für unser Projekt verwenden:
-  whites:
-    greenwhite: "#f1ffd1"
-    warmwhite: "#faf2e1"
-  primary: "#43fc26"
+
+  whites:<br>
+    &nbsp; greenwhite: "#f1ffd1"<br>
+    &nbsp; warmwhite: "#faf2e1"<br>
+  primary: "#43fc26"<br>
   secondary: "#2466ff"
