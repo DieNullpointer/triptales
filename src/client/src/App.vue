@@ -1,11 +1,13 @@
 <script setup lang="ts">
-import HelloWorld from "./components/HelloWorld.vue";
+
 </script>
 
 <template>
-  <div class="p-4 font-roboto">
-    <HelloWorld msg="Test Test" />
+  <div class="m-8 font-roboto font-semibold relative">
+    <router-view></router-view>
+    ABC
   </div>
 </template>
 
 <style scoped></style>
+
