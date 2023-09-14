@@ -31,8 +31,8 @@ using (var scope = app.Services.CreateScope())
         if (app.Environment.IsDevelopment())
             db.Database.EnsureDeleted();
         db.Database.EnsureCreated();
-        //if (app.Environment.IsDevelopment())
-            //db.Seed();
+        if (app.Environment.IsDevelopment())
+            db.Seed();
     }
 }
 
