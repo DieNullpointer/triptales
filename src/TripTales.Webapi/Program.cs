@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using TripTales.Application.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +17,18 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+using (var scope = app.Services.CreateScope())
+{
+    using (var db = scope.ServiceProvider.GetRequiredService<TripTalesContext>())
+    {
+        if (app.Environment.IsDevelopment())
+            db.Database.EnsureDeleted();
+        db.Database.EnsureCreated();
+        //if (app.Environment.IsDevelopment())
+            //db.Seed();
+    }
+}
+
 app.UseHttpsRedirection();
 if (app.Environment.IsDevelopment())
 {
