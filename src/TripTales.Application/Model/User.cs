@@ -15,12 +15,12 @@ namespace TripTales.Application.Model
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
-        private Guid Guid { get; set; }
-        private string Email { get; set; }
-        private string Password { get; set; }
-        private string DisplayName { get; set; }
-        private string RegistryName { get; set; }
-        private List<User> Friends { get; } = new();
+        public Guid Guid { get; set; }
+        public string Email { get; set; }
+        public string Password { get; set; }
+        public string DisplayName { get; set; }
+        public string RegistryName { get; set; }
+        public List<User> Friends { get; } = new();
 
         public User(string email, string password, string displayName, string registryName)
         {

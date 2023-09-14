@@ -14,8 +14,4 @@
     <ProjectReference Include="..\TripTales.Application\TripTales.Application.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Controllers\" />
-  </ItemGroup>
-
 </Project>
