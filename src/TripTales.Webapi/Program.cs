@@ -1,11 +1,18 @@
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using System;
 using TripTales.Application.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
-
 builder.Services.AddControllers();
+
+builder.Services.AddDbContext<TripTalesContext>(opt =>
+    opt.UseSqlite(builder.Configuration.GetConnectionString("Default")));
 
 if (builder.Environment.IsDevelopment())
 {
