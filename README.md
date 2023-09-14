@@ -19,3 +19,10 @@ https://github.com/DieNullpointer/triptales.git
 ## Kurzbeschreibung:
 Unser Project soll eine Social Media App darstellen mit der man Bilder oder Videos aus seinem Urlaub posten und speichern kann.
 Diese Bilder sollen nach Urlaub und nach Tag sortiert sein.
+## Farben:
+wir werden folgende Farben für unser Projekt verwenden:
+  whites:
+    greenwhite: "#f1ffd1"
+    warmwhite: "#faf2e1"
+  primary: "#43fc26"
+  secondary: "#2466ff"
