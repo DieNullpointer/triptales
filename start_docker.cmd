@@ -1,0 +1,1 @@
+docker run -d -p 1433:1433 --name triptales_sqlserver2019 -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=SqlServer2019" mcr.microsoft.com/azure-sql-edge
