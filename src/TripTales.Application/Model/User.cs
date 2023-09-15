@@ -1,4 +1,5 @@
 ﻿using AutoMapper.Execution;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -10,6 +11,8 @@ using System.Threading.Tasks;
 
 namespace TripTales.Application.Model
 {
+    [Index(nameof(Email), IsUnique = true)]
+    [Index(nameof(RegistryName), IsUnique = true)]
     public class User
     {
         [Key]
