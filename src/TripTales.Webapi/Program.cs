@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
+using TripTales.Application.Dto;
 using TripTales.Application.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,6 +23,7 @@ if (builder.Environment.IsDevelopment())
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 var app = builder.Build();
 using (var scope = app.Services.CreateScope())
