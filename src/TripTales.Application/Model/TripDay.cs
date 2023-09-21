@@ -1,6 +1,7 @@
 ﻿using Bogus.DataSets;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
@@ -10,7 +11,9 @@ namespace TripTales.Application.Model
 {
     public class TripDay
     {
+        [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
         public Guid Guid { get; set; }  
         public Date Date { get; set; }
         public string Title { get; set; }   

@@ -10,14 +10,16 @@ namespace TripTales.Application.Model
 {
     public class TripLocation
     {
+        
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
+        
         public Guid Guid { get; set; }
         public string Url { get; set; }
         public string Coordinates { get; set; }
 
-        public TripLocation(Guid guid, string url, string coordinates)
+        public TripLocation(string url, string coordinates)
         {
-            Guid = guid;
             Url = url;
             Coordinates = coordinates;
         }
