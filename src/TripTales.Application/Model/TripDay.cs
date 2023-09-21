@@ -19,9 +19,8 @@ namespace TripTales.Application.Model
         public string Title { get; set; }   
         public string Description { get; set; }
 
-        public TripDay(Guid guid, Date date, string title, string description)
+        public TripDay(Date date, string title, string description)
         {
-            Guid = guid;
             Date = date;
             Title = title;
             Description = description;

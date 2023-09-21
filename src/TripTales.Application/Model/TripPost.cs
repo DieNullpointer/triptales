@@ -16,9 +16,8 @@ namespace TripTales.Application.Model
         public Guid Guid { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
-        public TripPost(Guid guid, string title, string description)
+        public TripPost(string title, string description)
         {
-            Guid = guid;
             Title = title;
             Description = description;
         }
