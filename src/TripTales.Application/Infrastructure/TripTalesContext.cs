@@ -13,6 +13,9 @@ namespace TripTales.Application.Infrastructure
     public class TripTalesContext : DbContext
     {
         public DbSet<User> User => Set<User>();
+        public DbSet<TripPost> Posts => Set<TripPost>();
+        public DbSet<TripDay> Days => Set<TripDay>();
+        public DbSet<TripLocation> Locations => Set<TripLocation>();
 
         public TripTalesContext(DbContextOptions opt) : base(opt)
         {
@@ -57,6 +60,33 @@ namespace TripTales.Application.Infrastructure
             }).Generate(5).ToList();
             users.Add(new User("admin@nullpointer.at", "admin", "admin", "admin"));
             User.AddRange(users);
+            SaveChanges();
+
+            var posts = new Faker<TripPost>("de").CustomInstantiator(f =>
+            {
+                var dateb = DateTime.UtcNow.Date;
+                var daten = f.Date.Between(dateb.AddDays(5), dateb.AddDays(10)).Date;
+                var post = new TripPost(f.Lorem.ToString() ?? "test", f.Hacker.ToString() ?? "test", dateb, daten, f.PickRandom(users));
+                return post;
+            }).Generate(5).ToList();
+            Posts.AddRange(posts);
+            SaveChanges();
+
+            var days = new Faker<TripDay>("de").CustomInstantiator(f =>
+            {
+                var date = f.Date.Future(0);
+                var day = new TripDay(date, f.Lorem.ToString() ?? "title", f.Hacker.ToString() ?? "text");
+                return day;
+            }).Generate(10).ToList();
+            Days.AddRange(days);
+            SaveChanges();
+
+            var locations = new Faker<TripLocation>("de").CustomInstantiator(f =>
+            {
+                var location = new TripLocation(f.PickRandom(days), f.Random.AlphaNumeric(8));
+                return location;
+            }).Generate(20).ToList();
+            Locations.AddRange(locations);
             SaveChanges();
         }
     }

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,17 +12,18 @@ namespace TripTales.Application.Model
 {
     public class TripLocation
     {
-        
+        [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         
         public Guid Guid { get; set; }
-        public string Url { get; set; }
         public string Coordinates { get; set; }
+        public TripDay TripDay { get; set; }
+        public List<string> Images { get; } = new();
 
-        public TripLocation(string url, string coordinates)
+        public TripLocation(TripDay tripDay, string coordinates)
         {
-            Url = url;
+            TripDay = tripDay;
             Coordinates = coordinates;
         }
 

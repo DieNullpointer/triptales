@@ -14,12 +14,22 @@ namespace TripTales.Application.Model
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         public Guid Guid { get; set; }
+        public DateTime Created { get; set; }
+        public DateTime Begin { get; set; }
+        public DateTime End { get; set; }
         public string Title { get; set; }
-        public string Description { get; set; }
-        public TripPost(string title, string description)
+        public string Text { get; set; }
+        public User User { get; set; }
+        public List<TripDay> Days { get; } = new();
+
+        public TripPost(string title, string text, DateTime begin, DateTime end, User user)
         {
             Title = title;
-            Description = description;
+            Text = text;
+            Created = DateTime.UtcNow;
+            Begin = begin;
+            End = end;
+            User = user;
         }
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.

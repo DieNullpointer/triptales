@@ -1,5 +1,4 @@
-﻿using Bogus.DataSets;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -15,15 +14,17 @@ namespace TripTales.Application.Model
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         public Guid Guid { get; set; }  
-        public Date Date { get; set; }
+        public DateTime Date { get; set; }
         public string Title { get; set; }   
-        public string Description { get; set; }
+        public string Text { get; set; }
+        public List<string> Images { get; } = new();
+        public List<TripLocation> Locations { get; } = new();
 
-        public TripDay(Date date, string title, string description)
+        public TripDay(DateTime date, string title, string text)
         {
             Date = date;
             Title = title;
-            Description = description;
+            Text = text;
         }
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
