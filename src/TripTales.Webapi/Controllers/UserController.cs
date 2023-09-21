@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using TripTales.Application.Dto;
 using TripTales.Application.Infrastructure;
 using TripTales.Application.Model;
+using TripTales.Application.Services;
 
 namespace TripTales.Webapi.Controllers
 {
@@ -19,11 +20,13 @@ namespace TripTales.Webapi.Controllers
     {
         private readonly TripTalesContext _db;
         private readonly IMapper _mapper;
+        private readonly AuthService _authService;
 
-        public UserController(TripTalesContext db, IMapper mapper)
+        public UserController(TripTalesContext db, IMapper mapper, AuthService authService)
         {
             _db = db;
             _mapper = mapper;
+            _authService = authService;
         }
 
         [HttpPost("register")]
@@ -46,6 +49,21 @@ namespace TripTales.Webapi.Controllers
         public IActionResult Get()
         {
             return Ok(_db.User.ToList());
+        }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] UserCredentialsCmd credentials)
+        {
+            var jwt = await _authService.Login(credentials.registryName, credentials.password);
+            if (jwt is null) { return Unauthorized(); }
+            // Return the token so the client can save this to send a bearer token in the
+            // subsequent requests.
+            return Ok(new
+            {
+                Username = _authService.CurrentUser,
+                UserGuid = _authService.CurrentUserGuid,
+                Token = jwt
+            });
         }
     }
 }
