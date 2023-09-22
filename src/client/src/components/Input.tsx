@@ -1,17 +1,19 @@
 import { Typography, Input } from "@material-tailwind/react";
+import { ReactNode } from "react";
 
 export interface Props {
     type?: string;
     label: string;
     bottomText?: string;
     width?: string;
+    icon?: ReactNode
 }
 
-const CustomInput: React.FC<Props> = ({type = 'text', label, bottomText, width = "32rem"}) => {
+const CustomInput: React.FC<Props> = ({type = 'text', label, bottomText, width = "32rem", icon}) => {
     
     return (
         <div style={{width: width}}>
-          <Input crossOrigin={null} className="!font-roboto" type={type} label={label} />
+          <Input crossOrigin={null} className="!font-roboto" type={type} label={label} icon={icon} />
           {bottomText && <Typography
             variant="small"
             color="gray"
