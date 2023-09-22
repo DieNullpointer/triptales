@@ -1,5 +1,6 @@
 import Button from "@/components/Button";
 import Input from "@/components/Input";
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -34,6 +35,7 @@ export default function Home() {
         bottomText="Must include at least 8 characters"
         label="Password"
       />
+      <Link href="/user/1">Test Link</Link>
     </main>
   );
 }
