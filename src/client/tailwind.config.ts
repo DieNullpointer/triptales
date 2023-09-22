@@ -1,19 +1,20 @@
 /** @type {import('tailwindcss').Config} */
 const colors = require("tailwindcss/colors");
+const withMT = require("@material-tailwind/react/utils/withMT");
 
-export default {
+export default withMT({
   content: [
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
- 
-    // Or if using `src` directory:
+    "./node_modules/@material-tailwind/react/components/**/*.{js,ts,jsx,tsx}",
+    "./node_modules/@material-tailwind/react/theme/components/**/*.{js,ts,jsx,tsx}",
     "./src/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   darkMode: false, // or 'media' or 'class'
   theme: {
     fontFamily: {
-      sans: ["Roboto"],
+      sans: ["Roboto", "sans-serif"],
       roboto: ["Roboto", "sans-serif"],
     },
     extend: {},
@@ -30,4 +31,4 @@ export default {
     extend: {},
   },
   plugins: [],
-};
+});
