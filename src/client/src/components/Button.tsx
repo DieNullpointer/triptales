@@ -7,7 +7,7 @@ export interface Props {
 
 const CustomButton: React.FC<Props> = ({ children, className = ''}) => {
   return (
-    <Button ripple className={"bg-primaryHover " + className}>
+    <Button ripple className={"bg-primaryHover text-sm tracking-wider " + className}>
       {children}
     </Button>
   );
