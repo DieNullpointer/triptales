@@ -10,7 +10,7 @@ using System.Xml.Serialization;
 
 namespace TripTales.Application.Model
 {
-    public class TripLocation
+    public class TripLocation : IEntity<int>
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
