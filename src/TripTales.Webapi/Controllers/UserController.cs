@@ -16,16 +16,12 @@ namespace TripTales.Webapi.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [AllowAnonymous]
-    public class UserController : ControllerBase
+    public class UserController : EntityReadController<User>
     {
-        private readonly TripTalesContext _db;
-        private readonly IMapper _mapper;
         private readonly AuthService _authService;
 
-        public UserController(TripTalesContext db, IMapper mapper, AuthService authService)
+        public UserController(TripTalesContext db, IMapper mapper, AuthService authService) : base(db, mapper)
         {
-            _db = db;
-            _mapper = mapper;
             _authService = authService;
         }
 
@@ -46,9 +42,46 @@ namespace TripTales.Webapi.Controllers
         }
 
         [HttpGet]
-        public IActionResult Get()
+        public async Task<IActionResult> GetUsers() => await GetAll(h => 
+            new
+            {
+                h.Guid,
+                Friends = h.Friends.Select(f => new
+                {
+                    f.Guid,
+                    f.DisplayName,
+                    f.RegistryName
+                }),
+                h.DisplayName,
+                h.Email,
+                h.RegistryName,
+                Posts = h.Posts.Select(p => new
+                {
+                    p.Guid
+                }),
+                h.PasswordHash
+            });
+
+        [Authorize]
+        [HttpGet("me")]
+        public async Task<IActionResult> GetUserdata()
         {
-            return Ok(_db.User.ToList());
+            // No username is set in HttpContext? Should never occur because we added the
+            // Authorize annotation. But the properties are nullable, so we have to
+            // check.
+            //var username = _authService.CurrentUser;
+            var username = HttpContext?.User.Identity?.Name;
+            if (username is null) { return Unauthorized(); }
+
+            // Valid token, but no user match in the database (maybe deleted by an admin).
+            var user = await _db.User.FirstOrDefaultAsync(a => a.RegistryName == username);
+            if (user is null) { return Unauthorized(); }
+            return Ok(new
+            {
+                user.Email,
+                user.DisplayName,
+                user.RegistryName,
+            });
         }
 
         [HttpPost("login")]

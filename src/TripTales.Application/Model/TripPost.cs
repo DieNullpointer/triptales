@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace TripTales.Application.Model
 {
-    public class TripPost
+    public class TripPost: IEntity<int>
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

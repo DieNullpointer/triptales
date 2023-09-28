@@ -14,7 +14,7 @@ namespace TripTales.Application.Model
 {
     [Index(nameof(Email), IsUnique = true)]
     [Index(nameof(RegistryName), IsUnique = true)]
-    public class User
+    public class User : IEntity<int>
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
