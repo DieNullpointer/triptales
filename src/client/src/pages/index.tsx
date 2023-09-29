@@ -1,5 +1,7 @@
 import Button from "@/components/Button";
 import Input from "@/components/Input";
+import Spacing from "@/components/Spacing";
+import * as Text from "@/components/Text";
 import Link from "next/link";
 
 export default function Home() {
@@ -36,6 +38,22 @@ export default function Home() {
         label="Password"
       />
       <Link href="/user/1">Test Link</Link>
+      <div id="headingshowcase" className="space-y-0">
+      <Spacing spacing={10} line />
+      <Text.Heading>Testheading</Text.Heading>
+      <Text.Subheading gutter underline>Subheading</Text.Subheading>
+      <Text.Flowtext>
+        Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy
+        eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam
+        voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet
+        clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit
+        amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam
+        nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat,
+        sed diam voluptua. At vero eos et accusam et justo duo dolores et ea
+        rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem
+        ipsum dolor sit amet.
+      </Text.Flowtext>
+      </div>
     </main>
   );
 }
