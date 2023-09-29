@@ -41,7 +41,7 @@ export default function Home() {
       <div id="headingshowcase" className="space-y-0">
       <Spacing spacing={10} line />
       <Text.Heading>Testheading</Text.Heading>
-      <Text.Subheading gutter>Subheading</Text.Subheading>
+      <Text.Subheading gutter underline>Subheading</Text.Subheading>
       <Text.Flowtext>
         Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy
         eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam

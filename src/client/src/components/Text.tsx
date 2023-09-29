@@ -12,7 +12,7 @@ export interface Props {
 
 const classNames = (props: Props) =>
   cleanClasses(`${props.wide ? "tracking-far" : ""} ${props.uppercase ? "uppercase" : ""} ${
-    props.gutter ? "pb-6" : ""
+    props.gutter ? "!mb-6" : ""
   } ${props.underline ? "border-b border-black" : ""} ${
     props.bold ? "font-bold" : ""
   } ${props.className}`);
