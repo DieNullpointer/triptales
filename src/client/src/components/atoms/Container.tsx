@@ -1,0 +1,26 @@
+import { cleanClasses } from "@/helpers/helpers";
+import React from "react";
+
+export interface Props {
+  children: React.ReactElement[];
+  className?: string;
+  center?: boolean;
+  id?: string;
+}
+
+const Container: React.FC<Props> = ({
+  id = "",
+  center,
+  className = "",
+  children,
+}) => (
+  <div
+    id={id}
+    className={cleanClasses(
+      `${center ? "justify-center items-center" : ""} ${className}`
+    )}
+  >
+    {children}
+  </div>
+);
+export default Container;
