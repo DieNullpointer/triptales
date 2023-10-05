@@ -17,12 +17,15 @@ import {
 import React from "react";
 import { Flowtext, Subheading } from "./atoms/Text";
 
-const SideBar: React.FC<{}> = () => {
-  const itemsClass = "text-white hover:bg-primary/20 active:focus:bg-primary/20 focus:bg-primary/20 hover:text-white focus:text-white active:text-white"
+const SideBar: React.FC<{ className?: string }> = ({ className = "" }) => {
+  const itemsClass =
+    "text-white hover:bg-primary/20 active:focus:bg-primary/20 focus:bg-primary/20 hover:text-white focus:text-white active:text-white "
   return (
-    <Card className="h-screen w-full max-w-xs bg-primaryHover !text-white !rounded-none p-4 border-r border-gray-100/80">
+    <Card className={"h-screen w-full max-w-xs bg-primaryHover !text-white !rounded-none p-4 border-r border-gray-100/80 " + className}>
       <div className="mb-2 p-4 w-full">
-        <Flowtext uppercase wide center bold>Navigation</Flowtext>
+        <Flowtext uppercase wide center bold>
+          Navigation
+        </Flowtext>
       </div>
       <List>
         <ListItem className={itemsClass}>

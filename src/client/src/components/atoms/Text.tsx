@@ -1,4 +1,4 @@
-import { cleanClasses } from "@/helpers/helpers";
+import { cleanClasses } from "@/helpers/stringhelpers";
 
 export interface Props {
   children: string | React.ReactNode;

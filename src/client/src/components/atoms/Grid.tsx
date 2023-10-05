@@ -1,4 +1,4 @@
-import { cleanClasses } from "@/helpers/helpers";
+import { cleanClasses } from "@/helpers/stringHelpers";
 import React from "react";
 
 export interface Props {

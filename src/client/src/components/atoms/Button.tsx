@@ -1,16 +1,17 @@
-import { Button } from "@material-tailwind/react";
+import { Button as TButton } from "@material-tailwind/react";
 
 export interface Props {
   children: any;
   className?: string;
+  onClick?: () => void;
 }
 
-const CustomButton: React.FC<Props> = ({ children, className = ''}) => {
+const Button: React.FC<Props> = ({ children, className = '', onClick}) => {
   return (
-    <Button ripple className={"bg-primaryHover text-sm tracking-wider font-roboto " + className}>
+    <TButton onClick={onClick} ripple className={"bg-primaryHover text-sm tracking-wider font-roboto " + className}>
       {children}
-    </Button>
+    </TButton>
   );
 };
 
-export default CustomButton;
+export default Button;
