@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
@@ -61,6 +62,9 @@ namespace TripTales.Webapi.Controllers
                 }),
                 h.PasswordHash
             });
+
+        [HttpGet("{guid}")]
+        public async Task<IActionResult> GetUser(Guid guid) => await GetByGuid<UserDto>(guid);
 
         [Authorize]
         [HttpGet("me")]

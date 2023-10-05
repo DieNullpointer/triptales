@@ -7,6 +7,7 @@ using System;
 using TripTales.Application.Infrastructure;
 using TripTales.Application.Model;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 
 namespace TripTales.Webapi.Controllers
 {
@@ -29,6 +30,15 @@ namespace TripTales.Webapi.Controllers
                 .Select(projection)
                 .ToListAsync();
             return Ok(result);
+        }
+
+        protected async Task<IActionResult> GetByGuid<TDto>(Guid guid)
+        {
+            var query = _db.Set<TEntity>().AsQueryable();
+            query = ExpandQueryByParam(query);  // Add includes
+            var data = await ExpandQueryByParam(query).Where(a => a.Guid == guid).FirstOrDefaultAsync();
+            if (data is null) return NotFound();
+            return Ok(_mapper.Map<TDto>(data));
         }
 
         protected IQueryable<TEntity> ExpandQueryByParam(IQueryable<TEntity> query)
