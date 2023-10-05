@@ -37,7 +37,8 @@ export default function Home() {
         bottomText="Must include at least 8 characters"
         label="Password"
       />
-      <Link href="/user/1">Test Link</Link>
+      <Link href="/user/1">Test Link</Link> <br />
+      <Link href="/login/loginIndex">LOGIN</Link>
       <div id="headingshowcase" className="space-y-0">
       <Spacing spacing={10} line />
       <Text.Heading>Testheading</Text.Heading>
