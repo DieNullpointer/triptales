@@ -1,10 +1,6 @@
-import React, { useState } from "react";
-import { Flowtext } from "./atoms/Text";
 import {
-  Drawer as TDrawer,
-  Button,
+  Card,
   Typography,
-  IconButton,
   List,
   ListItem,
   ListItemPrefix,
@@ -17,32 +13,28 @@ import {
   InboxIcon,
   PowerIcon,
   HomeIcon,
+  ArrowUpCircleIcon,
 } from "@heroicons/react/24/solid";
+import * as Auth from "@/helpers/authHelpers";
+import React, { useEffect, useRef, useState } from "react";
+import useLocalStorage from "uselocalstoragenextjs";
 
-export interface Props {
-  open: boolean;
-  onClose: () => void;
-}
+const MenuProvider: React.FC<{}> = () => {
+  const { value, load } = useLocalStorage({ name: "bearerToken" });
 
-const Drawer: React.FC<Props> = ({ open = false, onClose }) => {
   const itemsClass =
-    "text-white hover:bg-primary/20 active:focus:bg-primary/20 focus:bg-primary/20 hover:text-white focus:text-white active:text-white";
+    "text-white hover:bg-primary/20 active:focus:bg-primary/20 focus:bg-primary/20 hover:text-white focus:text-white active:text-white ";
 
   return (
-    <React.Fragment>
-      <TDrawer open={open} onClose={onClose} className="bg-primaryHover/60 text-white">
-        <div className="mb-2 p-4 w-full">
-          <Flowtext uppercase wide center bold>
-            Navigation
-          </Flowtext>
-        </div>
-        <List>
-          <ListItem className={itemsClass}>
-            <ListItemPrefix>
-              <HomeIcon className="h-5 w-5 text-white" />
-            </ListItemPrefix>
-            Homepage
-          </ListItem>
+    <List>
+      <ListItem className={itemsClass}>
+        <ListItemPrefix>
+          <HomeIcon className="h-5 w-5 text-white" />
+        </ListItemPrefix>
+        Homepage
+      </ListItem>
+      {load && value ? (
+        <>
           <ListItem className={itemsClass}>
             <ListItemPrefix>
               <InboxIcon className="h-5 w-5 text-white" />
@@ -75,10 +67,17 @@ const Drawer: React.FC<Props> = ({ open = false, onClose }) => {
             </ListItemPrefix>
             Log Out
           </ListItem>
-        </List>
-      </TDrawer>
-    </React.Fragment>
+        </>
+      ) : (
+        <ListItem className={itemsClass}>
+          <ListItemPrefix>
+            <ArrowUpCircleIcon className="h-5 w-5 text-white" />
+          </ListItemPrefix>
+          Log In
+        </ListItem>
+      )}
+    </List>
   );
 };
 
-export default Drawer;
+export default MenuProvider;

@@ -3,8 +3,13 @@ import Input from "@/components/atoms/Input";
 import Spacing from "@/components/atoms/Spacing";
 import * as Text from "@/components/atoms/Text";
 import Link from "next/link";
+import useLocalStorage from "uselocalstoragenextjs";
 
 export default function CompsPage() {
+  const { setLocalStorage } = useLocalStorage({
+    name: "bearerToken",
+  });
+
   return (
     <div className="space-y-4">
       <h2 className="text-2xl">HOMEPAGE</h2>
@@ -39,20 +44,28 @@ export default function CompsPage() {
       />
       <Link href="/user/1">Test Link</Link>
       <div id="headingshowcase" className="space-y-0">
-      <Spacing spacing={10} line />
-      <Text.Heading wide uppercase>Testheading</Text.Heading>
-      <Text.Subheading gutter underline>Subheading</Text.Subheading>
-      <Text.Flowtext>
-        Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy
-        eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam
-        voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet
-        clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit
-        amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam
-        nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat,
-        sed diam voluptua. At vero eos et accusam et justo duo dolores et ea
-        rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem
-        ipsum dolor sit amet.
-      </Text.Flowtext>
+        <Spacing spacing={10} line />
+        <Text.Heading wide uppercase>
+          Testheading
+        </Text.Heading>
+        <Text.Subheading gutter underline>
+          Subheading
+        </Text.Subheading>
+        <Text.Flowtext>
+          Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam
+          nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat,
+          sed diam voluptua. At vero eos et accusam et justo duo dolores et ea
+          rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem
+          ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur
+          sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et
+          dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam
+          et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea
+          takimata sanctus est Lorem ipsum dolor sit amet.
+        </Text.Flowtext>
+      </div>
+      <div className="flex flex-row justify-around">
+        <Button onClick={() => setLocalStorage("xyz123")}>Log In</Button>
+        <Button onClick={() => setLocalStorage("")}>Log Out</Button>
       </div>
     </div>
   );

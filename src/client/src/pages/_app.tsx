@@ -1,16 +1,13 @@
 import "@/styles/globals.css";
 import type { AppProps } from "next/app";
 import { ThemeProvider } from "@material-tailwind/react";
-import SideBar from "@/components/SideBar";
-import Grid from "@/components/atoms/Grid";
-import useWindowDimensions from "@/helpers/dimensionHelpers";
+import SideBar from "@/components/static/SideBar";
 import Button from "@/components/atoms/Button";
 import { Bars3Icon } from "@heroicons/react/24/solid";
 import { useState } from "react";
-import Drawer from "@/components/Drawer";
+import Drawer from "@/components/static/Drawer";
 
 export default function App({ Component, pageProps }: AppProps) {
-  const { width, height } = useWindowDimensions();
   const [modalOpen, setModalOpen] = useState<boolean>(false);
 
   return (
