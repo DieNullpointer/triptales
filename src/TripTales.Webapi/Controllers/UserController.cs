@@ -102,14 +102,14 @@ namespace TripTales.Webapi.Controllers
 
         [Authorize]
         [HttpDelete("delete")]
-        public IActionResult DeleteUser(Guid guid)
+        public async Task<IActionResult> DeleteUser(Guid guid)
         {
-            var User = _db.User.FirstOrDefault(a => a.Guid == guid);
+            var User = await _db.User.FirstOrDefaultAsync(a => a.Guid == guid);
 
             if (User is null) { return NotFound(); }
 
             _db.User.Remove(User);
-            try { _db.SaveChanges(); }
+            try { await _db.SaveChangesAsync(); }
             catch (DbUpdateException) { return BadRequest(); }
             return Ok();
         }
