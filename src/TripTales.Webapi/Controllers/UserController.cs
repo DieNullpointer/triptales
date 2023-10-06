@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
@@ -97,6 +98,20 @@ namespace TripTales.Webapi.Controllers
                 UserGuid = _authService.CurrentUserGuid,
                 Token = jwt
             });
+        }
+
+        [Authorize]
+        [HttpDelete("delete")]
+        public async Task<IActionResult> DeleteUser(Guid guid)
+        {
+            var User = await _db.User.FirstOrDefaultAsync(a => a.Guid == guid);
+
+            if (User is null) { return NotFound(); }
+
+            _db.User.Remove(User);
+            try { await _db.SaveChangesAsync(); }
+            catch (DbUpdateException) { return BadRequest(); }
+            return Ok();
         }
     }
 }
