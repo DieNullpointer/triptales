@@ -16,12 +16,9 @@ import {
   ArrowUpCircleIcon,
 } from "@heroicons/react/24/solid";
 import * as Auth from "@/helpers/authHelpers";
-import React, { useEffect, useRef, useState } from "react";
-import useLocalStorage from "uselocalstoragenextjs";
+import React from "react";
 
 const MenuProvider: React.FC<{}> = () => {
-  const { value, load } = useLocalStorage({ name: "bearerToken" });
-
   const itemsClass =
     "text-white hover:bg-primary/20 active:focus:bg-primary/20 focus:bg-primary/20 hover:text-white focus:text-white active:text-white ";
 
@@ -33,7 +30,7 @@ const MenuProvider: React.FC<{}> = () => {
         </ListItemPrefix>
         Homepage
       </ListItem>
-      {load && value ? (
+      {Auth.getBearerToken() ? (
         <>
           <ListItem className={itemsClass}>
             <ListItemPrefix>

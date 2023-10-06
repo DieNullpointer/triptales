@@ -6,6 +6,7 @@ import Button from "@/components/atoms/Button";
 import { Bars3Icon } from "@heroicons/react/24/solid";
 import { useState } from "react";
 import Drawer from "@/components/static/Drawer";
+//import { m } from "framer-motion";
 
 export default function App({ Component, pageProps }: AppProps) {
   const [modalOpen, setModalOpen] = useState<boolean>(false);
