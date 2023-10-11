@@ -1,10 +1,10 @@
-import { getUser } from "@/middleware/middleware";
+import { getUser, getUserByRegistry } from "@/middleware/middleware";
 import { useRouter } from "next/router";
 
 export default function User() {
     const router = useRouter();
-    const guid:any = router.query?.id;
-  const { user, error, isLoading } = getUser(guid);
+    const registryname:any = router.query?.registryname;
+  const { user, error, isLoading } = getUserByRegistry(registryname);
   
   return (
     <>
