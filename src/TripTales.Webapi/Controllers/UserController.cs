@@ -63,8 +63,15 @@ namespace TripTales.Webapi.Controllers
                 h.PasswordHash
             });
 
-        [HttpGet("{guid}")]
+        [HttpGet("{guid:Guid}")]
         public async Task<IActionResult> GetUser(Guid guid) => await GetByGuid<UserDto>(guid);
+
+        [HttpGet("{registryName}")]
+        public async Task<IActionResult> GetUserByRegistryName(string registryName)
+        {
+            var user = await _db.User.FirstOrDefaultAsync((u) => u.RegistryName == registryName);
+            return Ok(_mapper.Map<UserDto>(user));
+        }
 
         [Authorize]
         [HttpGet("me")]
