@@ -13,6 +13,9 @@ namespace TripTales.Application.Dto
         public MappingProfile()
         {
             CreateMap<UserRegisterCmd, User>(); //UserRegisterCmd --> User
+            CreateMap<User, UserDto>(); //User --> UserDto
+            CreateMap<TripPost, PostDto>();
+            CreateMap<User, FriendDto>();
         }
     }
 }

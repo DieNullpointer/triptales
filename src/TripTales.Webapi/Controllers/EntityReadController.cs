@@ -7,6 +7,7 @@ using System;
 using TripTales.Application.Infrastructure;
 using TripTales.Application.Model;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 
 namespace TripTales.Webapi.Controllers
 {
@@ -29,6 +30,35 @@ namespace TripTales.Webapi.Controllers
                 .Select(projection)
                 .ToListAsync();
             return Ok(result);
+        }
+
+        protected async Task<IActionResult> GetByGuid<TDto>(Guid guid)
+        {
+            var query = _db.Set<TEntity>().AsQueryable();
+            query = ExpandQueryByParam(query);  // Add includes
+            var data = await ExpandQueryByParam(query).Where(a => a.Guid == guid).FirstOrDefaultAsync();
+            if (data is null) return NotFound();
+            return Ok(_mapper.Map<TDto>(data));
+        }
+
+        protected IQueryable<TEntity> ExpandQueryByParam(IQueryable<TEntity> query)
+        {
+            // Suche z. B. den Entity Type Handin
+            var entity = _db.Model.FindEntityType(typeof(TEntity));
+            if (entity is null) { throw new ApplicationException($"Entity {typeof(TEntity).Name} not found."); }
+
+            // HTTP Request im Controller analysiere die Parameter
+            // $expand=Student,Task soll ausgelesen werden.
+            if (!HttpContext.Request.Query.TryGetValue("$expand", out var paramValues))
+                return query;
+            // values wäre dann [Student, Task]
+            var values = paramValues.SelectMany(v => v.Split(",")).ToList();
+
+            var expandNavigations = entity.GetNavigations()
+                .Where(n => values.Contains(n.Name) || values.Contains(n.Name.ToLower())).Select(n => n.Name);
+            foreach (var navigation in expandNavigations)
+                query = query.Include(navigation);                // _db.Set<Handin>().Include(h=>h.Student)
+            return query;
         }
     }
 }

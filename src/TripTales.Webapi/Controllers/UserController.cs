@@ -63,6 +63,9 @@ namespace TripTales.Webapi.Controllers
                 h.PasswordHash
             });
 
+        [HttpGet("{guid}")]
+        public async Task<IActionResult> GetUser(Guid guid) => await GetByGuid<UserDto>(guid);
+
         [Authorize]
         [HttpGet("me")]
         public async Task<IActionResult> GetUserdata()
@@ -75,6 +78,8 @@ namespace TripTales.Webapi.Controllers
             if (username is null) { return Unauthorized(); }
 
             // Valid token, but no user match in the database (maybe deleted by an admin).
+
+
             var user = await _db.User.FirstOrDefaultAsync(a => a.RegistryName == username);
             if (user is null) { return Unauthorized(); }
             return Ok(new
