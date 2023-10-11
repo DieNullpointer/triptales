@@ -17,14 +17,17 @@ import {
 } from "@heroicons/react/24/solid";
 import * as Auth from "@/helpers/authHelpers";
 import React from "react";
+import { useRouter } from "next/router";
 
 const MenuProvider: React.FC<{}> = () => {
   const itemsClass =
     "text-white hover:bg-primary/20 active:focus:bg-primary/20 focus:bg-primary/20 hover:text-white focus:text-white active:text-white ";
 
+  const router = useRouter();
+
   return (
     <List>
-      <ListItem className={itemsClass}>
+      <ListItem className={itemsClass} onClick={() => router.push("/")}>
         <ListItemPrefix>
           <HomeIcon className="h-5 w-5 text-white" />
         </ListItemPrefix>

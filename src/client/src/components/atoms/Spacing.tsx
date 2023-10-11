@@ -1,12 +1,12 @@
 import { useState } from "react";
 
-const Spacing: React.FC<{ spacing: number; line?: boolean }> = ({
-  spacing = 6,
+const Spacing: React.FC<{ space?: number; line?: boolean }> = ({
+  space = 6,
   line,
 }) => {
   return (
     <div
-      className={`h-${spacing + ''} ${line ? "border-t border-black" : ""}`}
+      className={`h-${space + ''} ${line ? "border-t border-black" : ""}`}
     ></div>
   );
 };
