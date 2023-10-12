@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Bogus.DataSets;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -27,7 +28,7 @@ namespace TripTales.Webapi.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register(UserRegisterCmd user)
+        public async Task<IActionResult> Register([FromBody] UserRegisterCmd user)
         {
             var user1 = _mapper.Map<User>(user);
             try
@@ -113,7 +114,7 @@ namespace TripTales.Webapi.Controllers
         }
 
         [Authorize]
-        [HttpDelete("delete")]
+        [HttpDelete("delete/{guid:Guid}")]
         public async Task<IActionResult> DeleteUser(Guid guid)
         {
             var User = await _db.User.FirstOrDefaultAsync(a => a.Guid == guid);
@@ -124,6 +125,27 @@ namespace TripTales.Webapi.Controllers
             try { await _db.SaveChangesAsync(); }
             catch (DbUpdateException) { return BadRequest(); }
             return Ok();
+        }
+
+        [Authorize]
+        [HttpPut("change")]
+        public async Task<IActionResult> ChangeUser([FromBody] UserCmd userCmd)
+        {
+            var user = await _db.User.FirstOrDefaultAsync(a => a.Guid == userCmd.guid);
+
+            if ( user is null) { return NotFound(); }
+
+            user.DisplayName = userCmd.DisplayName;
+            user.Email = userCmd.Email;
+            user.RegistryName = userCmd.RegistryName;
+
+            try
+            {
+                await _db.SaveChangesAsync();
+                return Ok();
+            }
+            catch (DbUpdateException e) { return BadRequest(e.Message); }
+            
         }
     }
 }
