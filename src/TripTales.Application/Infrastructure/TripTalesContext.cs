@@ -23,6 +23,12 @@ namespace TripTales.Application.Infrastructure
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<User>()
+                .HasMany(e => e.Posts)
+                .WithOne(e => e.User);
+            modelBuilder.Entity<User>()
+                .HasMany(e => e.Likes)
+                .WithMany(e => e.Likes);
             // Generic config for all entities
             foreach (var entityType in modelBuilder.Model.GetEntityTypes())
             {

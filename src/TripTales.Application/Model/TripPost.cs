@@ -19,9 +19,9 @@ namespace TripTales.Application.Model
         public DateTime End { get; set; }
         public string Title { get; set; }
         public string Text { get; set; }
-        public User User { get; set; }
+        public User? User { get; set; }
         public List<TripDay> Days { get; } = new();
-        //public List<User> Likes { get; } = new();
+        public List<User> Likes { get; } = new();
 
         public TripPost(string title, string text, DateTime begin, DateTime end, User user)
         {
