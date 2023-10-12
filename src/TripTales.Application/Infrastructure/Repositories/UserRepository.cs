@@ -31,5 +31,18 @@ namespace TripTales.Application.Infrastructure.Repositories
             if (entity is null) { return (false, "User not found"); }
             return await base.Delete(guid);
         }
+
+        public override async Task<(bool success, string message)> Update(User user)
+        {
+            var user2 = await _db.User.FirstOrDefaultAsync(a => a.Guid == user.Guid);
+            if(user2 is null) { return (false, "User not found"); }
+            user2.Email = user.Email;
+            user2.DisplayName = user.DisplayName;
+            user2.RegistryName = user.RegistryName;
+            user2.Salt = user.Salt;
+            user2.PasswordHash = user.PasswordHash;
+            user2.Description = user.Description;
+            return await base.Update(user2);
+        }
     }
 }

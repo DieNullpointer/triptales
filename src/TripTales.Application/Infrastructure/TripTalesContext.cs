@@ -61,10 +61,10 @@ namespace TripTales.Application.Infrastructure
             var users = new Faker<User>("de").CustomInstantiator(f =>
             {
                 var person = f.Person;
-                var user = new User(person.Email, "1234", person.UserName, person.UserName.ToLower());
+                var user = new User(person.Email, "1234", person.UserName, person.UserName.ToLower(), f.Lorem.Text());
                 return user;
             }).Generate(5).ToList();
-            users.Add(new User("admin@nullpointer.at", "admin", "admin", "admin"));
+            users.Add(new User("admin@nullpointer.at", "admin", "Administrator", "admin", "This is the admin User!"));
             User.AddRange(users);
             SaveChanges();
 

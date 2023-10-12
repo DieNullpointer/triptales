@@ -116,7 +116,7 @@ namespace TripTales.Webapi.Controllers
         }
 
         [Authorize]
-        [HttpDelete("delete")]
+        [HttpDelete("delete/{guid:Guid}")]
         public async Task<IActionResult> DeleteUser(Guid guid)
         {
             (bool success, string message) = await _repo.Delete(guid);
@@ -128,21 +128,11 @@ namespace TripTales.Webapi.Controllers
         [HttpPut("change")]
         public async Task<IActionResult> ChangeUser([FromBody] UserCmd userCmd)
         {
-            var user = await _db.User.FirstOrDefaultAsync(a => a.Guid == userCmd.guid);
-
-            if ( user is null) { return NotFound(); }
-
-            user.DisplayName = userCmd.DisplayName;
-            user.Email = userCmd.Email;
-            user.RegistryName = userCmd.RegistryName;
-
-            try
-            {
-                await _db.SaveChangesAsync();
-                return Ok();
-            }
-            catch (DbUpdateException e) { return BadRequest(e.Message); }
-            
+            var user = _mapper.Map<User>(userCmd);
+            user.SetPassword(userCmd.Password);
+            (bool success, string message) = await _repo.Update(user);
+            if (success) return Ok();
+            return BadRequest(message);
         }
     }
 }
