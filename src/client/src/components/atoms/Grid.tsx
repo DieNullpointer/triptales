@@ -7,6 +7,7 @@ export interface Props {
   expandCols?: number;
   className?: string;
   itemClass?: string;
+  even?: boolean;
 }
 
 const Grid: React.FC<Props> = ({
@@ -15,11 +16,12 @@ const Grid: React.FC<Props> = ({
   expandCols,
   className,
   itemClass,
+  even,
 }) => {
   const classNames = cleanClasses(
-    `!grid !grid-flow-row grid-cols-${cols} ${
+    `!grid !grid-flow-col grid-cols-${cols} ${
       expandCols ? "md:grid-cols-" + expandCols + "" : ""
-    } ${className}`
+    } ${even ? "auto-cols-fr" : ""} ${className}`
   );
   if (!itemClass) return <div className={classNames}>{...children}</div>;
   else
