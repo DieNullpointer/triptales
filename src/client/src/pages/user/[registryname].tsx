@@ -5,14 +5,15 @@ import { useRouter } from "next/router";
 import defaultBanner from "@/resources/default_bannerpic.jpg";
 import defaultPfp from "@/resources/default_profilepic.png";
 import { Flowtext, Heading, Subheading } from "@/components/atoms/Text";
+import Loading from "@/components/static/Loading";
 
 export default function User() {
   const router = useRouter();
   const registryname: any = router.query?.registryname;
   const { user, error, isLoading } = getUserByRegistry(registryname);
 
-  return (
-    <div className="">
+  return user ? (
+    <div>
       <div className="relative">
         <Image
           src={defaultBanner.src}
@@ -30,11 +31,15 @@ export default function User() {
         />
       </div>
       <div className="mt-16">
-        <Subheading bold wide center>
-          {user.displayName}
+        <Subheading bold center className="!tracking-wider">
+          {user?.displayName}
         </Subheading>
-        <Flowtext className="italic !text-slate-600" center>@{user.registryName}</Flowtext>
+        <Flowtext className="italic !text-slate-600" center>
+          @{user?.registryName}
+        </Flowtext>
       </div>
     </div>
+  ) : (
+    <Loading />
   );
 }
