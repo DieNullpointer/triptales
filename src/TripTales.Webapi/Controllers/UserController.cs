@@ -59,11 +59,11 @@ namespace TripTales.Webapi.Controllers
                 h.DisplayName,
                 h.Email,
                 h.RegistryName,
+                h.Description,
                 Posts = h.Posts.Select(p => new
                 {
                     p.Guid
-                }),
-                h.PasswordHash
+                })
             });
 
         [HttpGet("{guid:Guid}")]
