@@ -10,6 +10,7 @@ using Microsoft.IdentityModel.Tokens;
 using System;
 using TripTales.Application.Dto;
 using TripTales.Application.Infrastructure;
+using TripTales.Application.Infrastructure.Repositories;
 using TripTales.Application.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,6 +18,8 @@ builder.Services.AddControllers();
 
 builder.Services.AddDbContext<TripTalesContext>(opt =>
     opt.UseSqlite(builder.Configuration.GetConnectionString("Default")));
+
+builder.Services.AddScoped<UserRepository>();
 
 if (builder.Environment.IsDevelopment())
 {
