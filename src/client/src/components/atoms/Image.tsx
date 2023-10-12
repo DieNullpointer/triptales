@@ -3,14 +3,15 @@ import React from "react";
 
 export interface Props {
   wrapper?: string;
-  width: number;
-  height: number;
+  width?: number | string;
+  height?: number | string;
   src: string;
   alt: string;
+  className?: string;
 }
 
-const Image: React.FC<Props> = ({ width, height, wrapper, src, alt }) => {
-  const img = <TImage width={width} height={height} src={src} alt={alt} />;
+const Image: React.FC<Props> = ({ width, height, wrapper, src, alt, className }) => {
+  const img = <img width={width} height={height} src={src} alt={alt} className={className} />;
   return wrapper ? <div className={wrapper}>{img}</div> : img;
 };
 
