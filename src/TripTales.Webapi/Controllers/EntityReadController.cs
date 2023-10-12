@@ -32,6 +32,15 @@ namespace TripTales.Webapi.Controllers
             return Ok(result);
         }
 
+        protected async Task<IActionResult> GetByGuid<TDto>(Guid guid, Expression<Func<TEntity, TDto>> projection)
+        {
+            var result = await _db.Set<TEntity>()
+                .Where(a => a.Guid == guid)
+                .Select(projection)
+                .FirstOrDefaultAsync();
+            return Ok(result);
+        }
+
         protected async Task<IActionResult> GetByGuid<TDto>(Guid guid)
         {
             var query = _db.Set<TEntity>().AsQueryable();

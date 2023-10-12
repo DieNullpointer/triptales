@@ -81,7 +81,7 @@ namespace TripTales.Application.Infrastructure
             var days = new Faker<TripDay>("de").CustomInstantiator(f =>
             {
                 var date = f.Date.Future(0);
-                var day = new TripDay(date, f.Lorem.ToString() ?? "title", f.Hacker.ToString() ?? "text");
+                var day = new TripDay(date, f.Lorem.ToString() ?? "title", f.Hacker.ToString() ?? "text", f.PickRandom(posts));
                 return day;
             }).Generate(10).ToList();
             Days.AddRange(days);
