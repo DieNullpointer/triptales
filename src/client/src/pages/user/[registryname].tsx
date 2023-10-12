@@ -6,6 +6,9 @@ import defaultBanner from "@/resources/default_bannerpic.jpg";
 import defaultPfp from "@/resources/default_profilepic.png";
 import { Flowtext, Heading, Subheading } from "@/components/atoms/Text";
 import Loading from "@/components/static/Loading";
+import Spacing from "@/components/atoms/Spacing";
+import Container from "@/components/atoms/Container";
+import Grid from "@/components/atoms/Grid";
 
 export default function User() {
   const router = useRouter();
@@ -38,6 +41,23 @@ export default function User() {
           @{user?.registryName}
         </Flowtext>
       </div>
+      <Spacing space={4} />
+      <Grid cols={1} expandCols={2} className="gap-8" even>
+        <Container className="flex flex-col !p-4" sectionMarker>
+          <Flowtext italic bold>
+            About this User
+          </Flowtext>
+          <Spacing space={1.5} />
+          <Flowtext className="!text-sm md:!text-base">
+            {user?.description}
+          </Flowtext>
+        </Container>
+        <Container className="" sectionMarker>
+          <Flowtext italic bold>
+            More Content to come!
+          </Flowtext>
+        </Container>
+      </Grid>
     </div>
   ) : (
     <Loading />
