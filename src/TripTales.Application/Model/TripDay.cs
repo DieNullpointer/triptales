@@ -17,14 +17,16 @@ namespace TripTales.Application.Model
         public DateTime Date { get; set; }
         public string Title { get; set; }   
         public string Text { get; set; }
+        public TripPost Post { get; set; }
         public List<string> Images { get; } = new();
         public List<TripLocation> Locations { get; } = new();
 
-        public TripDay(DateTime date, string title, string text)
+        public TripDay(DateTime date, string title, string text, TripPost post)
         {
             Date = date;
             Title = title;
             Text = text;
+            Post = post;
         }
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
