@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using Bogus.DataSets;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -10,6 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using TripTales.Application.Dto;
 using TripTales.Application.Infrastructure;
+using TripTales.Application.Infrastructure.Repositories;
 using TripTales.Application.Model;
 using TripTales.Application.Services;
 
@@ -21,10 +21,12 @@ namespace TripTales.Webapi.Controllers
     public class UserController : EntityReadController<User>
     {
         private readonly AuthService _authService;
+        private readonly UserRepository _repo;
 
-        public UserController(TripTalesContext db, IMapper mapper, AuthService authService) : base(db, mapper)
+        public UserController(TripTalesContext db, IMapper mapper, AuthService authService, UserRepository repo) : base(db, mapper)
         {
             _authService = authService;
+            _repo = repo;
         }
 
         [HttpPost("register")]
@@ -117,35 +119,20 @@ namespace TripTales.Webapi.Controllers
         [HttpDelete("delete/{guid:Guid}")]
         public async Task<IActionResult> DeleteUser(Guid guid)
         {
-            var User = await _db.User.FirstOrDefaultAsync(a => a.Guid == guid);
-
-            if (User is null) { return NotFound(); }
-
-            _db.User.Remove(User);
-            try { await _db.SaveChangesAsync(); }
-            catch (DbUpdateException) { return BadRequest(); }
-            return Ok();
+            (bool success, string message) = await _repo.Delete(guid);
+            if(success) { return Ok(); }
+            return BadRequest(message);
         }
 
         [Authorize]
         [HttpPut("change")]
         public async Task<IActionResult> ChangeUser([FromBody] UserCmd userCmd)
         {
-            var user = await _db.User.FirstOrDefaultAsync(a => a.Guid == userCmd.guid);
-
-            if ( user is null) { return NotFound(); }
-
-            user.DisplayName = userCmd.DisplayName;
-            user.Email = userCmd.Email;
-            user.RegistryName = userCmd.RegistryName;
-
-            try
-            {
-                await _db.SaveChangesAsync();
-                return Ok();
-            }
-            catch (DbUpdateException e) { return BadRequest(e.Message); }
-            
+            var user = _mapper.Map<User>(userCmd);
+            user.SetPassword(userCmd.Password);
+            (bool success, string message) = await _repo.Update(user);
+            if (success) return Ok();
+            return BadRequest(message);
         }
     }
 }
