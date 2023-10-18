@@ -72,7 +72,7 @@ namespace TripTales.Application.Infrastructure
             {
                 var dateb = DateTime.UtcNow.Date;
                 var daten = f.Date.Between(dateb.AddDays(5), dateb.AddDays(10)).Date;
-                var post = new TripPost(f.Lorem.ToString() ?? "test", f.Hacker.ToString() ?? "test", dateb, daten, f.PickRandom(users));
+                var post = new TripPost(f.Random.Words(10), f.Random.Words(30), dateb, daten, f.PickRandom(users));
                 return post;
             }).Generate(5).ToList();
             Posts.AddRange(posts);
@@ -81,7 +81,7 @@ namespace TripTales.Application.Infrastructure
             var days = new Faker<TripDay>("de").CustomInstantiator(f =>
             {
                 var date = f.Date.Future(0);
-                var day = new TripDay(date, f.Lorem.ToString() ?? "title", f.Hacker.ToString() ?? "text", f.PickRandom(posts));
+                var day = new TripDay(date, f.Random.Words(10), f.Random.Words(30), f.PickRandom(posts));
                 return day;
             }).Generate(10).ToList();
             Days.AddRange(days);
