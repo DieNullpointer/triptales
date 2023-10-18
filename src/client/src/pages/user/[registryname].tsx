@@ -53,9 +53,7 @@ export default function User() {
           </Flowtext>
         </Container>
         <Container className="" sectionMarker>
-          <Flowtext italic bold>
-            More Content to come!
-          </Flowtext>
+          <></>
         </Container>
       </Grid>
     </div>
