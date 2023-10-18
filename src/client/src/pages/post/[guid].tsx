@@ -7,9 +7,11 @@ export default function PostPage() {
   const guid: any = router.query?.guid;
   const { post, error, isLoading } = getPost(guid);
   console.log(post);
+  console.log(error);
+  
   return (
     <>
-      <Post data={post} />
+      <Post data={post} loading={isLoading || error} />
     </>
   );
 }
