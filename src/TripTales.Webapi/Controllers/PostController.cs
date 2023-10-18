@@ -1,10 +1,16 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using TripTales.Application.Dto;
 using TripTales.Application.Infrastructure;
+using TripTales.Application.Infrastructure.Repositories;
 using TripTales.Application.Model;
 
 namespace TripTales.Webapi.Controllers
@@ -13,8 +19,11 @@ namespace TripTales.Webapi.Controllers
     [ApiController]
     public class PostController : EntityReadController<TripPost>
     {
-        public PostController(TripTalesContext db, IMapper mapper) : base(db, mapper)
+        private readonly PostRepository _repo;
+
+        public PostController(TripTalesContext db, IMapper mapper, PostRepository repo) : base(db, mapper)
         {
+            _repo = repo;
         }
 
         [HttpGet]
@@ -78,5 +87,25 @@ namespace TripTales.Webapi.Controllers
                     h.User!.DisplayName
                 }
             });
+
+        [Authorize]
+        [HttpPost("add")]
+        public async Task<IActionResult> AddPost([FromBody] PostCmd postCmd)
+        {
+            var username = HttpContext?.User.Identity?.Name;
+            if (username is null) { return Unauthorized(); }
+            // Valid token, but no user match in the database (maybe deleted by an admin).
+            var user = await _db.User.FirstOrDefaultAsync(a => a.RegistryName == username);
+            if (user is null) { return Unauthorized(); }
+
+            var post = _mapper.Map<TripPost>(postCmd, opt => opt.AfterMap((dto, entity) =>
+            {
+                entity.Created = DateTime.UtcNow;
+                entity.User = user;
+            }));
+            (bool success, string message) = await _repo.Insert(post);
+            if(success) { return Ok(); }
+            return BadRequest(message);
+        }
     }
 }

@@ -19,6 +19,7 @@ builder.Services.AddControllers();
 builder.Services.AddDbContext<TripTalesContext>(opt =>
     opt.UseSqlite(builder.Configuration.GetConnectionString("Default")));
 
+builder.Services.AddScoped<PostRepository>();
 builder.Services.AddScoped<UserRepository>();
 
 if (builder.Environment.IsDevelopment())

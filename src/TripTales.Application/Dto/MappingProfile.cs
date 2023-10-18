@@ -17,6 +17,8 @@ namespace TripTales.Application.Dto
             CreateMap<TripPost, PostDto>();
             CreateMap<User, FriendDto>();
             CreateMap<UserCmd, User>();
+            CreateMap<PostCmd, TripPost>();
+            CreateMap<DayCmd, TripDay>();
         }
     }
 }
