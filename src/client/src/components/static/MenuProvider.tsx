@@ -1,3 +1,4 @@
+import Router, { useRouter } from "next/router";
 import {
   Card,
   Typography,
@@ -16,12 +17,12 @@ import {
   ArrowUpCircleIcon,
 } from "@heroicons/react/24/solid";
 import * as Auth from "@/helpers/authHelpers";
-import React from "react";
+import React, { use } from "react";
 
 const MenuProvider: React.FC<{}> = () => {
   const itemsClass =
     "text-white hover:bg-primary/20 active:focus:bg-primary/20 focus:bg-primary/20 hover:text-white focus:text-white active:text-white ";
-
+    const router = useRouter()
   return (
     <List>
       <ListItem className={itemsClass}>
@@ -66,7 +67,9 @@ const MenuProvider: React.FC<{}> = () => {
           </ListItem>
         </>
       ) : (
-        <ListItem className={itemsClass}>
+        <ListItem className={itemsClass}onClick={()=>{
+          router.push("/landingpage")
+        }}>
           <ListItemPrefix>
             <ArrowUpCircleIcon className="h-5 w-5 text-white" />
           </ListItemPrefix>
@@ -78,3 +81,4 @@ const MenuProvider: React.FC<{}> = () => {
 };
 
 export default MenuProvider;
+
