@@ -66,6 +66,15 @@ namespace TripTales.Webapi.Controllers
                 })
             });
 
+        [HttpGet("image/{guid:Guid}")]
+        public IActionResult GetPicutre(Guid guid)
+        {
+            var user = _db.User.FirstOrDefault(a => a.Guid == guid);
+            if (user is null) return BadRequest("User gibt es nicht");
+            var myfile = System.IO.File.ReadAllBytes($"Pictures/{user.RegistryName}-picture.jpg");
+            return new FileContentResult(myfile, "image/jpeg");
+        }
+
         [HttpGet("{guid:Guid}")]
         public async Task<IActionResult> GetUser(Guid guid) => await GetByGuid<UserDto>(guid);
 
