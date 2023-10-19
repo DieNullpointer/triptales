@@ -10,6 +10,7 @@ import {
   CalendarDaysIcon,
   InformationCircleIcon,
 } from "@heroicons/react/24/solid";
+import Avatar from "../atoms/Avatar";
 
 export interface Props {
   data: TripPost;
@@ -32,13 +33,7 @@ const Post: React.FC<Props> = ({ data, small, loading }) => {
     <Container className="relative h-screen m-12">
       <div className="flex lg:flex-row flex-col lg:items-center items-start lg:justify-between ">
         <div className="place-items-center flex flex-row">
-          <Image
-            src={defaultPfp.src}
-            alt=""
-            height={80}
-            width={80}
-            className="rounded-full ring-4 ring-white"
-          />
+          <Avatar size="small" />
           <div className="p-2 rounded ml-1">
             <Subheading bold className="!text-base md:!text-xl">
               {data.user.displayName}
