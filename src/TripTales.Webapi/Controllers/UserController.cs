@@ -101,7 +101,7 @@ namespace TripTales.Webapi.Controllers
                 Profile = profile,
                 Banner = banner
             };
-            return Ok(test);
+            return Ok(leon);
         }
 
         [Authorize]
