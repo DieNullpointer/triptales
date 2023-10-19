@@ -107,5 +107,25 @@ namespace TripTales.Webapi.Controllers
             if(success) { return Ok(); }
             return BadRequest(message);
         }
+
+        [Authorize]
+        [HttpDelete("delete/{guid:Guid}")]
+        public async Task<IActionResult> DeletePost(Guid guid)
+        {
+            var username = HttpContext?.User.Identity?.Name;
+            if (username is null) { return Unauthorized(); }
+            // Valid token, but no user match in the database (maybe deleted by an admin).
+            var user = await _db.User.FirstOrDefaultAsync(a => a.RegistryName == username);
+            if (user is null) { return Unauthorized(); }
+            var post = await _db.Posts.FirstOrDefaultAsync(a => a.Guid == guid);
+            if(post is null) { return BadRequest("Post gibt es nicht"); }
+            if (!user.Posts.Contains(post))
+                return BadRequest("This is not the Post of the User");
+            post.User = null;
+            user.Posts.Remove(post);
+            (bool success, string message) = await _repo.Delete(guid);
+            if (success) { return Ok(); }
+            return BadRequest(message);
+        }
     }
 }
