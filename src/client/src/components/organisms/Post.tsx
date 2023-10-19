@@ -1,10 +1,15 @@
-import { TripPost } from "@/types/types";
+import { TripDay, TripPost } from "@/types/types";
 import React from "react";
 import Container from "../atoms/Container";
 import Image from "../atoms/Image";
 import defaultPfp from "@/resources/default_profilepic.png";
 import { Flowtext, Heading, Subheading } from "../atoms/Text";
 import Loading from "../static/Loading";
+import { formatDateEuropean } from "@/helpers/stringHelpers";
+import {
+  CalendarDaysIcon,
+  InformationCircleIcon,
+} from "@heroicons/react/24/solid";
 
 export interface Props {
   data: TripPost;
@@ -12,15 +17,20 @@ export interface Props {
   loading?: boolean;
 }
 
-const Post: React.FC<Props> = ({ data, small, loading }) => {
-  const format = (date: Date) => {
-    var d = new Date(date);
-    return d.getDay() + "." + d.getMonth() + "." + d.getFullYear();
-  };
+export interface PropsDay {
+  data: TripDay;
+}
 
+const Day: React.FC<PropsDay> = ({data}) => {
+  return <></>
+}
+
+const Post: React.FC<Props> = ({ data, small, loading }) => {
+  // shadow-lg rounded-[2rem] bg-greenwhite
+  
   return !loading ? (
-    <Container className="relative h-screen m-12" sectionMarker>
-      <div className="flex lg:flex-row flex-col bg-white rounded lg:items-center items-start lg:justify-between ">
+    <Container className="relative h-screen m-12">
+      <div className="flex lg:flex-row flex-col lg:items-center items-start lg:justify-between ">
         <div className="place-items-center flex flex-row">
           <Image
             src={defaultPfp.src}
@@ -29,7 +39,7 @@ const Post: React.FC<Props> = ({ data, small, loading }) => {
             width={80}
             className="rounded-full ring-4 ring-white"
           />
-          <div className="bg-white p-2 rounded ml-1">
+          <div className="p-2 rounded ml-1">
             <Subheading bold className="!text-base md:!text-xl">
               {data.user.displayName}
             </Subheading>
@@ -41,10 +51,18 @@ const Post: React.FC<Props> = ({ data, small, loading }) => {
             </Flowtext>
           </div>
         </div>
-        <div className="m-4 w-full lg:w-auto">
-          <Flowtext italic center className="!text-slate-600 w-full lg:w-auto">
-            {format(data.begin)} <b>-</b> {format(data.end)}
+        <div className="md:m-4 m-2 w-full flex flex-row !text-slate-600 lg:w-auto">
+          <CalendarDaysIcon className="h-6 w-6 mr-1" />
+          <Flowtext italic className="">
+            {formatDateEuropean(data.begin)} <b>-</b>{" "}
+            {formatDateEuropean(data.end)}
           </Flowtext>
+        </div>
+      </div>
+      <div className="md:mt-1">
+        <Heading className="tracking-tight mb-2">{data.title}</Heading>
+        <div className="flex flex-row">
+          <Flowtext>{data.text}</Flowtext>
         </div>
       </div>
     </Container>
