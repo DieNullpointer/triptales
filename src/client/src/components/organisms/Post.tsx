@@ -11,6 +11,14 @@ import {
   InformationCircleIcon,
 } from "@heroicons/react/24/solid";
 import Avatar from "../atoms/Avatar";
+import {
+  Timeline,
+  TimelineBody,
+  TimelineConnector,
+  TimelineHeader,
+  TimelineIcon,
+  TimelineItem,
+} from "@material-tailwind/react";
 
 export interface Props {
   data: TripPost;
@@ -18,17 +26,34 @@ export interface Props {
   loading?: boolean;
 }
 
-export interface PropsDay {
-  data: TripDay;
-}
+const Day: React.FC<{ day: TripDay }> = ({ day }) => {
+  return <Flowtext className="!text-sm !text-slate-600">{day.text}</Flowtext>;
+};
 
-const Day: React.FC<PropsDay> = ({data}) => {
-  return <></>
-}
+const Days: React.FC<{ days: TripDay[]; className?: string }> = ({ days, className }) => {
+  return (
+    <div className={className}>
+      <Timeline>
+        {days.map((day, idx) => (
+          <TimelineItem className="pb-6">
+            <TimelineConnector />
+            <TimelineHeader className="h-3">
+              {idx >= days.length ? <></> : <TimelineIcon />}
+              <Flowtext bold className="!p-0 !m-0 tracking-tight">Day {idx + 1}: {day.title}</Flowtext>
+            </TimelineHeader>
+            <TimelineBody>
+              <Day day={day} />
+            </TimelineBody>
+          </TimelineItem>
+        ))}
+      </Timeline>
+    </div>
+  );
+};
 
 const Post: React.FC<Props> = ({ data, small, loading }) => {
   // shadow-lg rounded-[2rem] bg-greenwhite
-  
+
   return !loading ? (
     <Container className="relative h-screen m-12">
       <div className="flex lg:flex-row flex-col lg:items-center items-start lg:justify-between ">
@@ -59,6 +84,7 @@ const Post: React.FC<Props> = ({ data, small, loading }) => {
         <div className="flex flex-row">
           <Flowtext>{data.text}</Flowtext>
         </div>
+        <Days days={data.days} className="mx-2 mt-6" />
       </div>
     </Container>
   ) : (
