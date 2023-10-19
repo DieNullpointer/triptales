@@ -2,6 +2,7 @@ import Post from "@/components/organisms/Post";
 import { getPost } from "@/middleware/middleware";
 import { useRouter } from "next/router";
 
+
 export default function PostPage() {
   const router = useRouter();
   const guid: any = router.query?.guid;
