@@ -66,6 +66,20 @@ namespace TripTales.Webapi.Controllers
                 })
             });
 
+        /*[HttpGet("image/{guid:Guid}")]
+        public IActionResult GetPicutre(Guid guid)
+        {
+            var user = _db.User.FirstOrDefault(a => a.Guid == guid);
+            if (user is null) return BadRequest("User gibt es nicht");
+            var myfile = System.IO.File.ReadAllBytes($"Pictures/{user.RegistryName}-picture.jpg");
+            var test = new
+            {
+                User = user,
+                Profile = File(myfile, "image/jpeg")
+            };
+            return Ok(test);
+        }*/
+
         [HttpGet("{guid:Guid}")]
         public async Task<IActionResult> GetUser(Guid guid) => await GetByGuid<UserDto>(guid);
 
@@ -73,7 +87,16 @@ namespace TripTales.Webapi.Controllers
         public async Task<IActionResult> GetUserByRegistryName(string registryName)
         {
             var user = await _db.User.FirstOrDefaultAsync((u) => u.RegistryName == registryName);
-            return Ok(_mapper.Map<UserDto>(user));
+            if (user is null) return BadRequest("User gibt es nicht");
+            var myfile = System.IO.File.ReadAllBytes($"Pictures/{user.RegistryName}-picture.jpg");
+            var banner = System.IO.File.ReadAllBytes($"Pictures/{user.RegistryName}-banner.jpg");
+            var test = new
+            {
+                User = _mapper.Map<UserDto>(user),
+                Profile = File(myfile, "image/jpeg"),
+                Banner = File(banner, "image/jpeg")
+            };
+            return Ok(test);
         }
 
         [Authorize]
