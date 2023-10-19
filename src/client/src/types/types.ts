@@ -7,26 +7,31 @@ export interface User {
     friends: User[]
 }
 
-export interface TripPosts {
+export interface TripPost {
     guid: string,
     title: string,
-    description: string,
-
-}
-
-export interface TripMap {
-    guid: string
+    text: string,
+    begin: Date,
+    end: Date,
+    created: Date,
+    likes: number,
+    user: {
+        registryName: string,
+        displayName: string,
+        guid: string,
+    }
+    days: TripDay[]
 }
 
 export interface TripDay {
     guid: string,
     date: Date,
     title: string,
-    description: string
+    text: string,
+    images: any[],
 }
 
 export interface TripLocation {
-    guid: string,
-    picture: string,    // url to image
-    coordinates: any    // unknown frontend implementation
+    coordinates: string,
+    images: any[]
 }
