@@ -10,6 +10,7 @@ import Spacing from "@/components/atoms/Spacing";
 import Container from "@/components/atoms/Container";
 import Grid from "@/components/atoms/Grid";
 import { buildBase64Image } from "@/helpers/stringHelpers";
+import Avatar from "@/components/atoms/Avatar";
 
 export default function User() {
   const router = useRouter();
@@ -28,14 +29,7 @@ export default function User() {
           className="w-full"
           wrapper="max-h-60 overflow-hidden items-center flex rounded-lg"
         />
-        <Image
-          src={profile ? buildBase64Image(profile) : defaultPfp.src}
-          alt=""
-          height={110}
-          width={110}
-          className="rounded-full overflow-hidden ring-8 ring-white"
-          wrapper="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2"
-        />
+        <Avatar profile={profile} size="large" className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2" />
       </div>
       <div className="mt-16">
         <Subheading bold center className="!tracking-wider">
