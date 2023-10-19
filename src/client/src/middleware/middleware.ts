@@ -23,7 +23,7 @@ export function getUserByRegistry(registryName: string): { user: User, profile: 
   );
 
   return {
-    user: data.user,
+    user: data?.user,
     profile: data?.profile,
     banner: data?.banner,
     error,
