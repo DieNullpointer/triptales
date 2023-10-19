@@ -4,7 +4,19 @@ export interface User {
     password: string,
     displayName: string,
     registryName: string,
+    description: string,
     friends: User[]
+}
+
+export interface ProfileUser {
+    user: User,
+    profile: Image,
+    banner: Image
+}
+
+export interface Image {
+    contentType: string,
+    fileContents: string
 }
 
 export interface TripPost {
