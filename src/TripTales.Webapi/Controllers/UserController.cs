@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using TripTales.Application.Dto;
@@ -88,15 +89,26 @@ namespace TripTales.Webapi.Controllers
         {
             var user = await _db.User.FirstOrDefaultAsync((u) => u.RegistryName == registryName);
             if (user is null) return BadRequest("User gibt es nicht");
-            var myfile = System.IO.File.ReadAllBytes($"Pictures/{user.RegistryName}-picture.jpg");
-            var banner = System.IO.File.ReadAllBytes($"Pictures/{user.RegistryName}-banner.jpg");
-            var test = new
+            byte[]? myfile = null;
+            byte[]? banner = null;
+            try
+            {
+                myfile = System.IO.File.ReadAllBytes($"Pictures/{user.RegistryName}-picture.jpg");
+            }
+            catch (FileNotFoundException) { }
+
+            try
+            {
+                banner = System.IO.File.ReadAllBytes($"Pictures/{user.RegistryName}-banner.jpg");
+            }
+            catch (FileNotFoundException) { }
+            var leon = new
             {
                 User = _mapper.Map<UserDto>(user),
-                Profile = File(myfile, "image/jpeg"),
-                Banner = File(banner, "image/jpeg")
+                Profile = myfile is null ? null : File(myfile, "image/jpeg"),
+                Banner = banner is null ? null : File(banner, "image/jpeg")
             };
-            return Ok(test);
+            return Ok(leon);
         }
 
         [Authorize]
