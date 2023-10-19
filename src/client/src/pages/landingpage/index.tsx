@@ -1,7 +1,7 @@
-import Button from "@/components/Button";
-import Input from "@/components/Input";
-import Spacing from "@/components/Spacing";
-import * as Text from "@/components/Text";
+import Button from "@/components/atoms/Button";
+import Input from "@/components/atoms/Input";
+import Spacing from "@/components/atoms/Spacing";
+import * as Text from "@/components/atoms/Text";
 import Link from "next/link";
 
 export default function Login() {
@@ -25,7 +25,6 @@ export default function Login() {
           </svg>
         }
       />
-      <Input label="Email Adresse" width="20rem" />
       <Input
         type="password"
         bottomText="Must include at least 8 characters"
