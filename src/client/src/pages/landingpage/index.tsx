@@ -8,9 +8,9 @@ import loginImage from "@/resources/bild.webp"
 
 export default function Login() {
   return (
-  <div className="flex justify-center items-center h-full">
+  <div className="flex justify-center items-center">
     <div className="basis-2/3">
-      <Image src={loginImage.src} alt={""} className="w-full h-full" />
+      <Image src={loginImage.src} alt={""} className="w-full h-screen" />
     </div>
     <div className="basis-1/3">
       <div className="m-4 space-y-4">
