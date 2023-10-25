@@ -24,9 +24,9 @@ export default function App({ Component, pageProps }: AppProps) {
         <>
           <Drawer open={modalOpen} onClose={() => setModalOpen(false)} />
           <div className="sticky top-0 h-screen">
-            <SideBar className="hidden md:block" />
+            <SideBar className="hidden md:block h-full" />
           </div>
-          <div className="p-6 w-full">
+          <main className="p-6 w-full">
             <ThemeProvider>
               <div className="flex md:hidden flex-row space-x items-center relative mb-4">
                 <Button
@@ -41,7 +41,7 @@ export default function App({ Component, pageProps }: AppProps) {
               </div>
               <Component {...pageProps} />
             </ThemeProvider>
-          </div>
+          </main>
         </>
       )}
     </div>
