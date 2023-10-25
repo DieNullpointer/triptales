@@ -11,6 +11,7 @@ export interface Props {
   center?: boolean;
   sectionMarker?: boolean;
   italic?: boolean;
+  tightHeight?: boolean;
 }
 
 const classNames = (props: Props) =>
@@ -37,7 +38,7 @@ export const Subheading: React.FC<Props> = (props) => (
 );
 
 export const Flowtext: React.FC<Props> = (props) => (
-  <p className={`!text-base md:!text-lg overflow-auto ${classNames(props)}`}>
+  <p className={`${props.tightHeight ? '!leading-tight' : ''} text-base md:text-lg overflow-auto ${classNames(props)}`}>
     {props.children}
   </p>
 );
