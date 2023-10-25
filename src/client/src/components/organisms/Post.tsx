@@ -55,7 +55,7 @@ const Post: React.FC<Props> = ({ data, small, loading }) => {
   // shadow-lg rounded-[2rem] bg-greenwhite
 
   return !loading ? (
-    <Container className="relative h-screen m-12">
+    <Container className="relative min-h-screen m-12">
       <div className="flex lg:flex-row flex-col lg:items-center items-start lg:justify-between ">
         <div className="place-items-center flex flex-row">
           <Avatar size="small" />

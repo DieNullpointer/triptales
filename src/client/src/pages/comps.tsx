@@ -44,7 +44,7 @@ export default function CompsPage() {
       />
       <Link href="/user/1">Test Link</Link>
       <div id="headingshowcase" className="space-y-0">
-        <Spacing spacing={10} line />
+        <Spacing space={10} line />
         <Text.Heading wide uppercase>
           Testheading
         </Text.Heading>
