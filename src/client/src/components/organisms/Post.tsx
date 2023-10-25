@@ -35,11 +35,11 @@ const Days: React.FC<{ days: TripDay[]; className?: string }> = ({ days, classNa
     <div className={className}>
       <Timeline>
         {days.map((day, idx) => (
-          <TimelineItem className="pb-6">
-            <TimelineConnector />
-            <TimelineHeader className="h-3">
+          <TimelineItem className="pb-6 h-full">
+            <TimelineConnector className="!h-full" />
+            <TimelineHeader className="h-auto items-center">
               {idx >= days.length ? <></> : <TimelineIcon />}
-              <Flowtext bold className="!p-0 !m-0 tracking-tight">Day {idx + 1}: {day.title}</Flowtext>
+              <Flowtext bold tightHeight className=" tracking-tight !h-min">Day {idx + 1}: {day.title}</Flowtext>
             </TimelineHeader>
             <TimelineBody>
               <Day day={day} />
