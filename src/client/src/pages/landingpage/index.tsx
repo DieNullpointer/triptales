@@ -1,10 +1,5 @@
 import Button from "@/components/atoms/Button";
-import Input from "@/components/atoms/Input";
-import Spacing from "@/components/atoms/Spacing";
-import * as Text from "@/components/atoms/Text";
-import Image from "@/components/atoms/Image";
 import Link from "next/link";
-import loginImage from "@/resources/bild.webp"
 import Router from "next/router";
 
 export default function Login() {
