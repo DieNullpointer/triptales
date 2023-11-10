@@ -37,6 +37,11 @@ export default function Login() {
           bottomText="Must include at least 8 characters"
           label="Password"
         />
+        <Button
+          className="text-s"
+        >
+          <h1>Login</h1>
+        </Button>
       </div>
     </div>
   </div>
