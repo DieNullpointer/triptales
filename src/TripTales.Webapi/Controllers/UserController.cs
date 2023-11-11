@@ -88,13 +88,21 @@ namespace TripTales.Webapi.Controllers
         {
             var user = await _db.User.FirstOrDefaultAsync((u) => u.RegistryName == registryName);
             if (user is null) return BadRequest("User gibt es nicht");
+            return Ok("Schreib den Code fertig!!");
+        }
+        
+        [HttpGet("test/{registryName}")]
+        public async Task<IActionResult> GetUserByRegistryNameTest(string registryName)
+        {
+            var user = await _db.User.FirstOrDefaultAsync((u) => u.RegistryName == registryName);
+            if (user is null) return BadRequest("User gibt es nicht");
             var myfile = System.IO.File.ReadAllBytes($"Pictures/{user.RegistryName}-picture.jpg");
             var banner = System.IO.File.ReadAllBytes($"Pictures/{user.RegistryName}-banner.jpg");
             var test = new
             {
                 User = _mapper.Map<UserDto>(user),
-                Profile = File(myfile, "image/jpeg"),
-                Banner = File(banner, "image/jpeg")
+                Profile = File(myfile, "image/jpeg").FileContents,
+                Banner = File(banner, "image/jpeg").FileContents
             };
             return Ok(test);
         }

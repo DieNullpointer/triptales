@@ -3,9 +3,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Memory;
 using System;
-using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using TripTales.Application.Dto;
@@ -27,8 +26,10 @@ namespace TripTales.Webapi.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllPosts() => await GetAll(h =>
-            new
+        public async Task<IActionResult> GetAllPosts()
+        {
+            var posts = await _db.Posts.Include(a => a.User).Include(a => a.Likes).Include(a => a.Images).Include(a => a.Days).ThenInclude(a => a.Locations).ToListAsync();
+            return Ok(posts.Select(h => new
             {
                 h.Guid,
                 h.Begin,
@@ -36,6 +37,10 @@ namespace TripTales.Webapi.Controllers
                 h.Title,
                 h.Text,
                 h.Created,
+                Images = h.Images.Select(async i => new
+                {
+                    Image = File(await System.IO.File.ReadAllBytesAsync(i.Path), "image/jpeg").FileContents,
+                }),
                 Likes = h.Likes.Count,
                 Days = h.Days.Select(d => new
                 {
@@ -55,7 +60,8 @@ namespace TripTales.Webapi.Controllers
                     h.User!.RegistryName,
                     h.User!.DisplayName
                 }
-            });
+            }));
+        }
 
         [HttpGet("{guid:Guid}")]
         public async Task<IActionResult> GetPost(Guid guid) => await GetByGuid(guid, h =>
@@ -67,6 +73,7 @@ namespace TripTales.Webapi.Controllers
                 h.Title,
                 h.Text,
                 h.Created,
+                h.Images,
                 Likes = h.Likes.Count,
                 Days = h.Days.Select(d => new
                 {
@@ -97,7 +104,6 @@ namespace TripTales.Webapi.Controllers
             // Valid token, but no user match in the database (maybe deleted by an admin).
             var user = await _db.User.FirstOrDefaultAsync(a => a.RegistryName == username);
             if (user is null) { return Unauthorized(); }
-
             var post = _mapper.Map<TripPost>(postCmd, opt => opt.AfterMap((dto, entity) =>
             {
                 entity.Created = DateTime.UtcNow;
@@ -106,6 +112,35 @@ namespace TripTales.Webapi.Controllers
             (bool success, string message) = await _repo.Insert(post);
             if(success) { return Ok(); }
             return BadRequest(message);
+        }
+
+        [Authorize]
+        [HttpPost("addImages/{guid:Guid}")]
+        public async Task<IActionResult> AddImages(Guid guid, [FromForm] IFormFile formFile)
+        {
+            var username = HttpContext?.User.Identity?.Name;
+            if (username is null) { return Unauthorized(); }
+            // Valid token, but no user match in the database (maybe deleted by an admin).
+            var user = await _db.User.FirstOrDefaultAsync(a => a.RegistryName == username);
+            if (user is null) { return Unauthorized(); }
+            var post = await _db.Posts.FirstOrDefaultAsync(a => a.Guid == guid);
+            if (post is null)
+                return BadRequest("Diesen Post gibt es nicht");
+            string path = Path.Combine(Directory.GetCurrentDirectory(), "PostImages", $"{guid}");
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
+            path = Path.Combine(path, $"{DateTime.UtcNow.ToString("yyyy-MM-dd")}.{formFile.FileName.Split(".").Last()}");
+            post.Images.Add(new Image(path, Path.GetFileNameWithoutExtension(path)));
+            try
+            {
+                await _db.SaveChangesAsync();
+            }
+            catch(DbUpdateException e) { return BadRequest(e.Message); }
+            using (var stream = new FileStream(path, FileMode.Create))
+            {
+                await formFile.CopyToAsync(stream);
+            }
+            return Ok();
         }
 
         [Authorize]
@@ -123,6 +158,9 @@ namespace TripTales.Webapi.Controllers
                 return BadRequest("This is not the Post of the User");
             post.User = null;
             user.Posts.Remove(post);
+            if(Directory.Exists("PostImages"))
+                foreach (var file in Directory.GetFiles("PostImages"))
+                    System.IO.File.Delete(file);
             (bool success, string message) = await _repo.Delete(guid);
             if (success) { return Ok(); }
             return BadRequest(message);

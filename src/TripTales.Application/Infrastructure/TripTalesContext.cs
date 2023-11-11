@@ -1,7 +1,9 @@
 ﻿using Bogus;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection.Metadata;
 using System.Text;
@@ -16,6 +18,7 @@ namespace TripTales.Application.Infrastructure
         public DbSet<TripPost> Posts => Set<TripPost>();
         public DbSet<TripDay> Days => Set<TripDay>();
         public DbSet<TripLocation> Locations => Set<TripLocation>();
+        public DbSet<Image> Images => Set<Image>();
 
         public TripTalesContext(DbContextOptions opt) : base(opt)
         {
@@ -68,11 +71,21 @@ namespace TripTales.Application.Infrastructure
             User.AddRange(users);
             SaveChanges();
 
+            List<string> paths = Directory.GetFiles("../TripTales.Application/Infrastructure/DevImages").ToList();
+            List<Image> images = new();
+            foreach(var path in paths)
+            {
+                images.Add(new Image(path, Path.GetFileNameWithoutExtension(path)));
+            }
+            Images.AddRange(images);
+            SaveChanges();
+
             var posts = new Faker<TripPost>("de").CustomInstantiator(f =>
             {
                 var dateb = DateTime.UtcNow.Date;
                 var daten = f.Date.Between(dateb.AddDays(5), dateb.AddDays(10)).Date;
                 var post = new TripPost(f.Random.Words(10), f.Random.Words(30), dateb, daten, f.PickRandom(users));
+                post.Images.Add(f.PickRandom(images));
                 return post;
             }).Generate(5).ToList();
             Posts.AddRange(posts);
@@ -86,7 +99,7 @@ namespace TripTales.Application.Infrastructure
             }).Generate(10).ToList();
             Days.AddRange(days);
             SaveChanges();
-
+            
             var locations = new Faker<TripLocation>("de").CustomInstantiator(f =>
             {
                 var location = new TripLocation(f.PickRandom(days), f.Random.AlphaNumeric(8));
