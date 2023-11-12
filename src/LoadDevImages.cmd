@@ -1,3 +1,3 @@
-rd /S /Q "TripTales.Application/Infrastructure/DevImages"
-md "TripTales.Application/Infrastructure/DevImages"
+rd /S /Q "TripTales.Webapi/DevImages"
+md "TripTales.Webapi/DevImages"
 node index.js

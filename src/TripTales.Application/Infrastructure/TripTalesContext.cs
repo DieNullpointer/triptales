@@ -71,7 +71,7 @@ namespace TripTales.Application.Infrastructure
             User.AddRange(users);
             SaveChanges();
 
-            List<string> paths = Directory.GetFiles("../TripTales.Application/Infrastructure/DevImages").ToList();
+            List<string> paths = Directory.GetFiles(Path.Combine(Directory.GetCurrentDirectory(), "DevImages")).ToList();
             List<Image> images = new();
             foreach(var path in paths)
             {

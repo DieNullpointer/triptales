@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -37,9 +38,9 @@ namespace TripTales.Webapi.Controllers
                 h.Title,
                 h.Text,
                 h.Created,
-                Images = h.Images.Select(async i => new
+                Images = h.Images.Select(i => new
                 {
-                    Image = File(await System.IO.File.ReadAllBytesAsync(i.Path), "image/jpeg").FileContents,
+                    Image = i.Path,
                 }),
                 Likes = h.Likes.Count,
                 Days = h.Days.Select(d => new
@@ -116,7 +117,7 @@ namespace TripTales.Webapi.Controllers
 
         [Authorize]
         [HttpPost("addImages/{guid:Guid}")]
-        public async Task<IActionResult> AddImages(Guid guid, [FromForm] IFormFile formFile)
+        public async Task<IActionResult> AddImages(Guid guid, [FromForm] List<IFormFile> formFile)
         {
             var username = HttpContext?.User.Identity?.Name;
             if (username is null) { return Unauthorized(); }
@@ -126,20 +127,27 @@ namespace TripTales.Webapi.Controllers
             var post = await _db.Posts.FirstOrDefaultAsync(a => a.Guid == guid);
             if (post is null)
                 return BadRequest("Diesen Post gibt es nicht");
-            string path = Path.Combine(Directory.GetCurrentDirectory(), "PostImages", $"{guid}");
-            if (!Directory.Exists(path))
-                Directory.CreateDirectory(path);
-            path = Path.Combine(path, $"{DateTime.UtcNow.ToString("yyyy-MM-dd")}.{formFile.FileName.Split(".").Last()}");
-            post.Images.Add(new Image(path, Path.GetFileNameWithoutExtension(path)));
+            string directoryPath = Path.Combine(Directory.GetCurrentDirectory(), "PostImages", $"{guid}");
+            if (!Directory.Exists(directoryPath))
+                Directory.CreateDirectory(directoryPath);
+            List<Image> images = new();
+            var count = Directory.GetFiles($"PostImages/{guid}").Count() + 1;
+            foreach (var file in formFile)
+            {
+                var path = Path.Combine(directoryPath, $"{count}.jpg");
+                images.Add(new Image(path, count.ToString()));
+                using (var stream = new FileStream(path, FileMode.Create))
+                {
+                    await file.CopyToAsync(stream);
+                }
+                count++;
+            }
+            await _db.Images.AddRangeAsync(images);
             try
             {
                 await _db.SaveChangesAsync();
             }
             catch(DbUpdateException e) { return BadRequest(e.Message); }
-            using (var stream = new FileStream(path, FileMode.Create))
-            {
-                await formFile.CopyToAsync(stream);
-            }
             return Ok();
         }
 
