@@ -1,4 +1,5 @@
 using AutoMapper;
+using Bogus.DataSets;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -83,13 +84,44 @@ namespace TripTales.Webapi.Controllers
 
         [HttpGet("{guid:Guid}")]
         public async Task<IActionResult> GetUser(Guid guid) => await GetByGuid<UserDto>(guid);
+
+        [Authorize]
+        [HttpPut("addImages")]
+        public async Task<IActionResult> UpdateImages([FromForm] IFormFile? banner, IFormFile? profile)
+        {
+            var username = HttpContext?.User.Identity?.Name;
+            if (username is null) { return Unauthorized(); }
+            // Valid token, but no user match in the database (maybe deleted by an admin).
+            var user = await _db.User.FirstOrDefaultAsync(a => a.RegistryName == username);
+            if (user is null) { return Unauthorized(); }
+            string directoryPath = Path.Combine(Directory.GetCurrentDirectory(), "Pictures");
+            if (!Directory.Exists(directoryPath))
+                Directory.CreateDirectory(directoryPath);
+            var bannerPath = Path.Combine(directoryPath, $"{username}-banner.jpg");
+            var profilePath = Path.Combine(directoryPath, $"{username}-profile.jpg");
+            if(banner is not null)
+            {
+                using (var stream = new FileStream(bannerPath, FileMode.Create))
+                {
+                    await banner.CopyToAsync(stream);
+                }
+            }
+            if(profile is not null)
+            {
+                using (var stream = new FileStream(profilePath, FileMode.Create))
+                {
+                    await profile.CopyToAsync(stream);
+                }
+            }
+            return Ok();
+        }
         
         [HttpGet("{registryName}")]
         public async Task<IActionResult> GetUserByRegistryNameTest(string registryName)
         {
             var user = await _db.User.FirstOrDefaultAsync(u => u.RegistryName == registryName);
             if (user is null) return BadRequest("User gibt es nicht");
-            string? profile = Path.Combine(Directory.GetCurrentDirectory(), $"Pictures/{registryName}-picture.jpg").Replace("\\", "/");
+            string? profile = Path.Combine(Directory.GetCurrentDirectory(), $"Pictures/{registryName}-profile.jpg").Replace("\\", "/");
             string? banner = Path.Combine(Directory.GetCurrentDirectory(), $"Pictures/{registryName}-banner.jpg").Replace("\\", "/");
             if (!System.IO.File.Exists(profile))
                 profile = null;
@@ -101,7 +133,7 @@ namespace TripTales.Webapi.Controllers
                 Profile = profile,
                 Banner = banner
             };
-            return Ok(leon);
+            return Ok(test);
         }
 
         [Authorize]
@@ -144,10 +176,15 @@ namespace TripTales.Webapi.Controllers
         }
 
         [Authorize]
-        [HttpDelete("delete/{guid:Guid}")]
-        public async Task<IActionResult> DeleteUser(Guid guid)
+        [HttpDelete("delete")]
+        public async Task<IActionResult> DeleteUser()
         {
-            (bool success, string message) = await _repo.Delete(guid);
+            var username = HttpContext?.User.Identity?.Name;
+            if (username is null) { return Unauthorized(); }
+            // Valid token, but no user match in the database (maybe deleted by an admin).
+            var user = await _db.User.FirstOrDefaultAsync(a => a.RegistryName == username);
+            if (user is null) { return Unauthorized(); }
+            (bool success, string message) = await _repo.Delete(user.Guid);
             if(success) { return Ok(); }
             return BadRequest(message);
         }
@@ -156,7 +193,12 @@ namespace TripTales.Webapi.Controllers
         [HttpPut("change")]
         public async Task<IActionResult> ChangeUser([FromBody] UserCmd userCmd)
         {
-            var user = _mapper.Map<User>(userCmd);
+            var username = HttpContext?.User.Identity?.Name;
+            if (username is null) { return Unauthorized(); }
+            // Valid token, but no user match in the database (maybe deleted by an admin).
+            var user = await _db.User.FirstOrDefaultAsync(a => a.RegistryName == username);
+            if (user is null) { return Unauthorized(); }
+            user = _mapper.Map<User>(userCmd);
             user.SetPassword(userCmd.Password);
             (bool success, string message) = await _repo.Update(user);
             if (success) return Ok();
