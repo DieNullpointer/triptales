@@ -116,7 +116,7 @@ namespace TripTales.Webapi.Controllers
         }
 
         [Authorize]
-        [HttpPost("addImages/{guid:Guid}")]
+        [HttpPut("addImages/{guid:Guid}")]
         public async Task<IActionResult> AddImages(Guid guid, [FromForm] List<IFormFile> formFile)
         {
             var username = HttpContext?.User.Identity?.Name;
