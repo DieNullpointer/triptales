@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using TripTales.Application.Dto;
@@ -82,19 +83,23 @@ namespace TripTales.Webapi.Controllers
 
         [HttpGet("{guid:Guid}")]
         public async Task<IActionResult> GetUser(Guid guid) => await GetByGuid<UserDto>(guid);
-
+        
         [HttpGet("{registryName}")]
-        public async Task<IActionResult> GetUserByRegistryName(string registryName)
+        public async Task<IActionResult> GetUserByRegistryNameTest(string registryName)
         {
-            var user = await _db.User.FirstOrDefaultAsync((u) => u.RegistryName == registryName);
+            var user = await _db.User.FirstOrDefaultAsync(u => u.RegistryName == registryName);
             if (user is null) return BadRequest("User gibt es nicht");
-            var myfile = System.IO.File.ReadAllBytes($"Pictures/{user.RegistryName}-picture.jpg");
-            var banner = System.IO.File.ReadAllBytes($"Pictures/{user.RegistryName}-banner.jpg");
+            string? profile = Path.Combine(Directory.GetCurrentDirectory(), $"Pictures/{registryName}-picture.jpg").Replace("\\", "/");
+            string? banner = Path.Combine(Directory.GetCurrentDirectory(), $"Pictures/{registryName}-banner.jpg").Replace("\\", "/");
+            if (!System.IO.File.Exists(profile))
+                profile = null;
+            if(!System.IO.File.Exists(banner))
+                banner = null;
             var test = new
             {
                 User = _mapper.Map<UserDto>(user),
-                Profile = File(myfile, "image/jpeg"),
-                Banner = File(banner, "image/jpeg")
+                Profile = profile,
+                Banner = banner
             };
             return Ok(test);
         }

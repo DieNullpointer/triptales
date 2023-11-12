@@ -8,3 +8,5 @@
 **/obj
 **/appsettings.Development.json
 *.db*
+**/DevImages
+**/PostImages
