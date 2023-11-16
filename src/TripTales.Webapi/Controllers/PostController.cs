@@ -100,6 +100,8 @@ namespace TripTales.Webapi.Controllers
         [HttpPost("add")]
         public async Task<IActionResult> AddPost([FromBody] PostCmd postCmd)
         {
+            var authenticated = HttpContext.User.Identity?.IsAuthenticated ?? false;
+            if (!authenticated) { return Unauthorized(); }
             var username = HttpContext?.User.Identity?.Name;
             if (username is null) { return Unauthorized(); }
             // Valid token, but no user match in the database (maybe deleted by an admin).
@@ -119,6 +121,8 @@ namespace TripTales.Webapi.Controllers
         [HttpPut("addImages/{guid:Guid}")]
         public async Task<IActionResult> AddImages(Guid guid, [FromForm] List<IFormFile> formFile)
         {
+            var authenticated = HttpContext.User.Identity?.IsAuthenticated ?? false;
+            if (!authenticated) { return Unauthorized(); }
             var username = HttpContext?.User.Identity?.Name;
             if (username is null) { return Unauthorized(); }
             // Valid token, but no user match in the database (maybe deleted by an admin).
@@ -155,6 +159,8 @@ namespace TripTales.Webapi.Controllers
         [HttpDelete("delete/{guid:Guid}")]
         public async Task<IActionResult> DeletePost(Guid guid)
         {
+            var authenticated = HttpContext.User.Identity?.IsAuthenticated ?? false;
+            if (!authenticated) { return Unauthorized(); }
             var username = HttpContext?.User.Identity?.Name;
             if (username is null) { return Unauthorized(); }
             // Valid token, but no user match in the database (maybe deleted by an admin).
