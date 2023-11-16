@@ -1,13 +1,16 @@
 using AutoMapper;
 using Bogus.DataSets;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using TripTales.Application.Dto;
 using TripTales.Application.Infrastructure;
@@ -89,6 +92,8 @@ namespace TripTales.Webapi.Controllers
         [HttpPut("addImages")]
         public async Task<IActionResult> UpdateImages([FromForm] IFormFile? banner, IFormFile? profile)
         {
+            var authenticated = HttpContext.User.Identity?.IsAuthenticated ?? false;
+            if (!authenticated) { return Unauthorized(); }
             var username = HttpContext?.User.Identity?.Name;
             if (username is null) { return Unauthorized(); }
             // Valid token, but no user match in the database (maybe deleted by an admin).
@@ -138,41 +143,47 @@ namespace TripTales.Webapi.Controllers
 
         [Authorize]
         [HttpGet("me")]
-        public async Task<IActionResult> GetUserdata()
+        public IActionResult GetUserdata()
         {
-            // No username is set in HttpContext? Should never occur because we added the
-            // Authorize annotation. But the properties are nullable, so we have to
-            // check.
-            //var username = _authService.CurrentUser;
-            var username = HttpContext?.User.Identity?.Name;
-            if (username is null) { return Unauthorized(); }
-
-            // Valid token, but no user match in the database (maybe deleted by an admin).
-
-
-            var user = await _db.User.FirstOrDefaultAsync(a => a.RegistryName == username);
-            if (user is null) { return Unauthorized(); }
+            var authenticated = HttpContext.User.Identity?.IsAuthenticated ?? false;
+            if (!authenticated) { return Unauthorized(); }
             return Ok(new
             {
-                user.Email,
-                user.DisplayName,
-                user.RegistryName,
+                Username = HttpContext.User.Identity?.Name,
+                //IsAdmin = HttpContext.User.IsInRole("admin"),
             });
+        }
+
+        [HttpGet("logout")]
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync();
+            return NoContent();
         }
 
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] UserCredentialsCmd credentials)
         {
-            var jwt = await _authService.Login(credentials.registryName, credentials.password);
-            if (jwt is null) { return Unauthorized(); }
-            // Return the token so the client can save this to send a bearer token in the
-            // subsequent requests.
-            return Ok(new
+            var claims = new List<Claim>
+                    {
+                        new Claim(ClaimTypes.Name, credentials.registryName),
+                        //new Claim(ClaimTypes.Role, "admin")
+                    };
+            var claimsIdentity = new ClaimsIdentity(
+                claims,
+                Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationDefaults.AuthenticationScheme);
+
+            var authProperties = new AuthenticationProperties
             {
-                Username = _authService.CurrentUser,
-                UserGuid = _authService.CurrentUserGuid,
-                Token = jwt
-            });
+                AllowRefresh = true,
+                ExpiresUtc = DateTimeOffset.UtcNow.AddHours(3),
+            };
+
+            await HttpContext.SignInAsync(
+                Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationDefaults.AuthenticationScheme,
+                new ClaimsPrincipal(claimsIdentity),
+                authProperties);
+            return Ok(new { Username = credentials.registryName });
         }
 
         [Authorize]

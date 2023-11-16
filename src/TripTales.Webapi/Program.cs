@@ -1,6 +1,8 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,30 +24,36 @@ builder.Services.AddDbContext<TripTalesContext>(opt =>
 builder.Services.AddScoped<PostRepository>();
 builder.Services.AddScoped<UserRepository>();
 
-if (builder.Environment.IsDevelopment())
-{
-    builder.Services.AddCors(options =>
-        options.AddDefaultPolicy(builder => builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));
-}
-
-byte[] secret = Convert.FromBase64String(builder.Configuration["Secret"]);
-builder.Services
-    .AddAuthentication(options => options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
-    {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(secret),
-            ValidateAudience = false,
-            ValidateIssuer = false
-        };
-    });
-
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.AddTransient<AuthService>();
+
+builder.Services.Configure<CookiePolicyOptions>(options =>
+{
+    options.OnAppendCookie = cookieContext =>
+    {
+        cookieContext.CookieOptions.Secure = true;
+        cookieContext.CookieOptions.SameSite = builder.Environment.IsDevelopment() ? SameSiteMode.None : SameSiteMode.Strict;
+    };
+});
+
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(o =>
+    {
+        o.Events.OnRedirectToLogin = context =>
+        {
+            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+            return System.Threading.Tasks.Task.CompletedTask;
+        };
+    });
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowNextDevserver",
+        builder => builder.SetIsOriginAllowed(origin => new System.Uri(origin).IsLoopback)
+            .AllowAnyHeader().AllowAnyMethod().AllowCredentials());
+});
 
 var app = builder.Build();
 using (var scope = app.Services.CreateScope())
@@ -60,19 +68,19 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-app.UseHttpsRedirection();
-if (app.Environment.IsDevelopment())
-{
-    app.UseCors();
-}
 
+app.UseHttpsRedirection();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
+if (app.Environment.IsDevelopment())
+{
+    app.UseCors("AllowNextDevserver");
+}
+app.UseCookiePolicy();
 app.UseStaticFiles();
 app.UseAuthentication();
 app.UseAuthorization();
