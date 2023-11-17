@@ -18,7 +18,6 @@ namespace TripTales.Application.Model
         public string Title { get; set; }   
         public string Text { get; set; }
         public TripPost Post { get; set; }
-        public List<string> Images { get; } = new();
         public List<TripLocation> Locations { get; } = new();
 
         public TripDay(DateTime date, string title, string text, TripPost post)

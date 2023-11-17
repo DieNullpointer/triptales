@@ -86,6 +86,7 @@ namespace TripTales.Application.Infrastructure
                 var daten = f.Date.Between(dateb.AddDays(5), dateb.AddDays(10)).Date;
                 var post = new TripPost(f.Random.Words(10), f.Random.Words(30), dateb, daten, f.PickRandom(users));
                 post.Images.Add(f.PickRandom(images));
+                post.Images.Add(f.PickRandom(images));
                 return post;
             }).Generate(5).ToList();
             Posts.AddRange(posts);
@@ -103,6 +104,8 @@ namespace TripTales.Application.Infrastructure
             var locations = new Faker<TripLocation>("de").CustomInstantiator(f =>
             {
                 var location = new TripLocation(f.PickRandom(days), f.Random.AlphaNumeric(8));
+                location.Images.Add(f.PickRandom(images));
+                location.Images.Add(f.PickRandom(images));
                 return location;
             }).Generate(20).ToList();
             Locations.AddRange(locations);
