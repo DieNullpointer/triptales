@@ -19,7 +19,7 @@ namespace TripTales.Application.Model
         public Guid Guid { get; set; }
         public string Coordinates { get; set; }
         public TripDay TripDay { get; set; }
-        public List<string> Images { get; } = new();
+        public List<Image> Images { get; } = new();
 
         public TripLocation(TripDay tripDay, string coordinates)
         {

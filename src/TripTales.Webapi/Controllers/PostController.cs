@@ -27,10 +27,44 @@ namespace TripTales.Webapi.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllPosts()
+        public async Task<IActionResult> GetAllPosts() => await GetAll(h => new
         {
-            var posts = await _db.Posts.Include(a => a.User).Include(a => a.Likes).Include(a => a.Images).Include(a => a.Days).ThenInclude(a => a.Locations).ToListAsync();
-            return Ok(posts.Select(h => new
+            h.Guid,
+            h.Begin,
+            h.End,
+            h.Title,
+            h.Text,
+            h.Created,
+            Images = h.Images.Select(i => new
+            {
+                Image = i.Path,
+            }),
+            Likes = h.Likes.Count,
+            Days = h.Days.Select(d => new
+            {
+                d.Title,
+                d.Text,
+                d.Date,
+                Locations = d.Locations.Select(l => new
+                {
+                    l.Coordinates,
+                    Images = l.Images.Select(i => new
+                    {
+                        Image = i.Path,
+                    }),
+                })
+            }),
+            User = new
+            {
+                h.User!.Guid,
+                h.User!.RegistryName,
+                h.User!.DisplayName
+            }
+        });
+
+        [HttpGet("{guid:Guid}")]
+        public async Task<IActionResult> GetPost(Guid guid) => await GetByGuid(guid, h =>
+            new
             {
                 h.Guid,
                 h.Begin,
@@ -48,44 +82,13 @@ namespace TripTales.Webapi.Controllers
                     d.Title,
                     d.Text,
                     d.Date,
-                    d.Images,
                     Locations = d.Locations.Select(l => new
                     {
                         l.Coordinates,
-                        l.Images
-                    })
-                }),
-                User = new
-                {
-                    h.User!.Guid,
-                    h.User!.RegistryName,
-                    h.User!.DisplayName
-                }
-            }));
-        }
-
-        [HttpGet("{guid:Guid}")]
-        public async Task<IActionResult> GetPost(Guid guid) => await GetByGuid(guid, h =>
-            new
-            {
-                h.Guid,
-                h.Begin,
-                h.End,
-                h.Title,
-                h.Text,
-                h.Created,
-                h.Images,
-                Likes = h.Likes.Count,
-                Days = h.Days.Select(d => new
-                {
-                    d.Title,
-                    d.Text,
-                    d.Date,
-                    d.Images,
-                    Locations = d.Locations.Select(l => new
-                    {
-                        l.Coordinates,
-                        l.Images
+                        Images = l.Images.Select(i => new
+                        {
+                            Image = i.Path,
+                        }),
                     })
                 }),
                 User = new
