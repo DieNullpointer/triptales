@@ -27,6 +27,7 @@ namespace TripTales.Application.Model
         public string RegistryName { get; set; }
         public string Description { get; set; }
         public List<User> Friends { get; } = new();
+        public List<User> RequestFriend { get; } = new();
         public List<TripPost> Posts { get; } = new();
         public List<TripPost> Likes { get; } = new();
 

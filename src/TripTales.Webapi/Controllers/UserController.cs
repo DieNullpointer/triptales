@@ -61,6 +61,12 @@ namespace TripTales.Webapi.Controllers
                     f.DisplayName,
                     f.RegistryName
                 }),
+                FriendRequest = h.RequestFriend.Select(f => new
+                {
+                    f.Guid,
+                    f.DisplayName,
+                    f.RegistryName
+                }),
                 h.DisplayName,
                 h.Email,
                 h.RegistryName,
@@ -190,7 +196,9 @@ namespace TripTales.Webapi.Controllers
         [HttpDelete("delete")]
         public async Task<IActionResult> DeleteUser()
         {
-            var username = HttpContext?.User.Identity?.Name;
+            var authenticated = HttpContext.User.Identity?.IsAuthenticated ?? false;
+            if (!authenticated) { return Unauthorized(); }
+            var username = HttpContext.User.Identity?.Name;
             if (username is null) { return Unauthorized(); }
             // Valid token, but no user match in the database (maybe deleted by an admin).
             var user = await _db.User.FirstOrDefaultAsync(a => a.RegistryName == username);
@@ -204,7 +212,9 @@ namespace TripTales.Webapi.Controllers
         [HttpPut("change")]
         public async Task<IActionResult> ChangeUser([FromBody] UserCmd userCmd)
         {
-            var username = HttpContext?.User.Identity?.Name;
+            var authenticated = HttpContext.User.Identity?.IsAuthenticated ?? false;
+            if (!authenticated) { return Unauthorized(); }
+            var username = HttpContext.User.Identity?.Name;
             if (username is null) { return Unauthorized(); }
             // Valid token, but no user match in the database (maybe deleted by an admin).
             var user = await _db.User.FirstOrDefaultAsync(a => a.RegistryName == username);
@@ -214,6 +224,63 @@ namespace TripTales.Webapi.Controllers
             (bool success, string message) = await _repo.Update(user);
             if (success) return Ok();
             return BadRequest(message);
+        }
+
+        //User1 schickt Freundschaftsanfrage an User2
+        //User2 bekommt User1 in List: RequestFriend
+        [Authorize]
+        [HttpPost("sendFriendRequest/{guid:Guid}")]
+        public async Task<IActionResult> SendFriendRequest(Guid guid)
+        {
+            var authenticated = HttpContext.User.Identity?.IsAuthenticated ?? false;
+            if (!authenticated) { return Unauthorized(); }
+            var username = HttpContext.User.Identity?.Name;
+            var user1 = await _db.User.FirstOrDefaultAsync(a => a.RegistryName == username);
+            if (user1 is null) { return Unauthorized(); }
+            var user2 = await _db.User.FirstOrDefaultAsync(a => a.Guid == guid);
+            if(user2 is null) { return BadRequest("Gesuchte User gibt es nicht!"); }
+            user2.RequestFriend.Add(user1);
+            try { await _db.SaveChangesAsync(); }
+            catch (DbUpdateException e) { return BadRequest(e.Message); }
+            return Ok();
+        }
+
+        // api/user/sendFriendResponse?response=accept
+        // api/user/sendFriendResponse?response = deny
+        // User1 ist der annehmende User
+        [Authorize]
+        [HttpPost("sendFriendResponse/{guid:Guid}")]
+        public async Task<IActionResult> FriendRequestResponse(Guid guid, [FromQuery] string response)
+        {
+            var authenticated = HttpContext.User.Identity?.IsAuthenticated ?? false;
+            if (!authenticated) { return Unauthorized(); }
+            if (response is null) return BadRequest("Response ist ein Pflichtfeld");
+            var username = HttpContext.User.Identity?.Name;
+            var user1 = await _db.User.FirstOrDefaultAsync(a => a.RegistryName == username);
+            var user2 = await _db.User.FirstOrDefaultAsync(a => a.Guid == guid);
+            if (user1 is null) { return Unauthorized(); }
+            if (user2 is null) { return BadRequest("Gesuchte User gibt es nicht!"); }
+            if (user1.RequestFriend.Count == 0 || !user1.RequestFriend.Contains(user2))
+                return BadRequest("Dieser Freund hat keine Freundschaftsanfrage geschickt");
+            if (response == "accept")
+            {
+                user1.RequestFriend.Remove(user2);
+                user2.RequestFriend.Remove(user1);
+                user2.Friends.Add(user1);
+                user1.Friends.Add(user2);
+                try { await _db.SaveChangesAsync(); }
+                catch (DbUpdateException e) { return BadRequest(e.Message); }
+                return Ok();
+            }
+            else if(response == "deny")
+            {
+                user1.RequestFriend.Remove(user2);
+                user2.RequestFriend.Remove(user1);
+                try { await _db.SaveChangesAsync(); }
+                catch(DbUpdateException e) { return  BadRequest(e.Message); }
+                return Ok();
+            }
+            return BadRequest("Falscher Response Type");
         }
     }
 }

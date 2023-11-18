@@ -32,6 +32,9 @@ namespace TripTales.Application.Infrastructure
             modelBuilder.Entity<User>()
                 .HasMany(e => e.Likes)
                 .WithMany(e => e.Likes);
+
+            //modelBuilder.Entity<User>()
+                //.HasMany(e => e.friend)
             // Generic config for all entities
             foreach (var entityType in modelBuilder.Model.GetEntityTypes())
             {
