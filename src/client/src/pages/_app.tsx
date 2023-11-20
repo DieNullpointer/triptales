@@ -2,6 +2,7 @@ import "@/styles/globals.css";
 import type { AppProps } from "next/app";
 import { ThemeProvider } from "@material-tailwind/react";
 import SideBar from "@/components/static/SideBar";
+import Footer from "@/components/static/Footer";
 import Button from "@/components/atoms/Button";
 import { Bars3Icon } from "@heroicons/react/24/solid";
 import { useState } from "react";
@@ -28,20 +29,24 @@ export default function App({ Component, pageProps }: AppProps) {
           </div>
           <div className="p-6 w-full">
             <ThemeProvider>
-              <div className="flex md:hidden flex-row space-x items-center relative mb-4">
-                <Button
-                  onClick={() => setModalOpen(true)}
-                  className="bg-inherit shadow-none !p-3 hover:bg-slate-100/50"
-                >
-                  <Bars3Icon className="h-6 w-6 text-slate-900" />
-                </Button>
-                <Subheading uppercase bold wide center>
-                  navigation
-                </Subheading>
+              <div className="h-screen">
+                <div className="flex md:hidden flex-row space-x items-center relative mb-4">
+                  <Button
+                    onClick={() => setModalOpen(true)}
+                    className="bg-inherit shadow-none !p-3 hover:bg-slate-100/50"
+                  >
+                    <Bars3Icon className="h-6 w-6 text-slate-900" />
+                  </Button>
+                  <Subheading uppercase bold wide center>
+                    navigation
+                  </Subheading>
+                </div>
+                <Component {...pageProps} />
               </div>
-              <Component {...pageProps} />
+              <Footer className="" />
             </ThemeProvider>
           </div>
+          <div></div>
         </>
       )}
     </div>
