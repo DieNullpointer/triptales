@@ -61,6 +61,32 @@ namespace TripTales.Webapi.Controllers
                     f.DisplayName,
                     f.RegistryName
                 }),
+                FriendRequestRecipient = h.FriendRequestsRecipient.Select(r => new
+                {
+                    Sender = new
+                    {
+                        r.Sender.Guid,
+                        r.Sender.RegistryName,
+                    },
+                    Recipient = new
+                    {
+                        r.Recipient.Guid,
+                        r.Recipient.RegistryName
+                    }
+                }),
+                FriendRequestSender = h.FriendRequestsSender.Select(r => new
+                {
+                    Sender = new
+                    {
+                        r.Sender.Guid,
+                        r.Sender.RegistryName,
+                    },
+                    Recipient = new
+                    {
+                        r.Recipient.Guid,
+                        r.Recipient.RegistryName
+                    }
+                }),
                 h.DisplayName,
                 h.Email,
                 h.RegistryName,
@@ -122,7 +148,7 @@ namespace TripTales.Webapi.Controllers
         }
         
         [HttpGet("{registryName}")]
-        public async Task<IActionResult> GetUserByRegistryNameTest(string registryName)
+        public async Task<IActionResult> GetUserByRegistryName(string registryName)
         {
             var user = await _db.User.FirstOrDefaultAsync(u => u.RegistryName == registryName);
             if (user is null) return BadRequest("User gibt es nicht");
@@ -134,7 +160,21 @@ namespace TripTales.Webapi.Controllers
                 banner = null;
             var test = new
             {
-                User = _mapper.Map<UserDto>(user),
+                User = new
+                {
+                    user.RegistryName,
+                    user.DisplayName,
+                    user.Guid,
+                    user.Description,
+                    user.Email,
+                    Likes = user.Likes.Count,
+                    Friends = user.Friends.Select(a => new
+                    {
+                        a.Guid,
+                        a.RegistryName,
+                        a.DisplayName
+                    })
+                },
                 Profile = profile,
                 Banner = banner
             };
@@ -190,7 +230,9 @@ namespace TripTales.Webapi.Controllers
         [HttpDelete("delete")]
         public async Task<IActionResult> DeleteUser()
         {
-            var username = HttpContext?.User.Identity?.Name;
+            var authenticated = HttpContext.User.Identity?.IsAuthenticated ?? false;
+            if (!authenticated) { return Unauthorized(); }
+            var username = HttpContext.User.Identity?.Name;
             if (username is null) { return Unauthorized(); }
             // Valid token, but no user match in the database (maybe deleted by an admin).
             var user = await _db.User.FirstOrDefaultAsync(a => a.RegistryName == username);
@@ -204,7 +246,9 @@ namespace TripTales.Webapi.Controllers
         [HttpPut("change")]
         public async Task<IActionResult> ChangeUser([FromBody] UserCmd userCmd)
         {
-            var username = HttpContext?.User.Identity?.Name;
+            var authenticated = HttpContext.User.Identity?.IsAuthenticated ?? false;
+            if (!authenticated) { return Unauthorized(); }
+            var username = HttpContext.User.Identity?.Name;
             if (username is null) { return Unauthorized(); }
             // Valid token, but no user match in the database (maybe deleted by an admin).
             var user = await _db.User.FirstOrDefaultAsync(a => a.RegistryName == username);
@@ -214,6 +258,69 @@ namespace TripTales.Webapi.Controllers
             (bool success, string message) = await _repo.Update(user);
             if (success) return Ok();
             return BadRequest(message);
+        }
+
+        //User1 schickt Freundschaftsanfrage an User2
+        //User2 bekommt User1 in List: RequestFriend
+        [Authorize]
+        [HttpPost("sendFriendRequest/{guid:Guid}")]
+        public async Task<IActionResult> SendFriendRequest(Guid guid)
+        {
+            var authenticated = HttpContext.User.Identity?.IsAuthenticated ?? false;
+            if (!authenticated) { return Unauthorized(); }
+            var username = HttpContext.User.Identity?.Name;
+            var userSender = await _db.User.FirstOrDefaultAsync(u => u.RegistryName == username);
+            if (userSender is null) { return Unauthorized(); }
+            var userRecipient = await _db.User.FirstOrDefaultAsync(a => a.Guid == guid);
+            if(userRecipient is null) { return BadRequest(); }
+            if (await _db.FriendRequests.FirstOrDefaultAsync(a => a.Sender == userSender && a.Recipient == userRecipient) is not null)
+                return BadRequest("Freund gibt es schon!");
+            var friendRequest = new FriendRequest(userSender, userRecipient, DateTime.UtcNow.Date);
+            _db.FriendRequests.Add(friendRequest);
+            try { await _db.SaveChangesAsync(); }
+            catch (DbUpdateException e) { return BadRequest(e.Message); }
+            return Ok();
+        }
+
+        [Authorize]
+        [HttpPost("responseFriendRequest/{guid:Guid}")]
+        public async Task<IActionResult> ResponseFriendRequest(Guid guid, [FromQuery] string response)
+        {
+            var authenticated = HttpContext.User.Identity?.IsAuthenticated ?? false;
+            if (!authenticated) { return Unauthorized(); }
+            if(response is null) { return BadRequest("Falschen Response ausgewählt!"); }
+            var username = HttpContext.User.Identity?.Name;
+            var userRecipient = await _db.User.FirstOrDefaultAsync(u => u.RegistryName == username);
+            if (userRecipient is null) { return Unauthorized(); }
+            var userSender = await _db.User.FirstOrDefaultAsync(a => a.Guid == guid);
+            if (userSender is null) { return BadRequest(); }
+            var friendRequest = await _db.FriendRequests.FirstOrDefaultAsync(a => a.Sender == userSender && a.Recipient == userRecipient);
+            if (friendRequest is null)
+                return BadRequest("User hat keine Freundschaftsanfrage geschickt");
+            if(response == "accept")
+            {
+                userRecipient.Friends.Add(userSender);
+                userSender.Friends.Add(userRecipient);
+                try
+                {
+                    await _db.SaveChangesAsync();
+                }
+                catch(DbUpdateException e) { return BadRequest(e.Message); }
+                return Ok();
+            }
+            if(response == "deny")
+            {
+                var friend = await _db.FriendRequests.FirstOrDefaultAsync(a => a.Sender == userSender && a.Recipient == userRecipient);
+                if (friend is null) { return BadRequest(); }
+                _db.FriendRequests.Remove(friend);
+                try
+                {
+                    await _db.SaveChangesAsync();
+                }
+                catch (DbUpdateException e) { return BadRequest(e.Message); }
+                return Ok();
+            }
+            return BadRequest();
         }
     }
 }

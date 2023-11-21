@@ -1,19 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace TripTales.Application.Dto
 {
-    public record UserDto
+    public record FriendRequestDto
     (
         Guid guid,
-        List<FriendDto>? Friends,
-        List<PostDto>? Posts,
-        List<FriendRequestDto>? FriendRequests,
         string DisplayName,
         string RegistryName,
         [EmailAddress]
-        string Email,
-        string Description
+        string Email
     );
 }
