@@ -10,8 +10,8 @@ import BigLogo from "@/resources/triptales_homepage_tight_transparent.png";
 
 const Footer: React.FC<{ className?: string }> = ({ className = "" }) => {
   return (
-    <Grid cols={1} className="gap-0" even>
-        <Container className="flex flex-col py-16" sectionMarker>
+    <Grid cols={2} className="gap-0" even>
+        <Container className="flex flex-col py-16 pl-16" sectionMarker>
           <Flowtext italic bold>
             Contact
           </Flowtext>
@@ -23,16 +23,19 @@ const Footer: React.FC<{ className?: string }> = ({ className = "" }) => {
             +43 1 205 108 525
           </Flowtext>
         </Container>
-        <Container className="py-8" sectionMarker>
+        <Container className="py-16" sectionMarker>
           <Image
             src={BigLogo.src}
             alt="TripTales Logo"
-            width={300}
-            height={300}
+            width={200}
+            height={200}
             wrapper="flex justify-center items-center"
           />
+          <Flowtext center className="!text-sm md:!text-base  pt-8">
+            &copy; Triptales, 2023
+          </Flowtext>
         </Container>
-        <Container className="flex flex-col py-16 text-right pr-6" sectionMarker>
+        <Container className="flex flex-col py-16 text-right pr-16 " sectionMarker>
           <Flowtext italic bold>
             Information
           </Flowtext>
@@ -44,6 +47,7 @@ const Footer: React.FC<{ className?: string }> = ({ className = "" }) => {
             Datenschutz
           </Flowtext>
         </Container>
+        
       </Grid>
   );
 };
