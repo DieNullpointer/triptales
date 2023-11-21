@@ -19,7 +19,7 @@ namespace TripTales.Application.Infrastructure
         public DbSet<TripDay> Days => Set<TripDay>();
         public DbSet<TripLocation> Locations => Set<TripLocation>();
         public DbSet<Image> Images => Set<Image>();
-
+        public DbSet<FriendRequest> FriendRequests => Set<FriendRequest>();
         public TripTalesContext(DbContextOptions opt) : base(opt)
         {
         }
@@ -32,9 +32,11 @@ namespace TripTales.Application.Infrastructure
             modelBuilder.Entity<User>()
                 .HasMany(e => e.Likes)
                 .WithMany(e => e.Likes);
-
+            modelBuilder.Entity<FriendRequest>().HasOne(f => f.Sender).WithMany(u => u.FriendRequestsSender);
+            modelBuilder.Entity<FriendRequest>().HasOne(f => f.Recipient).WithMany(u => u.FriendRequestsRecipient);
+            modelBuilder.Entity<FriendRequest>().HasIndex("SenderId", "RecipientId").IsUnique();
             //modelBuilder.Entity<User>()
-                //.HasMany(e => e.friend)
+            //.HasMany(e => e.friend)
             // Generic config for all entities
             foreach (var entityType in modelBuilder.Model.GetEntityTypes())
             {
