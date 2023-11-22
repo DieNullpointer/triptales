@@ -29,7 +29,7 @@ export default function App({ Component, pageProps }: AppProps) {
           </div>
           <main className="p-6 w-full">
             <ThemeProvider>
-              <div className="h-screen">
+              <div className="min-h-screen">
                 <div className="flex md:hidden flex-row space-x items-center relative mb-4">
                   <Button
                     onClick={() => setModalOpen(true)}
