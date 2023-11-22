@@ -39,7 +39,7 @@ const Days: React.FC<{ days: TripDay[]; className?: string }> = ({ days, classNa
             <TimelineConnector className="!h-full" />
             <TimelineHeader className="h-auto items-center">
               {idx >= days.length ? <></> : <TimelineIcon />}
-              <Flowtext bold tightHeight className=" tracking-tight !h-min">Day {idx + 1}: {day.title}</Flowtext>
+              <Flowtext bold tightHeight className="tracking-tight !h-min">Day {idx + 1}: {day.title}</Flowtext>
             </TimelineHeader>
             <TimelineBody>
               <Day day={day} />
