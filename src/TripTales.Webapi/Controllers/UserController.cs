@@ -136,6 +136,7 @@ namespace TripTales.Webapi.Controllers
                 {
                     await banner.CopyToAsync(stream);
                 }
+                user.BannerImagePath = bannerPath;
             }
             if(profile is not null)
             {
@@ -143,7 +144,11 @@ namespace TripTales.Webapi.Controllers
                 {
                     await profile.CopyToAsync(stream);
                 }
+                user.ProfileImagePath = profilePath;
             }
+
+            try { await _db.SaveChangesAsync(); }
+            catch(DbUpdateException e) { return BadRequest(e.Message); }
             return Ok();
         }
         
@@ -175,8 +180,8 @@ namespace TripTales.Webapi.Controllers
                         a.DisplayName
                     })
                 },
-                Profile = profile,
-                Banner = banner
+                Profile = user.ProfileImagePath,
+                Banner = user.BannerImagePath
             };
             return Ok(test);
         }
