@@ -1,5 +1,6 @@
 import defaultBanner from "@/resources/default_bannerpic.jpg";
 import Image from "../atoms/Image";
+import InteractableImage from "../atoms/InteractableImage";
 
 export interface Props {
   images: [{ image: string }];
@@ -10,11 +11,8 @@ const ImageCollection: React.FC<Props> = ({ images, className }) => {
   return (
     <div className="flex flex-row">
       {images.map((image) => (
-        <Image
+        <InteractableImage
           src={defaultBanner.src}
-          onClick={() => console.log("test")}
-          className="h-full hover:opacity-80 hover:cursor-pointer"
-          wrapper="h-42 max-w-xs overflow-hidden items-center flex rounded"
         />
       ))}
     </div>
