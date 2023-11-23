@@ -1,4 +1,4 @@
-import { Image, User } from "@/types/types";
+import { User } from "@/types/types";
 import useSWR from "swr";
 
 export function getUser(guid: string) {
@@ -15,7 +15,7 @@ export function getUser(guid: string) {
   };
 }
 
-export function getUserByRegistry(registryName: string): { user: User, profile: Image, banner: Image, error: string, isLoading: boolean} {
+export function getUserByRegistry(registryName: string): { user: User, profile: string, banner: string, error: string, isLoading: boolean} {
   const fetcher = (url: string) => fetch(url).then((res) => res.json());
   const { data, error, isLoading } = useSWR(
     `https://localhost:7174/api/User/${registryName}`,
@@ -25,7 +25,7 @@ export function getUserByRegistry(registryName: string): { user: User, profile: 
   return {
     user: data?.user,
     profile: "https://localhost:7174/" + data?.profile,
-    banner: "https://localhost:7174/" +data?.banner,
+    banner: "https://localhost:7174/" + data?.banner,
     error,
     isLoading,
   };
