@@ -1,11 +1,11 @@
-import { Image as ImageT } from "@/types/types";
+
 import React from "react";
 import defaultPfp from "@/resources/default_profilepic.png";
 import { buildBase64Image } from "@/helpers/stringHelpers";
 import Image from "./Image";
 
 export interface Props {
-  profile?: ImageT;
+  profile?: string;
   size?: "large" | "small";
   className?: string;
 }
@@ -17,7 +17,7 @@ const Avatar: React.FC<Props> = ({
 }) => {
   return (
     <Image
-      src={profile ? buildBase64Image(profile) : defaultPfp.src}
+      src={profile || defaultPfp.src}
       alt=""
       height={size === "large" ? 110 : 80}
       width={size === "large" ? 110 : 80}

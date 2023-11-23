@@ -6,11 +6,11 @@ export interface Props {
   width?: number | string;
   height?: number | string;
   src: string;
-  alt: string;
+  alt?: string;
   className?: string;
 }
 
-const Image: React.FC<Props> = ({ width, height, wrapper, src, alt, className }) => {
+const Image: React.FC<Props> = ({ width, height, wrapper, src, alt = " ", className }) => {
   const img = <img width={width} height={height} src={src} alt={alt} className={className} />;
   return wrapper ? <div className={wrapper}>{img}</div> : img;
 };

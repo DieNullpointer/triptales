@@ -19,6 +19,10 @@ import {
   TimelineIcon,
   TimelineItem,
 } from "@material-tailwind/react";
+import Spacing from "../atoms/Spacing";
+import ImageCollection from "../molecules/ImageCollection";
+
+import TestImage from "@/resources/DevImages/Antelope Canyon.jpg"
 
 export interface Props {
   data: TripPost;
@@ -30,7 +34,10 @@ const Day: React.FC<{ day: TripDay }> = ({ day }) => {
   return <Flowtext className="!text-sm !text-slate-600">{day.text}</Flowtext>;
 };
 
-const Days: React.FC<{ days: TripDay[]; className?: string }> = ({ days, className }) => {
+const Days: React.FC<{ days: TripDay[]; className?: string }> = ({
+  days,
+  className,
+}) => {
   return (
     <div className={className}>
       <Timeline>
@@ -39,7 +46,9 @@ const Days: React.FC<{ days: TripDay[]; className?: string }> = ({ days, classNa
             <TimelineConnector className="!h-full" />
             <TimelineHeader className="h-auto items-center">
               {idx >= days.length ? <></> : <TimelineIcon />}
-              <Flowtext bold tightHeight className="tracking-tight !h-min">Day {idx + 1}: {day.title}</Flowtext>
+              <Flowtext bold tightHeight className="tracking-tight !h-min">
+                Day {idx + 1}: {day.title}
+              </Flowtext>
             </TimelineHeader>
             <TimelineBody>
               <Day day={day} />
@@ -51,9 +60,7 @@ const Days: React.FC<{ days: TripDay[]; className?: string }> = ({ days, classNa
   );
 };
 
-const Post: React.FC<Props> = ({ data, small, loading }) => {
-  // shadow-lg rounded-[2rem] bg-greenwhite
-
+const Post: React.FC<Props> = ({ data, small, loading }) => { 
   return !loading ? (
     <Container className="relative min-h-screen m-12">
       <div className="flex lg:flex-row flex-col lg:items-center items-start lg:justify-between ">
@@ -85,6 +92,9 @@ const Post: React.FC<Props> = ({ data, small, loading }) => {
           <Flowtext>{data.text}</Flowtext>
         </div>
         <Days days={data.days} className="mx-2 mt-6" />
+        <Spacing />
+        <Flowtext bold>Images</Flowtext>
+        <ImageCollection images={data.images} />
       </div>
     </Container>
   ) : (
