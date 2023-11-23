@@ -74,8 +74,10 @@ namespace TripTales.Webapi.Controllers
         }
 
         [HttpGet("{guid:Guid}")]
-        public async Task<IActionResult> GetPost(Guid guid) => await GetByGuid(guid, h =>
-            new
+        public async Task<IActionResult> GetPost(Guid guid)
+        {
+            var posts = await _db.Posts.Include(a => a.User).Include(a => a.Days).ThenInclude(a => a.Locations).Where(a => a.Guid == guid).ToListAsync();
+            var export = posts.Select(h => new
             {
                 h.Guid,
                 h.Begin,
@@ -83,7 +85,7 @@ namespace TripTales.Webapi.Controllers
                 h.Title,
                 h.Text,
                 h.Created,
-                Images = Directory.GetFiles(Path.Combine("wwwroot", "Images", $"{h.Guid}")).Count() == 0 ? null : Directory.GetFiles(Path.Combine("wwwroot", "Images", $"{h.Guid}")),
+                Images = !Directory.Exists(Path.Combine("wwwroot", "Images", $"{h.Guid}")) ? null : SplitString(Directory.GetFiles(Path.Combine("wwwroot", "Images", $"{h.Guid}")).ToList()),
                 Likes = h.Likes.Count,
                 Days = h.Days.Select(d => new
                 {
@@ -93,17 +95,19 @@ namespace TripTales.Webapi.Controllers
                     Locations = d.Locations.Select(l => new
                     {
                         l.Coordinates,
-                        Images = Directory.GetFiles(Path.Combine("wwwroot", "Images", $"{l.Guid}")).Count() == 0 ? null : Directory.GetFiles(Path.Combine("wwwroot", "Images", $"{l.Guid}")),
+                        Images = !Directory.Exists(Path.Combine("wwwroot", "Images", $"{l.Guid}")) ? null : SplitString(Directory.GetFiles(Path.Combine("wwwroot", "Images", $"{l.Guid}")).ToList()),
                     })
                 }),
                 User = new
                 {
                     h.User!.Guid,
                     h.User!.RegistryName,
-                    h.User!.DisplayName,
+                    h.User.DisplayName,
                     ProfilePicture = System.IO.File.Exists(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Pictures", $"{h.User.RegistryName}-profile.jpg")) ? $"Pictures/{h.User.RegistryName}-profile.jpg" : null
                 }
             });
+            return Ok(export);
+        }
 
         [Authorize]
         [HttpPost("add")]
