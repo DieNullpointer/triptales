@@ -125,7 +125,7 @@ namespace TripTales.Webapi.Controllers
             // Valid token, but no user match in the database (maybe deleted by an admin).
             var user = await _db.User.FirstOrDefaultAsync(a => a.RegistryName == username);
             if (user is null) { return Unauthorized(); }
-            string directoryPath = Path.Combine(Directory.GetCurrentDirectory(), "Pictures");
+            string directoryPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Pictures");
             if (!Directory.Exists(directoryPath))
                 Directory.CreateDirectory(directoryPath);
             var bannerPath = Path.Combine(directoryPath, $"{username}-banner.jpg");
@@ -136,7 +136,6 @@ namespace TripTales.Webapi.Controllers
                 {
                     await banner.CopyToAsync(stream);
                 }
-                user.BannerImagePath = bannerPath;
             }
             if(profile is not null)
             {
@@ -144,11 +143,7 @@ namespace TripTales.Webapi.Controllers
                 {
                     await profile.CopyToAsync(stream);
                 }
-                user.ProfileImagePath = profilePath;
             }
-
-            try { await _db.SaveChangesAsync(); }
-            catch(DbUpdateException e) { return BadRequest(e.Message); }
             return Ok();
         }
         
@@ -180,8 +175,8 @@ namespace TripTales.Webapi.Controllers
                         a.DisplayName
                     })
                 },
-                Profile = user.ProfileImagePath,
-                Banner = user.BannerImagePath
+                Profile = $"Pictures/{registryName}-profile.jpg",
+                Banner = $"Pictures/{registryName}-banner.jpg"
             };
             return Ok(test);
         }

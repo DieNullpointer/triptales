@@ -58,7 +58,6 @@ namespace TripTales.Webapi.Controllers
             {
                 h.User!.Guid,
                 h.User!.RegistryName,
-                ProfilePicture = h.User.ProfileImagePath
             }
         });
 
@@ -96,7 +95,7 @@ namespace TripTales.Webapi.Controllers
                     h.User!.Guid,
                     h.User!.RegistryName,
                     h.User!.DisplayName,
-                    ProfilePicture = h.User.ProfileImagePath
+                    ProfilePicture = $"Pictures/{h.User.RegistryName}-profile.jpg",
                 }
             });
 
