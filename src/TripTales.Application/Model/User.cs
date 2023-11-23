@@ -31,8 +31,6 @@ namespace TripTales.Application.Model
         public List<FriendRequest> FriendRequestsRecipient { get; } = new();
         public List<TripPost> Posts { get; } = new();
         public List<TripPost> Likes { get; } = new();
-        public string? ProfileImagePath { get; set; }
-        public string? BannerImagePath { get; set; }
 
         public User(string email, string password, string displayName, string registryName, string description)
         {
