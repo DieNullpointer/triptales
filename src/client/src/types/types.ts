@@ -10,13 +10,8 @@ export interface User {
 
 export interface ProfileUser {
   user: User;
-  profile: Image;
-  banner: Image;
-}
-
-export interface Image {
-  contentType: string;
-  fileContents: string;
+  profile: string;
+  banner: string;
 }
 
 export interface TripPost {

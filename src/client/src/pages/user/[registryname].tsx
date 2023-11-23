@@ -24,7 +24,7 @@ export default function User() {
     <div>
       <div className="relative">
         <Image
-          src={banner ? buildBase64Image(banner) : defaultBanner.src}
+          src={banner || defaultBanner.src}
           alt=""
           className="w-full"
           wrapper="max-h-60 overflow-hidden items-center flex rounded-lg"

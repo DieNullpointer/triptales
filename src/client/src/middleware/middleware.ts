@@ -24,8 +24,8 @@ export function getUserByRegistry(registryName: string): { user: User, profile: 
 
   return {
     user: data?.user,
-    profile: data?.profile,
-    banner: data?.banner,
+    profile: "https://localhost:7174/" + data?.profile,
+    banner: "https://localhost:7174/" +data?.banner,
     error,
     isLoading,
   };
