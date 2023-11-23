@@ -22,7 +22,6 @@ namespace TripTales.Application.Model
         public User? User { get; set; }
         public List<TripDay> Days { get; } = new();
         public List<User> Likes { get; } = new();
-        public List<Image> Images { get; } = new();
 
         public TripPost(string title, string text, DateTime begin, DateTime end, User user)
         {
