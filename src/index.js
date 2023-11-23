@@ -3,7 +3,7 @@ const https = require('https');
 
 async function laodImages(count)
 {
-    var response = await fetch(`https://api.unsplash.com/photos/random/?orientaion=landscape&count=${count}&client_id=FhoYRHwY2LaJ4Xt24CtoQlzTkviimX_a7IJgG7CjouM`);
+    var response = await fetch(`https://api.unsplash.com/photos/random/?query=landscape&count=${count}&client_id=FhoYRHwY2LaJ4Xt24CtoQlzTkviimX_a7IJgG7CjouM`);
     const images = await response.json();
     images.forEach(imageFile => {
         const filename = 'TripTales.Webapi/DevImages/' + imageFile.alt_description + '.jpg';
