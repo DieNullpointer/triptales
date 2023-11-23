@@ -152,12 +152,16 @@ namespace TripTales.Webapi.Controllers
         {
             var user = await _db.User.FirstOrDefaultAsync(u => u.RegistryName == registryName);
             if (user is null) return BadRequest("User gibt es nicht");
-            string? profile = Path.Combine(Directory.GetCurrentDirectory(), $"Pictures/{registryName}-profile.jpg").Replace("\\", "/");
-            string? banner = Path.Combine(Directory.GetCurrentDirectory(), $"Pictures/{registryName}-banner.jpg").Replace("\\", "/");
+            string? profile = Path.Combine(Directory.GetCurrentDirectory(), $"wwwroot/Pictures/{registryName}-profile.jpg").Replace("\\", "/");
+            string? banner = Path.Combine(Directory.GetCurrentDirectory(), $"wwwroot/Pictures/{registryName}-banner.jpg").Replace("\\", "/");
             if (!System.IO.File.Exists(profile))
                 profile = null;
-            if(!System.IO.File.Exists(banner))
+            else
+                profile = $"Pictures/{registryName}-profile.jpg";
+            if (!System.IO.File.Exists(banner))
                 banner = null;
+            else
+                banner = $"Pictures/{registryName}-banner.jpg";
             var test = new
             {
                 User = new
@@ -175,8 +179,8 @@ namespace TripTales.Webapi.Controllers
                         a.DisplayName
                     })
                 },
-                Profile = $"Pictures/{registryName}-profile.jpg",
-                Banner = $"Pictures/{registryName}-banner.jpg"
+                Profile = profile,
+                Banner = banner
             };
             return Ok(test);
         }
