@@ -9,5 +9,5 @@
 **/appsettings.Development.json
 *.db*
 **/DevImages
-**/PostImages
+**/Images
 **/Pictures

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Castle.Core.Internal;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -26,42 +27,51 @@ namespace TripTales.Webapi.Controllers
             _repo = repo;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetAllPosts() => await GetAll(h => new
+        private List<string> SplitString(List<string> input)
         {
-            h.Guid,
-            h.Begin,
-            h.End,
-            h.Title,
-            h.Text,
-            h.Created,
-            Images = h.Images.Select(i => new
+            var list = new List<string>();
+            foreach (var item in input)
             {
-                Image = i.Path,
-            }),
-            Likes = h.Likes.Count,
-            Days = h.Days.Select(d => new
-            {
-                d.Title,
-                d.Text,
-                d.Date,
-                Locations = d.Locations.Select(l => new
-                {
-                    l.Coordinates,
-                    Images = l.Images.Select(i => new
-                    {
-                        Image = i.Path,
-                    }),
-                })
-            }),
-            User = new
-            {
-                h.User!.Guid,
-                h.User!.RegistryName,
-                h.User.DisplayName,
-                ProfilePicture = System.IO.File.Exists(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Pictures", $"{h.User.RegistryName}-profile.jpg")) ? $"Pictures/{h.User.RegistryName}-profile.jpg" : null
+                list.Add(item.Split("wwwroot").Last());
             }
-        });
+            return list;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllPosts()
+        {
+            var posts = await _db.Posts.Include(a => a.User).Include(a => a.Days).ThenInclude(a => a.Locations).ToListAsync();
+            var export = posts.Select(h => new
+            {
+                h.Guid,
+                h.Begin,
+                h.End,
+                h.Title,
+                h.Text,
+                h.Created,
+                Images = !Directory.Exists(Path.Combine("wwwroot", "Images", $"{h.Guid}")) ? null : SplitString(Directory.GetFiles(Path.Combine("wwwroot", "Images", $"{h.Guid}")).ToList()),
+                Likes = h.Likes.Count,
+                Days = h.Days.Select(d => new
+                {
+                    d.Title,
+                    d.Text,
+                    d.Date,
+                    Locations = d.Locations.Select(l => new
+                    {
+                        l.Coordinates,
+                        Images = !Directory.Exists(Path.Combine("wwwroot", "Images", $"{l.Guid}")) ? null : SplitString(Directory.GetFiles(Path.Combine("wwwroot", "Images", $"{l.Guid}")).ToList()),
+                    })
+                }),
+                User = new
+                {
+                    h.User!.Guid,
+                    h.User!.RegistryName,
+                    h.User.DisplayName,
+                    ProfilePicture = System.IO.File.Exists(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Pictures", $"{h.User.RegistryName}-profile.jpg")) ? $"Pictures/{h.User.RegistryName}-profile.jpg" : null
+                }
+            });
+            return Ok(export);
+        }
 
         [HttpGet("{guid:Guid}")]
         public async Task<IActionResult> GetPost(Guid guid) => await GetByGuid(guid, h =>
@@ -73,10 +83,7 @@ namespace TripTales.Webapi.Controllers
                 h.Title,
                 h.Text,
                 h.Created,
-                Images = h.Images.Select(i => new
-                {
-                    Image = i.Path,
-                }),
+                Images = Directory.GetFiles(Path.Combine("wwwroot", "Images", $"{h.Guid}")).Count() == 0 ? null : Directory.GetFiles(Path.Combine("wwwroot", "Images", $"{h.Guid}")),
                 Likes = h.Likes.Count,
                 Days = h.Days.Select(d => new
                 {
@@ -86,10 +93,7 @@ namespace TripTales.Webapi.Controllers
                     Locations = d.Locations.Select(l => new
                     {
                         l.Coordinates,
-                        Images = l.Images.Select(i => new
-                        {
-                            Image = i.Path,
-                        }),
+                        Images = Directory.GetFiles(Path.Combine("wwwroot", "Images", $"{l.Guid}")).Count() == 0 ? null : Directory.GetFiles(Path.Combine("wwwroot", "Images", $"{l.Guid}")),
                     })
                 }),
                 User = new
@@ -136,27 +140,19 @@ namespace TripTales.Webapi.Controllers
             var post = await _db.Posts.FirstOrDefaultAsync(a => a.Guid == guid);
             if (post is null)
                 return BadRequest("Diesen Post gibt es nicht");
-            string directoryPath = Path.Combine(Directory.GetCurrentDirectory(), "PostImages", $"{guid}");
+            string directoryPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Images", $"{guid}");
             if (!Directory.Exists(directoryPath))
                 Directory.CreateDirectory(directoryPath);
-            List<Image> images = new();
-            var count = Directory.GetFiles($"PostImages/{guid}").Count() + 1;
+            var count = Directory.GetFiles(directoryPath).Count() + 1;
             foreach (var file in formFile)
             {
                 var path = Path.Combine(directoryPath, $"{count}.jpg");
-                images.Add(new Image(path, count.ToString()));
                 using (var stream = new FileStream(path, FileMode.Create))
                 {
                     await file.CopyToAsync(stream);
                 }
                 count++;
             }
-            await _db.Images.AddRangeAsync(images);
-            try
-            {
-                await _db.SaveChangesAsync();
-            }
-            catch(DbUpdateException e) { return BadRequest(e.Message); }
             return Ok();
         }
 
