@@ -9,10 +9,10 @@ import loginImage from "@/resources/bild.webp"
 export default function Login() {
   return (
   <div className="flex justify-center items-center">
-    <div className="basis-5/8">
+    <div className="basis-3/4">
       <Image src={loginImage.src} alt={""} className="w-full h-screen" />
     </div>
-    <div className="basis-3/8">
+    <div className="basis-1/4">
       <div className="m-4 space-y-4">
         <h2 className="text-2xl">Loginpage</h2>
         <Input
@@ -38,7 +38,7 @@ export default function Login() {
           label="Password"
         />
         <Button
-          className="text-s"
+          className="text-white w-full"
         >
           <h1>Login</h1>
         </Button>
