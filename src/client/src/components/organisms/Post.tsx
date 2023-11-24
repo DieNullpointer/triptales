@@ -22,7 +22,7 @@ import {
 import Spacing from "../atoms/Spacing";
 import ImageCollection from "../molecules/ImageCollection";
 
-import TestImage from "@/resources/DevImages/Antelope Canyon.jpg"
+import TestImage from "@/resources/DevImages/Antelope Canyon.jpg";
 
 export interface Props {
   data: TripPost;
@@ -60,7 +60,7 @@ const Days: React.FC<{ days: TripDay[]; className?: string }> = ({
   );
 };
 
-const Post: React.FC<Props> = ({ data, small, loading }) => { 
+const Post: React.FC<Props> = ({ data, small, loading }) => {
   return !loading ? (
     <Container className="relative min-h-screen m-12">
       <div className="flex lg:flex-row flex-col lg:items-center items-start lg:justify-between ">
@@ -92,9 +92,13 @@ const Post: React.FC<Props> = ({ data, small, loading }) => {
           <Flowtext>{data.text}</Flowtext>
         </div>
         <Days days={data.days} className="mx-2 mt-6" />
-        <Spacing />
-        <Flowtext bold>Images</Flowtext>
-        <ImageCollection images={data.images} />
+        {data.images && (
+          <>
+            <Spacing />
+            <Flowtext bold>Images</Flowtext>
+            <ImageCollection images={data.images} />
+          </>
+        )}
       </div>
     </Container>
   ) : (

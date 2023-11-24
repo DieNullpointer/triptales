@@ -27,7 +27,7 @@ export interface TripPost {
     displayName: string;
     guid: string;
   };
-  images: [{ image: string }];
+  images: string[];
   days: TripDay[];
 }
 

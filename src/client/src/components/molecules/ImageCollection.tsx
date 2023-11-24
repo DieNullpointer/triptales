@@ -3,16 +3,16 @@ import Image from "../atoms/Image";
 import InteractableImage from "../atoms/InteractableImage";
 
 export interface Props {
-  images: [{ image: string }];
+  images: string[];
   className?: string;
 }
 
 const ImageCollection: React.FC<Props> = ({ images, className }) => {
   return (
-    <div className="flex flex-row">
+    <div className="flex flex-row overflow-x-scroll scroll-mt-2">
       {images.map((image) => (
         <InteractableImage
-          src={defaultBanner.src}
+          src={"https://localhost:7471" + image.replace("\\", "/")}
         />
       ))}
     </div>
