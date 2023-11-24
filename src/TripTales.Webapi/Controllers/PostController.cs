@@ -76,7 +76,7 @@ namespace TripTales.Webapi.Controllers
         [HttpGet("{guid:Guid}")]
         public async Task<IActionResult> GetPost(Guid guid)
         {
-            var posts = await _db.Posts.Include(a => a.User).Include(a => a.Days).ThenInclude(a => a.Locations).Where(a => a.Guid == guid).ToListAsync();
+            var posts = await _db.Posts.Include(a => a.User).Include(a => a.Days).ThenInclude(a => a.Locations).FirstOrDefaultAsync(a => a.Guid == guid);
             var export = posts.Select(h => new
             {
                 h.Guid,
