@@ -32,7 +32,7 @@ namespace TripTales.Webapi.Controllers
             var list = new List<string>();
             foreach (var item in input)
             {
-                list.Add(item.Split("wwwroot").Last());
+                list.Add(item.Split("wwwroot\\").Last().Replace(" ", "%20"));
             }
             return list;
         }
@@ -77,6 +77,7 @@ namespace TripTales.Webapi.Controllers
         public async Task<IActionResult> GetPost(Guid guid)
         {
             var h = await _db.Posts.Include(a => a.User).Include(a => a.Days).ThenInclude(a => a.Locations).FirstOrDefaultAsync(a => a.Guid == guid);
+            if (h is null) return BadRequest();
             var export = new
             {
                 h.Guid,
@@ -105,7 +106,7 @@ namespace TripTales.Webapi.Controllers
                     h.User.DisplayName,
                     ProfilePicture = System.IO.File.Exists(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Pictures", $"{h.User.RegistryName}-profile.jpg")) ? $"Pictures/{h.User.RegistryName}-profile.jpg" : null
                 }
-            });
+            };
             return Ok(export);
         }
 
