@@ -3,7 +3,7 @@ import Input from "@/components/atoms/Input";
 import Image from "@/components/atoms/Image";
 import loginImage from "@/resources/bild.webp";
 import { useState } from "react";
-import { Subheading } from "@/components/atoms/Text";
+import { Flowtext, Subheading } from "@/components/atoms/Text";
 import { login } from "@/helpers/authHelpers";
 import { useRouter } from "next/router";
 
@@ -11,11 +11,14 @@ export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  const router = useRouter();
+  const [error, setError] = useState("");
 
-  const handleSubmit = () => {
-    login({ registryName: username, password });
-    router.push("/");
+  const router = useRouter();
+  const handleSubmit = async () => {
+    setError("");
+    const response: any = await login({ registryName: username, password });
+    if (response.success) router.push("/");
+    else setError(response.error);
   };
 
   return (
@@ -82,6 +85,9 @@ export default function Login() {
               Login
             </Button>
           </form>
+          {error && (
+            <Flowtext className="text-red-600 !text-base">{error}</Flowtext>
+          )}
         </div>
       </div>
     </div>
