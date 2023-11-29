@@ -32,7 +32,7 @@ namespace TripTales.Webapi.Controllers
             var list = new List<string>();
             foreach (var item in input)
             {
-                list.Add(item.Split("wwwroot\\").Last().Replace(" ", "%20"));
+                list.Add(item.Split("wwwroot\\").Last());
             }
             return list;
         }
