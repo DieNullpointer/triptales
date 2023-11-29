@@ -1,3 +1,9 @@
+export interface Response {
+  status: number;
+  success: boolean;
+  data: any;
+}
+
 export interface User {
   guid: string;
   email: string;
