@@ -13,6 +13,7 @@ namespace TripTales.Application.Dto
         string email,
         string password,
         string displayName,
-        string registryName
+        string registryName,
+        string? description
     );
 }
