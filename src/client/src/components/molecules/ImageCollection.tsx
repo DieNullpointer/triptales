@@ -1,16 +1,22 @@
+import defaultBanner from "@/resources/default_bannerpic.jpg";
 import Image from "../atoms/Image";
+import InteractableImage from "../atoms/InteractableImage";
 
 export interface Props {
-    images: [{image: string}];
-    className?: string;
+  images: string[];
+  className?: string;
 }
 
-const ImageCollection: React.FC<Props> = ({images, className}) => {
-    return <div className="flex flex-row">
-        {
-            images.map((image) => <Image src={image.image} className="h-48 w-auto" />)
-        }
-    </div>;
-}
+const ImageCollection: React.FC<Props> = ({ images, className }) => {
+  return (
+    <div className="flex flex-row overflow-x-auto scroll-mt-2 space-x-4">
+      {images.map((image) => (
+        <InteractableImage
+          src={"https://localhost:7174/" + image.replace("\\", "/")}
+        />
+      ))}
+    </div>
+  );
+};
 
 export default ImageCollection;

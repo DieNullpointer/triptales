@@ -6,7 +6,7 @@ async function laodImages(count)
     var response = await fetch(`https://api.unsplash.com/photos/random/?query=landscape&count=${count}&client_id=FhoYRHwY2LaJ4Xt24CtoQlzTkviimX_a7IJgG7CjouM`);
     const images = await response.json();
     images.forEach(imageFile => {
-        const filename = 'TripTales.Webapi/wwwroot/Images/1c5d894c-2135-4668-ba17-bb2c80d4a465/' + imageFile.alt_description + '.jpg';
+        const filename = 'TripTales.Webapi/wwwroot/Images/1c5d894c-2135-4668-ba17-bb2c80d4a465/' + imageFile.alt_description.replaceAll(" ", "_") + '.jpg';
         var image = imageFile.urls.raw;
         console.log(image);
         const file = fs.createWriteStream(filename);
