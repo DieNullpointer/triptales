@@ -12,8 +12,6 @@ namespace TripTales.Application.Dto
         [EmailAddress]
         string email,
         string password,
-        string displayName,
-        string registryName,
-        string? description
+        string registryName
     );
 }
