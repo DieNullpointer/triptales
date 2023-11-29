@@ -208,6 +208,8 @@ namespace TripTales.Webapi.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] UserCredentialsCmd credentials)
         {
+            var user = await _db.User.FirstOrDefaultAsync(a => a.RegistryName == credentials.registryName);
+            if (user is null || !user.CheckPassword(credentials.password)) return BadRequest("Password falsch oder User gibt es nicht");
             var claims = new List<Claim>
                     {
                         new Claim(ClaimTypes.Name, credentials.registryName),
