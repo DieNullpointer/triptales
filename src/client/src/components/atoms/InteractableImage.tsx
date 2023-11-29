@@ -14,14 +14,13 @@ const InteractableImage: React.FC<{ src: string }> = ({ src }) => {
       <Image
         src={src}
         onClick={handler}
-        className="h-full hover:opacity-80 hover:cursor-zoom-in object-cover"
-        wrapper="w-auto overflow-hidden items-center flex rounded object-cover"
+        className="h-40 w-auto inline-block hover:opacity-80 hover:cursor-zoom-in object-cover"
       />
-      <Dialog open={fullSize} size="lg" handler={handler} className="bg-transparent">
+      <Dialog open={fullSize} size="lg" handler={handler} className="bg-transparent flex justify-center max-h-screen">
         <Image
           src={src}
           onClick={handler}
-          className="h-full w-auto object-cover"
+          className="max-h-[90vh]"
         />
       </Dialog>
     </>

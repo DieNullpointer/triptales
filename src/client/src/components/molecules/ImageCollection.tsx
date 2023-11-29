@@ -9,7 +9,7 @@ export interface Props {
 
 const ImageCollection: React.FC<Props> = ({ images, className }) => {
   return (
-    <div className="flex flex-row overflow-x-auto scroll-mt-2">
+    <div className="flex flex-row overflow-x-auto scroll-mt-2 space-x-4">
       {images.map((image) => (
         <InteractableImage
           src={"https://localhost:7174/" + image.replace("\\", "/")}
