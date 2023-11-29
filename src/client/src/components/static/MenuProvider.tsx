@@ -31,7 +31,7 @@ const MenuProvider: React.FC<{}> = () => {
         </ListItemPrefix>
         Homepage
       </ListItem>
-      {Auth.getBearerToken() ? (
+      {Auth.getCookie() ? (
         <>
           <ListItem className={itemsClass}>
             <ListItemPrefix>
