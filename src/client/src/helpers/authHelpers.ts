@@ -33,3 +33,28 @@ export async function login(credentials: {
     return { sucess: false, error: error.response?.data };
   }
 }
+
+export async function register(credentials: {
+  registryName: string;
+  password: string;
+  email: string;
+}) {
+  try {
+    const response = await axios.post("/user/register", credentials);
+
+    const resObj = {
+      status: response.status,
+      success: response.status === 200,
+      data: response.data,
+    };
+    return resObj;
+  } catch (error: any) {
+    return {
+      success: false,
+      error:
+        typeof error.response?.data === "string"
+          ? error.response?.data
+          : Object.entries(error.response?.data?.errors)[0][1][0],
+    };
+  }
+}
