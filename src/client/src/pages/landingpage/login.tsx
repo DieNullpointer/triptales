@@ -1,19 +1,36 @@
 import Button from "@/components/atoms/Button";
 import Input from "@/components/atoms/Input";
 import Image from "@/components/atoms/Image";
-import loginImage from "@/resources/bild.webp";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Flowtext, Subheading } from "@/components/atoms/Text";
 import { login } from "@/helpers/authHelpers";
 import { useRouter } from "next/router";
 
-export default function Login() {
+import { getRandomUnsplashPhoto } from "@/helpers/imgHelpers";
+
+
+
+export function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-
+  const [randomPhotoUrl, setRandomPhotoUrl] = useState("");
   const [error, setError] = useState("");
 
   const router = useRouter();
+
+  useEffect(() => {
+    const fetchRandomPhoto = async () => {
+      try {
+        const photoUrl = await getRandomUnsplashPhoto();;
+        setRandomPhotoUrl(photoUrl);
+      } catch (error : any) {
+        console.error('Error fetching random Unsplash photo:', error.message);
+      }
+    };
+
+    fetchRandomPhoto();
+  }, []);
+
   const handleSubmit = async () => {
     setError("");
     const response: any = await login({ registryName: username, password });
@@ -24,7 +41,7 @@ export default function Login() {
   return (
     <div className="flex justify-center items-center">
       <div className="basis-3/4">
-        <Image src={loginImage.src} alt={""} className="w-full h-screen" />
+        <Image src={randomPhotoUrl} alt={""} className="w-full h-screen" />
       </div>
       <div className="basis-1/4">
         <div className="m-4 space-y-4">
@@ -93,3 +110,5 @@ export default function Login() {
     </div>
   );
 }
+
+export default Login; 
