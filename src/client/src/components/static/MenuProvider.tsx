@@ -17,12 +17,23 @@ import {
   ArrowUpCircleIcon,
 } from "@heroicons/react/24/solid";
 import * as Auth from "@/helpers/authHelpers";
-import React, { use } from "react";
+import React, { use, useEffect, useState } from "react";
 
 const MenuProvider: React.FC<{}> = () => {
   const itemsClass =
     "text-white hover:bg-primary/20 active:focus:bg-primary/20 focus:bg-primary/20 hover:text-white focus:text-white active:text-white ";
-    const router = useRouter()
+  const router = useRouter();
+
+  const [auth, setAuth] = useState("");
+
+  const checkLogin = async () => {
+    await setAuth(await Auth.getAuthorized());
+  };
+
+  useEffect(() => {
+    checkLogin();
+  });
+
   return (
     <List>
       <ListItem className={itemsClass} onClick={() => router.push("/")}>
@@ -31,7 +42,7 @@ const MenuProvider: React.FC<{}> = () => {
         </ListItemPrefix>
         Homepage
       </ListItem>
-      {Auth.getCookie() ? (
+      {auth ? (
         <>
           <ListItem className={itemsClass}>
             <ListItemPrefix>
@@ -47,7 +58,7 @@ const MenuProvider: React.FC<{}> = () => {
               />
             </ListItemSuffix>
           </ListItem>
-          <ListItem className={itemsClass}>
+          <ListItem className={itemsClass} onClick={() => router.push("/user/" + auth)}>
             <ListItemPrefix>
               <UserCircleIcon className="h-5 w-5 text-white" />
             </ListItemPrefix>
@@ -59,7 +70,12 @@ const MenuProvider: React.FC<{}> = () => {
             </ListItemPrefix>
             Settings
           </ListItem>
-          <ListItem className={itemsClass}>
+          <ListItem
+            className={itemsClass}
+            onClick={async () => {
+              if (await Auth.logout()) router.push("/landingpage");
+            }}
+          >
             <ListItemPrefix>
               <PowerIcon className="h-5 w-5 text-white" />
             </ListItemPrefix>
@@ -67,9 +83,12 @@ const MenuProvider: React.FC<{}> = () => {
           </ListItem>
         </>
       ) : (
-        <ListItem className={itemsClass}onClick={()=>{
-          router.push("/landingpage")
-        }}>
+        <ListItem
+          className={itemsClass}
+          onClick={() => {
+            router.push("/landingpage");
+          }}
+        >
           <ListItemPrefix>
             <ArrowUpCircleIcon className="h-5 w-5 text-white" />
           </ListItemPrefix>
@@ -81,4 +100,3 @@ const MenuProvider: React.FC<{}> = () => {
 };
 
 export default MenuProvider;
-
