@@ -6,9 +6,7 @@ import { Flowtext, Subheading } from "@/components/atoms/Text";
 import { login } from "@/helpers/authHelpers";
 import { useRouter } from "next/router";
 
-import { getRandomUnsplashPhoto } from "@/helpers/imgHelpers";
-
-
+import { getRandom } from "@/helpers/imgHelpers";
 
 export function Login() {
   const [username, setUsername] = useState("");
@@ -18,16 +16,15 @@ export function Login() {
 
   const router = useRouter();
 
+  const fetchRandomPhoto = async () => {
+    try {
+      const photo = await getRandom();
+      //setRandomPhotoUrl(photoUrl);
+    } catch (error: any) {
+      console.error("Error fetching random Unsplash photo:", error.message);
+    }
+  };
   useEffect(() => {
-    const fetchRandomPhoto = async () => {
-      try {
-        const photoUrl = await getRandomUnsplashPhoto();;
-        setRandomPhotoUrl(photoUrl);
-      } catch (error : any) {
-        console.error('Error fetching random Unsplash photo:', error.message);
-      }
-    };
-
     fetchRandomPhoto();
   }, []);
 
@@ -111,4 +108,4 @@ export function Login() {
   );
 }
 
-export default Login; 
+export default Login;
