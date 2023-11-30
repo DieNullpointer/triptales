@@ -71,7 +71,7 @@ namespace TripTales.Application.Infrastructure
                 var user = new User(person.Email, "1234", person.UserName, person.UserName.ToLower(), f.Lorem.Text());
                 return user;
             }).Generate(5).ToList();
-            users.Add(new User("admin@nullpointer.at", "admin", "Administrator", "admin", "This is the admin User!"));
+            users.Add(new User("admin@nullpointer.at", "admin", "admin", "Administrator", "This is the admin User!"));
             User.AddRange(users);
             SaveChanges();
 
