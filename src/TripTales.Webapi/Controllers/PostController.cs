@@ -185,5 +185,34 @@ namespace TripTales.Webapi.Controllers
             if (success) { return Ok(); }
             return BadRequest(message);
         }
+
+        [Authorize]
+        [HttpDelete("delete/")]
+        public async Task<IActionResult> DeleteDay(Guid guid)
+        {
+            var authenticated = HttpContext.User.Identity?.IsAuthenticated ?? false;
+            if (!authenticated) { return Unauthorized(); }
+            var username = HttpContext?.User.Identity?.Name;
+            if (username is null) { return Unauthorized(); }
+            var user = await _db.User.FirstOrDefaultAsync(a => a.RegistryName == username);
+            if (user is null) { return Unauthorized(); }
+            var day = await _db.Days.FirstOrDefaultAsync(a => a.Guid == guid);
+            if(day is null) { return BadRequest("Day gibt es nicht"); }
+            bool iaAuthor = false;
+            foreach(var Post in user.Posts)
+            {
+                if (Post.Days.Contains(day))
+                {
+                    Post.Days.Remove(day);
+                    (bool success, string message) = await _repo.Delete(guid);
+                    if (success) { return Ok(); }
+                }
+            
+            }
+            if (!iaAuthor) { return BadRequest("User is nicht der author"); }
+            return BadRequest();
+
+
+        }
     }
 }
