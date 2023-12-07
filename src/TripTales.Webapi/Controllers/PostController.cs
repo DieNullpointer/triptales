@@ -53,6 +53,7 @@ namespace TripTales.Webapi.Controllers
                 Likes = h.Likes.Count,
                 Days = h.Days.Select(d => new
                 {
+                    d.Guid,
                     d.Title,
                     d.Text,
                     d.Date,
@@ -90,6 +91,7 @@ namespace TripTales.Webapi.Controllers
                 Likes = h.Likes.Count,
                 Days = h.Days.Select(d => new
                 {
+                    d.Guid,
                     d.Title,
                     d.Text,
                     d.Date,
@@ -176,7 +178,7 @@ namespace TripTales.Webapi.Controllers
             if(post is null) { return BadRequest("Post gibt es nicht"); }
             if (!user.Posts.Contains(post))
                 return BadRequest("This is not the Post of the User");
-            post.User = null;
+            //post.User = null;
             user.Posts.Remove(post);
             if(Directory.Exists("PostImages"))
                 foreach (var file in Directory.GetFiles("PostImages"))
@@ -184,6 +186,26 @@ namespace TripTales.Webapi.Controllers
             (bool success, string message) = await _repo.Delete(guid);
             if (success) { return Ok(); }
             return BadRequest(message);
+        }
+
+        [Authorize]
+        [HttpDelete("deleteDay/{guid:Guid}")]
+        public async Task<IActionResult> DeleteDay(Guid guid)
+        {
+            var authenticated = HttpContext.User.Identity?.IsAuthenticated ?? false;
+            if (!authenticated) { return Unauthorized(); }
+            var username = HttpContext?.User.Identity?.Name;
+            if (username is null) { return Unauthorized(); }
+            var user = await _db.User.FirstOrDefaultAsync(a => a.RegistryName == username);
+            if (user is null) { return Unauthorized(); }
+            var day = await _db.Days.FirstOrDefaultAsync(a => a.Guid == guid);
+            if(day is null) { return BadRequest("Day gibt es nicht"); }
+            if (day.Post.User!.RegistryName != username) { return BadRequest("User is not the author"); }
+            (bool success, string message) = await _repo.Delete(guid);
+            if (success) { return Ok(); }
+            return BadRequest();
+
+
         }
     }
 }
