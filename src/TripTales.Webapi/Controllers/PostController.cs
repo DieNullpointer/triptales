@@ -207,5 +207,21 @@ namespace TripTales.Webapi.Controllers
 
 
         }
+
+        /// <summary>
+        /// /api/post/random?start=42746&itemNr=2
+        /// </summary>
+        /// <param name="itemNr"></param>
+        /// <returns></returns>
+        [HttpGet("random")]
+        public async Task<IActionResult> GetRandom([FromQuery] int start = 0, [FromQuery] int itemNr = 0) 
+        {
+            var count = _db.Posts.Count();
+            if (itemNr >= count) return NotFound();
+
+            int nr = (start+itemNr)%count;
+            var post = await _db.Posts.OrderBy(p=>p.Guid).Skip(nr).FirstOrDefaultAsync();
+            return Ok(post);
+        }
     }
 }
