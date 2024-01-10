@@ -17,7 +17,7 @@ namespace TripTales.Application.Model
         public DateTime Date { get; set; }
         public string Title { get; set; }   
         public string Text { get; set; }
-        public TripPost Post { get; set; }
+        public TripPost? Post { get; set; }
         public List<TripLocation> Locations { get; } = new();
 
         public TripDay(DateTime date, string title, string text, TripPost post)
