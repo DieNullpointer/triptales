@@ -8,6 +8,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Net.WebSockets;
 using System.Threading.Tasks;
 using TripTales.Application.Dto;
 using TripTales.Application.Infrastructure;
@@ -174,18 +176,20 @@ namespace TripTales.Webapi.Controllers
             // Valid token, but no user match in the database (maybe deleted by an admin).
             var user = await _db.User.FirstOrDefaultAsync(a => a.RegistryName == username);
             if (user is null) { return Unauthorized(); }
-            var post = await _db.Posts.FirstOrDefaultAsync(a => a.Guid == guid);
+            var post = await _db.Posts.Include(a => a.Likes).Include(a => a.User).Include(a => a.Days).ThenInclude(a => a.Locations).FirstOrDefaultAsync(a => a.Guid == guid);
             if(post is null) { return BadRequest("Post gibt es nicht"); }
-            if (!user.Posts.Contains(post))
+            if (post.User != user)
                 return BadRequest("This is not the Post of the User");
-            //post.User = null;
-            user.Posts.Remove(post);
+            post.User = null;
             if(Directory.Exists("PostImages"))
                 foreach (var file in Directory.GetFiles("PostImages"))
                     System.IO.File.Delete(file);
-            (bool success, string message) = await _repo.Delete(guid);
-            if (success) { return Ok(); }
-            return BadRequest(message);
+            _db.Locations.RemoveRange(_db.Locations.Include(a => a.TripDay).ThenInclude(a => a.Post).Where(a => a.TripDay.Post == post).ToList());
+            _db.Days.RemoveRange(post.Days);
+            _db.Posts.Remove(post);
+            try { await _db.SaveChangesAsync(); }
+            catch(DbUpdateException e) { return BadRequest(e.Message); }
+            return Ok();
         }
 
         [Authorize]
@@ -198,12 +202,18 @@ namespace TripTales.Webapi.Controllers
             if (username is null) { return Unauthorized(); }
             var user = await _db.User.FirstOrDefaultAsync(a => a.RegistryName == username);
             if (user is null) { return Unauthorized(); }
-            var day = await _db.Days.FirstOrDefaultAsync(a => a.Guid == guid);
-            if(day is null) { return BadRequest("Day gibt es nicht"); }
-            if (day.Post.User!.RegistryName != username) { return BadRequest("User is not the author"); }
-            (bool success, string message) = await _repo.Delete(guid);
-            if (success) { return Ok(); }
-            return BadRequest();
+            var day = await _db.Days.Include(a => a.Locations).Include(a => a.Post).ThenInclude(a => a!.User).FirstOrDefaultAsync(a => a.Guid == guid);
+            if (day is null) { return BadRequest("Day gibt es nicht"); }
+            if (day.Post?.User?.RegistryName != username) { return BadRequest("User is not the author"); }
+            day.Post = null;
+            _db.Locations.RemoveRange(day.Locations);
+            _db.Days.Remove(day);
+            try
+            {
+                await _db.SaveChangesAsync();
+            }
+            catch(DbUpdateException e) { return BadRequest(e.Message); }
+            return Ok();
 
 
         }
