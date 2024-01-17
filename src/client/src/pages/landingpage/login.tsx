@@ -11,7 +11,7 @@ import { getRandom } from "@/helpers/imgHelpers";
 export function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [randomPhotoUrl, setRandomPhotoUrl] = useState("");
+  const [randomPhoto, setRandomPhoto] = useState<any>();
   const [error, setError] = useState("");
 
   const router = useRouter();
@@ -19,7 +19,7 @@ export function Login() {
   const fetchRandomPhoto = async () => {
     try {
       const photo = await getRandom();
-      //setRandomPhotoUrl(photoUrl);
+      setRandomPhoto(photo);
     } catch (error: any) {
       console.error("Error fetching random Unsplash photo:", error.message);
     }
@@ -37,10 +37,15 @@ export function Login() {
 
   return (
     <div className="flex justify-center items-center">
-      <div className="basis-3/4">
-        <Image src={randomPhotoUrl} alt={""} className="w-full h-screen" />
+      <div className="hidden md:block md:basis-3/4">
+        <Image
+          src={randomPhoto?.urls.regular}
+          alt={""}
+          className="h-screen object-cover w-full"
+          wrapper="overflow-hidden items-center flex"
+        />
       </div>
-      <div className="basis-1/4">
+      <div className="md:basis-1/4">
         <div className="m-4 space-y-4">
           <Subheading center uppercase wide>
             Loginpage

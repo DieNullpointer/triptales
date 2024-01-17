@@ -2,19 +2,37 @@ import Button from "@/components/atoms/Button";
 import Input from "@/components/atoms/Input";
 import Image from "@/components/atoms/Image";
 import loginImage from "@/resources/bild.webp";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Subheading } from "@/components/atoms/Text";
+import { getRandom } from "@/helpers/imgHelpers";
 
 export default function Login() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [randomPhoto, setRandomPhoto] = useState<any>();
+
+  const fetchRandomPhoto = async () => {
+    try {
+      const photo = await getRandom();
+      setRandomPhoto(photo);
+    } catch (error: any) {
+      console.error("Error fetching random Unsplash photo:", error.message);
+    }
+  };
+  useEffect(() => {
+    fetchRandomPhoto();
+  }, []);
+
 
   return (
     <div className="flex justify-center items-center">
       <div className="basis-3/4">
-        <Image src={loginImage.src} alt={""} className="w-full h-screen" />
+        <Image src={randomPhoto?.urls.regular}
+          alt={""}
+          className="h-screen object-cover w-full"
+          wrapper="overflow-hidden items-center flex" />
       </div>
       <div className="basis-1/4">
         <div className="m-4 space-y-4">
