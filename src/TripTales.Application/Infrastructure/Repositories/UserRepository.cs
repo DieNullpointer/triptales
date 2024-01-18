@@ -42,6 +42,8 @@ namespace TripTales.Application.Infrastructure.Repositories
             user2.Salt = user.Salt;
             user2.PasswordHash = user.PasswordHash;
             user2.Description = user.Description;
+            user2.Origin = user.Origin;
+            user2.FavDestination = user.FavDestination;
             return await base.Update(user2);
         }
     }

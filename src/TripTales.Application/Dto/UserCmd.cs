@@ -8,11 +8,12 @@ namespace TripTales.Application.Dto
 {
     public record UserCmd
     (
-        Guid guid,
         string Email,
         string Password,
         string DisplayName, 
         string RegistryName,
-        string Description
+        string? Description,
+        string? Origin,
+        string? FavDestination
     ); 
 }

@@ -22,6 +22,20 @@ namespace TripTales.Application.Tests
         }
 
         [Fact]
+        public async void InsertSuccessTest()
+        {
+            // ARRange
+            var db = GetDatabase();
+            var repo = new UserRepository(db);
+
+            var user = new User("email@example.com", "password", "displayName", "registryName", "description");
+            await repo.Insert(user);
+            db.ChangeTracker.Clear();
+
+            Assert.True(db.User.Count() == 1);
+        }
+
+        [Fact]
         public async void DeleteSuccessTest()
         {
             // ARRange
@@ -47,7 +61,7 @@ namespace TripTales.Application.Tests
             var db = GetDatabase();
             var repo = new UserRepository(db);
 
-            var user = new User("email@example.com", "password", "displayName", "registryName", "description");
+            var user = new User("email@example.com", "password", "displayName", "registryName", "description", "Wien", "Kairo");
             await db.User.AddAsync(user);
             await db.SaveChangesAsync();
             db.ChangeTracker.Clear();

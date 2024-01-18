@@ -259,15 +259,19 @@ namespace TripTales.Webapi.Controllers
             // Valid token, but no user match in the database (maybe deleted by an admin).
             var user = await _db.User.FirstOrDefaultAsync(a => a.RegistryName == username);
             if (user is null) { return Unauthorized(); }
-            user = _mapper.Map<User>(userCmd);
-            user.SetPassword(userCmd.Password);
+            user = _mapper.Map<User>(userCmd, opt =>
+            {
+                opt.AfterMap((src, dest) =>
+                {
+                    user.SetPassword(userCmd.Password);
+                    dest.Guid = user.Guid;
+                });
+            });
             (bool success, string message) = await _repo.Update(user);
             if (success) return Ok();
             return BadRequest(message);
         }
 
-        //User1 schickt Freundschaftsanfrage an User2
-        //User2 bekommt User1 in List: RequestFriend
         [Authorize]
         [HttpPost("sendFriendRequest/{guid:Guid}")]
         public async Task<IActionResult> SendFriendRequest(Guid guid)
@@ -288,6 +292,7 @@ namespace TripTales.Webapi.Controllers
             return Ok();
         }
 
+        //response = accept or deny
         [Authorize]
         [HttpPost("responseFriendRequest/{guid:Guid}")]
         public async Task<IActionResult> ResponseFriendRequest(Guid guid, [FromQuery] string response)

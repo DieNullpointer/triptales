@@ -26,19 +26,24 @@ namespace TripTales.Application.Model
         public string? DisplayName { get; set; }
         public string RegistryName { get; set; }
         public string? Description { get; set; }
+        //where the user is from
+        public string? Origin { get; set; }
+        public string? FavDestination { get; set; }
         public List<User> Friends { get; } = new();
         public List<FriendRequest> FriendRequestsSender { get; } = new();
         public List<FriendRequest> FriendRequestsRecipient { get; } = new();
         public List<TripPost> Posts { get; } = new();
         public List<TripPost> Likes { get; } = new();
 
-        public User(string email, string password, string registryName, string? displayName = null, string? description = null)
+        public User(string email, string password, string registryName, string? displayName = null, string? description = null, string? origin = null, string? favDestination = null)
         {
             Email = email;
             SetPassword(password);
             DisplayName = displayName;
             RegistryName = registryName;
             Description = description;
+            Origin = origin;
+            FavDestination = favDestination;
         }
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         protected User() { }
