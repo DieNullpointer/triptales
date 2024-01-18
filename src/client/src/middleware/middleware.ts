@@ -1,4 +1,5 @@
 import { User } from "@/types/types";
+import axios from "axios";
 import useSWR from "swr";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
@@ -47,10 +48,19 @@ export function getPost(guid: string) {
   return { post: data, error, isLoading };
 }
 
-export function getNextPost(start:number, iteration: number) {
-  const { data, error, isLoading } = useSWR(
-    `https://localhost:7174/api/Post/random?start=${start}&itemNr=${iteration}`,
-    fetcher
-  );
-  return { post: data, error, isLoading };
+export async function getNextPost(start: number, iteration: number) {
+  let data;
+  let error;
+  const response = await axios
+    .get(
+      `https://localhost:7174/api/Post/random?start=${start}&itemNr=${iteration}`
+    )
+    .then((res) => {
+      data = res.data;
+    })
+    .catch((error) => {
+      error = error;
+    });
+    
+  return {data, error};
 }
