@@ -6,11 +6,8 @@ using System.Threading.Tasks;
 
 namespace TripTales.Application.Dto
 {
-    public record DayCmd
+    public record  LocationCmd
     (
-        DateTime Date,
-        string Title,
-        string Text,
-        List<LocationCmd>? Locations
+        string Coordinates
     );
 }
