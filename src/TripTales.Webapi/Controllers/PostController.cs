@@ -233,5 +233,32 @@ namespace TripTales.Webapi.Controllers
             var post = await _db.Posts.OrderBy(p=>p.Guid).Skip(nr).FirstOrDefaultAsync();
             return Ok(post);
         }
+
+        [Authorize]
+        [HttpPut("addDay/{guid:Guid}")]
+        public async Task<IActionResult> AddDay(Guid guid, DayCmd dayCmd)
+        {
+            var authenticated = HttpContext.User.Identity?.IsAuthenticated ?? false;
+            if (!authenticated) { return Unauthorized(); }
+            var username = HttpContext?.User.Identity?.Name;
+            if (username is null) { return Unauthorized(); }
+            // Valid token, but no user match in the database (maybe deleted by an admin).
+            var user = await _db.User.FirstOrDefaultAsync(a => a.RegistryName == username);
+            if (user is null) { return Unauthorized(); }
+            var post = await _db.Posts.FirstOrDefaultAsync(a => a.Guid == guid);
+            if (post is null)
+                return BadRequest("Diesen Post gibt es nicht");
+            var day = _mapper.Map<TripDay>(dayCmd, opt => opt.AfterMap((dto, entity) =>
+            {
+                entity.Post = post;
+            }));
+            post.Days.Add(day);
+            try
+            {
+                await _db.SaveChangesAsync();
+            }
+            catch (DbUpdateException e) { return BadRequest(e.Message); }
+            return Ok();
+        }
     }
 }
