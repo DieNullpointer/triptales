@@ -91,6 +91,8 @@ namespace TripTales.Webapi.Controllers
                 h.Email,
                 h.RegistryName,
                 h.Description,
+                h.Origin,
+                h.FavDestination,
                 Posts = h.Posts.Select(p => new
                 {
                     p.Guid
