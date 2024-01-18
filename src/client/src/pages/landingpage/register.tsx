@@ -2,16 +2,29 @@ import Button from "@/components/atoms/Button";
 import Input from "@/components/atoms/Input";
 import Image from "@/components/atoms/Image";
 import loginImage from "@/resources/bild.webp";
-import { useState } from "react";
-import { register } from "@/helpers/authHelpers";
+import { useEffect, useState } from "react";
 import { Flowtext, Subheading } from "@/components/atoms/Text";
-import { useRouter } from "next/router";
+import { getRandom } from "@/helpers/imgHelpers";
 
 export default function Login() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [randomPhoto, setRandomPhoto] = useState<any>();
+
+  const fetchRandomPhoto = async () => {
+    try {
+      const photo = await getRandom();
+      setRandomPhoto(photo);
+    } catch (error: any) {
+      console.error("Error fetching random Unsplash photo:", error.message);
+    }
+  };
+  useEffect(() => {
+    fetchRandomPhoto();
+  }, []);
+
 
   const [error, setError] = useState("");
 
@@ -32,7 +45,10 @@ export default function Login() {
   return (
     <div className="flex justify-center items-center">
       <div className="basis-3/4">
-        <Image src={loginImage.src} alt={""} className="w-full h-screen" />
+        <Image src={randomPhoto?.urls.regular}
+          alt={""}
+          className="h-screen object-cover w-full"
+          wrapper="overflow-hidden items-center flex" />
       </div>
       <div className="basis-1/4">
         <div className="m-4 space-y-4">
@@ -96,6 +112,7 @@ export default function Login() {
             <Flowtext className="text-red-600 !text-base">{error}</Flowtext>
           )}
         </div>
+        <Flowtext className="hidden md:inline-block md:absolute bottom-2 right-2 w-fit text-gray-500 italic !text-sm">Photo by {randomPhoto?.user?.name} on <a target="_blank" href={randomPhoto?.links?.html} className="underline">Unsplash</a></Flowtext>
       </div>
     </div>
   );

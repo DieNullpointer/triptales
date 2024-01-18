@@ -1,19 +1,33 @@
 import Button from "@/components/atoms/Button";
 import Input from "@/components/atoms/Input";
 import Image from "@/components/atoms/Image";
-import loginImage from "@/resources/bild.webp";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Flowtext, Subheading } from "@/components/atoms/Text";
 import { login } from "@/helpers/authHelpers";
 import { useRouter } from "next/router";
 
-export default function Login() {
+import { getRandom } from "@/helpers/imgHelpers";
+
+export function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-
+  const [randomPhoto, setRandomPhoto] = useState<any>();
   const [error, setError] = useState("");
 
   const router = useRouter();
+
+  const fetchRandomPhoto = async () => {
+    try {
+      const photo = await getRandom();
+      setRandomPhoto(photo);
+    } catch (error: any) {
+      console.error("Error fetching random Unsplash photo:", error.message);
+    }
+  };
+  useEffect(() => {
+    fetchRandomPhoto();
+  }, []);
+
   const handleSubmit = async () => {
     setError("");
     const response: any = await login({ registryName: username, password });
@@ -23,10 +37,15 @@ export default function Login() {
 
   return (
     <div className="flex justify-center items-center">
-      <div className="basis-3/4">
-        <Image src={loginImage.src} alt={""} className="w-full h-screen" />
+      <div className="hidden md:block md:basis-3/4">
+        <Image
+          src={randomPhoto?.urls.regular}
+          alt={""}
+          className="h-screen object-cover w-full"
+          wrapper="overflow-hidden items-center flex"
+        />
       </div>
-      <div className="basis-1/4">
+      <div className="md:basis-1/4">
         <div className="m-4 space-y-4">
           <Subheading center uppercase wide>
             Loginpage
@@ -87,9 +106,12 @@ export default function Login() {
           </form>
           {error && (
             <Flowtext className="text-red-600 !text-base">{error}</Flowtext>
-          )}
+          )}        
         </div>
+        <Flowtext className="hidden md:inline-block md:absolute bottom-2 right-2 w-fit text-gray-500 italic !text-sm">Photo by {randomPhoto?.user?.name} on <a target="_blank" href={randomPhoto?.links?.html} className="underline">Unsplash</a></Flowtext>
       </div>
     </div>
   );
 }
+
+export default Login;

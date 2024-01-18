@@ -18,7 +18,7 @@ export default function App({ Component, pageProps }: AppProps) {
   return (
     <div className={"text-slate-800 font-roboto flex w-full"}>
       {router.asPath.includes("landingpage") ? (
-        <div className="w-full">
+        <div className="w-full relative">
           <Component {...pageProps} />
         </div>
       ) : (
