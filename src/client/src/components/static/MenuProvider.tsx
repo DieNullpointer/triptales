@@ -64,7 +64,7 @@ const MenuProvider: React.FC<{}> = () => {
             </ListItemPrefix>
             Profile
           </ListItem>
-          <ListItem className={itemsClass}>
+          <ListItem className={itemsClass} onClick={() => router.push("settings")}>
             <ListItemPrefix>
               <Cog6ToothIcon className="h-5 w-5 text-white" />
             </ListItemPrefix>

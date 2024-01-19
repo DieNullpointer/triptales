@@ -14,6 +14,16 @@ export async function getAuthorized() {
   }
 }
 
+export async function getAuthorizedFull() {
+  try {
+    const response = await axios.get("/user/me");
+    return response.data;
+  } catch (error) {
+    console.log("not logged in");
+    return "";
+  }
+}
+
 export async function logout() {
   try {
     await axios.get("/user/logout");
