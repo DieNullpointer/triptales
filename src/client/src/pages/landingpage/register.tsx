@@ -5,6 +5,8 @@ import loginImage from "@/resources/bild.webp";
 import { useEffect, useState } from "react";
 import { Flowtext, Subheading } from "@/components/atoms/Text";
 import { getRandom } from "@/helpers/imgHelpers";
+import { useRouter } from "next/router";
+import { register } from "@/helpers/authHelpers";
 
 export default function Login() {
   const [username, setUsername] = useState("");
@@ -38,7 +40,7 @@ export default function Login() {
       password,
       email,
     });
-    if (response.success) router.push("/");
+    if (response.success) router.push("/landingpage/login");
     else setError(response.error);
   };
 
@@ -101,7 +103,6 @@ export default function Login() {
               onChange={(val) => setConfirmPassword(val)}
             />
             <Button
-              onClick={handleSubmit}
               type="submit"
               className="text-white w-full"
             >
