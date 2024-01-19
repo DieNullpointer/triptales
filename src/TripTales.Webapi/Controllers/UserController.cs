@@ -193,10 +193,19 @@ namespace TripTales.Webapi.Controllers
         {
             var authenticated = HttpContext.User.Identity?.IsAuthenticated ?? false;
             if (!authenticated) { return Unauthorized(); }
+            var username = HttpContext.User.Identity?.Name;
+            if (username is null) { return Unauthorized(); }
+            var user = _db.User.FirstOrDefault(a => a.RegistryName == username);
+            if (user is null) { return Unauthorized(); }
             return Ok(new
             {
-                Username = HttpContext.User.Identity?.Name,
-                //IsAdmin = HttpContext.User.IsInRole("admin"),
+                user.DisplayName,
+                user.RegistryName,
+                user.Description,
+                user.Email,
+                user.Origin,
+                user.FavDestination,
+                user.Guid
             });
         }
 
