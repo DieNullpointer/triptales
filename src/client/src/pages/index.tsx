@@ -13,10 +13,12 @@ export default function Home() {
 
   const getNext = async () => {
     const { data } = await getNextPost(0, feedIterationNr);
-    if (data) setFeedIterationNr(feedIterationNr + 1);
-    setFeed(feed.concat(data));
-    console.log(feed);
-    console.log(data);
+    if (data) {
+      setFeedIterationNr(feedIterationNr + 1);
+      setFeed([...feed, data]);
+      console.log(data);
+      console.log(feed);
+    }
   };
   useEffect(() => {
     if (feedIterationNr < 0) setFeedIterationNr(0);
