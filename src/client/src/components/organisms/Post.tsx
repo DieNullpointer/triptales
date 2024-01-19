@@ -23,6 +23,8 @@ import Spacing from "../atoms/Spacing";
 import ImageCollection from "../molecules/ImageCollection";
 
 import TestImage from "@/resources/DevImages/Antelope Canyon.jpg";
+import Button from "../atoms/Button";
+import { useRouter } from "next/router";
 
 export interface Props {
   data: TripPost;
@@ -61,6 +63,8 @@ const Days: React.FC<{ days: TripDay[]; className?: string }> = ({
 };
 
 const Post: React.FC<Props> = ({ data, small, loading }) => {
+  const router = useRouter();
+
   return !loading ? (
     <Container className="relative min-h-screen m-12">
       <div className="flex lg:flex-row flex-col lg:items-center items-start lg:justify-between ">
@@ -100,6 +104,17 @@ const Post: React.FC<Props> = ({ data, small, loading }) => {
           </>
         )}
       </div>
+      <>
+        {small && (
+          <div className="w-full flex items-center justify-center pt-2">
+            <Button onClick={() => router.push("/post/" + data.guid)}>
+              <Flowtext uppercase className="!text-sm !text-white" bold>
+                View full Post
+              </Flowtext>
+            </Button>
+          </div>
+        )}
+      </>
     </Container>
   ) : (
     <Loading />
