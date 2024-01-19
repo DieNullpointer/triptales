@@ -12,7 +12,7 @@ export default function Home() {
   const [feedIterationNr, setFeedIterationNr] = useState<number>(-1);
 
   const getNext = async () => {
-    const { data } = await getNextPost(0, feedIterationNr);
+    const { data } = await getNextPost(Math.floor(Math.random() * 5), feedIterationNr);
     if (data) {
       setFeedIterationNr(feedIterationNr + 1);
       setFeed([...feed, data]);
@@ -34,7 +34,7 @@ export default function Home() {
         <Spacing line />
         <div>
           {feed[0] ? (
-            feed.map((post, idx) => <Post small data={post} />)
+            feed.map((post, idx) => <div className="m-2 p-2 rounded bg-gray-100"><Post small data={post} /></div>)
           ) : (
             <Loading />
           )}
