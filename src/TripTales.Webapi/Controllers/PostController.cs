@@ -230,8 +230,38 @@ namespace TripTales.Webapi.Controllers
             if (itemNr >= count) return NotFound();
 
             int nr = (start+itemNr)%count;
-            var post = await _db.Posts.OrderBy(p=>p.Guid).Skip(nr).FirstOrDefaultAsync();
-            return Ok(post);
+            var post = await _db.Posts.Include(a => a.Days).ThenInclude(a => a.Locations).Include(a => a.User).OrderBy(p=>p.Guid).Skip(nr).FirstOrDefaultAsync();
+            if(post is null) return NotFound();
+            var export = new
+            {
+                post.Guid,
+                post.Begin,
+                post.End,
+                post.Created,
+                post.Text,
+                Likes = post.Likes.Count,
+                post.Title,
+                Days = post.Days.Select(d => new
+                {
+                    d.Guid,
+                    d.Title,
+                    d.Text,
+                    d.Date,
+                    Locations = d.Locations.Select(l => new
+                    {
+                        l.Coordinates,
+                        Images = !Directory.Exists(Path.Combine("wwwroot", "Images", $"{l.Guid}")) ? null : SplitString(Directory.GetFiles(Path.Combine("wwwroot", "Images", $"{l.Guid}")).ToList()),
+                    })
+                }),
+                User = new
+                {
+                    post.User!.Guid,
+                    post.User!.RegistryName,
+                    post.User.DisplayName,
+                    ProfilePicture = System.IO.File.Exists(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Pictures", $"{post.User.RegistryName}-profile.jpg")) ? $"Pictures/{post.User.RegistryName}-profile.jpg" : null
+                }
+            };
+            return Ok(export);
         }
 
         [Authorize]
