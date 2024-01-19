@@ -200,7 +200,7 @@ namespace TripTales.Webapi.Controllers
             return Ok(new
             {
                 user.DisplayName,
-                user.RegistryName,
+                Username = user.RegistryName,
                 user.Description,
                 user.Email,
                 user.Origin,
