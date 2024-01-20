@@ -42,7 +42,7 @@ namespace TripTales.Webapi.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllPosts()
         {
-            var posts = await _db.Posts.Include(a => a.User).Include(a => a.Days).ThenInclude(a => a.Locations).ToListAsync();
+            var posts = await _db.Posts.Include(a => a.Likes).Include(a => a.User).Include(a => a.Days).ThenInclude(a => a.Locations).ToListAsync();
             var export = posts.Select(h => new
             {
                 h.Guid,
@@ -283,6 +283,32 @@ namespace TripTales.Webapi.Controllers
                 entity.Post = post;
             }));
             post.Days.Add(day);
+            try
+            {
+                await _db.SaveChangesAsync();
+            }
+            catch (DbUpdateException e) { return BadRequest(e.Message); }
+            return Ok();
+        }
+
+        [Authorize]
+        [HttpPut("like/{guid:Guid}")]
+        public async Task<IActionResult> LikePost(Guid guid)
+        {
+            var authenticated = HttpContext.User.Identity?.IsAuthenticated ?? false;
+            if (!authenticated) { return Unauthorized(); }
+            var username = HttpContext?.User.Identity?.Name;
+            if (username is null) { return Unauthorized(); }
+            // Valid token, but no user match in the database (maybe deleted by an admin).
+            var user = await _db.User.FirstOrDefaultAsync(a => a.RegistryName == username);
+            if (user is null) { return Unauthorized(); }
+            var post = await _db.Posts.Include(a => a.Likes).FirstOrDefaultAsync(a => a.Guid == guid);
+            if (post is null) return BadRequest("Diesen Post gibt es nicht");
+            if (post.Likes.Contains(user))
+            {
+                post.Likes.Remove(user);
+            }
+            else post.Likes.Add(user);
             try
             {
                 await _db.SaveChangesAsync();
