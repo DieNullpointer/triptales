@@ -54,7 +54,7 @@ export function Login() {
           wrapper="overflow-hidden items-center flex"
         />
       </div>
-      <div className="md:basis-1/4">
+      <div className="md:basis-1/4 w-full">
         <div className="m-4 space-y-4">
           <Subheading center uppercase wide>
             Loginpage

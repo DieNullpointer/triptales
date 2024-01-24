@@ -33,7 +33,7 @@ export default function Login() {
         />
       </div>
       <Spacing space={52} className="md:hidden" />
-      <div className="md:basis-1/4 flex flex-col items-center space-y-3 px-8 justify-center">
+      <div className="md:basis-1/4 w-full flex flex-col items-center space-y-3 px-8 justify-center mt-12 md:mt-0">
         <Subheading center wide uppercase>
           Welcome
         </Subheading>

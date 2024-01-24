@@ -49,8 +49,8 @@ export default function Login() {
   };
 
   return (
-    <div className="flex justify-center items-center">
-      <div className="basis-3/4">
+    <div className="flex justify-center items-center w-full">
+      <div className="hidden md:block md:basis-3/4">
         <Image
           src={randomPhoto?.urls.regular || Fallbackimg.src}
           alt={""}
@@ -58,7 +58,7 @@ export default function Login() {
           wrapper="overflow-hidden items-center flex"
         />
       </div>
-      <div className="basis-1/4">
+      <div className="md:basis-1/4 w-full">
         <div className="m-4 space-y-4">
           <Subheading center wide uppercase>
             Registerpage

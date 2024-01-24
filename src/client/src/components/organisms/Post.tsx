@@ -66,7 +66,7 @@ const Post: React.FC<Props> = ({ data, small, loading }) => {
   const router = useRouter();
 
   return !loading ? (
-    <Container className="relative min-h-screen m-12">
+    <Container className={`relative m-12 ${small ? 'h-fit' : 'min-h-screen'}`}>
       <div className="flex lg:flex-row flex-col lg:items-center items-start lg:justify-between ">
         <div className="place-items-center flex flex-row">
           <Avatar size="small" />
@@ -95,20 +95,24 @@ const Post: React.FC<Props> = ({ data, small, loading }) => {
         <div className="flex flex-row">
           <Flowtext>{data.text}</Flowtext>
         </div>
-        <Days days={data.days} className="mx-2 mt-6" />
-        {data.images && (
+        {!small && (
           <>
-            <Spacing />
-            <Flowtext bold>Images</Flowtext>
-            <ImageCollection images={data.images} />
+            <Days days={data.days} className="mx-2 mt-6" />
+            {data.images && (
+              <>
+                <Spacing />
+                <Flowtext bold>Images</Flowtext>
+                <ImageCollection images={data.images} />
+              </>
+            )}
           </>
         )}
       </div>
       <>
         {small && (
-          <div className="w-full flex items-center justify-center pt-2">
-            <Button onClick={() => router.push("/post/" + data.guid)}>
-              <Flowtext uppercase className="!text-sm !text-white" bold>
+          <div className="w-full flex items-center justify-center pt-4">
+            <Button transparent onClick={() => router.push("/post/" + data.guid)}>
+              <Flowtext uppercase className="!text-sm" bold>
                 View full Post
               </Flowtext>
             </Button>
