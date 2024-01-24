@@ -4,6 +4,7 @@ import Container from "@/components/atoms/Container";
 import { Flowtext, Heading, Subheading } from "@/components/atoms/Text";
 import Datepicker from "@/components/molecules/Datepicker";
 import { useContext } from "react";
+import { Textarea } from "@material-tailwind/react";
 
 
 
@@ -17,8 +18,9 @@ export default function () {
         label="Title"
       />
       <Spacing space={4} />
-      <Input
+      <Textarea
         label="Text"
+        size="md"
       />
       <Spacing space={4} />
       <Datepicker />
