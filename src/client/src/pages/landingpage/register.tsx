@@ -7,6 +7,7 @@ import { Flowtext, Subheading } from "@/components/atoms/Text";
 import { getRandom } from "@/helpers/imgHelpers";
 import { useRouter } from "next/router";
 import { register } from "@/helpers/authHelpers";
+import Fallbackimg from "@/resources/login_fallback.jpg";
 
 export default function Login() {
   const [username, setUsername] = useState("");
@@ -27,7 +28,6 @@ export default function Login() {
     fetchRandomPhoto();
   }, []);
 
-
   const [error, setError] = useState("");
 
   const router = useRouter();
@@ -40,20 +40,23 @@ export default function Login() {
       password,
       email,
     });
-    if (response.success) router.push({
-      pathname: "/landingpage/login",
-      query: { registered: true },
-    });
+    if (response.success)
+      router.push({
+        pathname: "/landingpage/login",
+        query: { registered: true },
+      });
     else setError(response.error);
   };
 
   return (
     <div className="flex justify-center items-center">
       <div className="basis-3/4">
-        <Image src={randomPhoto?.urls.regular}
+        <Image
+          src={randomPhoto?.urls.regular || Fallbackimg.src}
           alt={""}
           className="h-screen object-cover w-full"
-          wrapper="overflow-hidden items-center flex" />
+          wrapper="overflow-hidden items-center flex"
+        />
       </div>
       <div className="basis-1/4">
         <div className="m-4 space-y-4">
@@ -61,7 +64,7 @@ export default function Login() {
             Registerpage
           </Subheading>
           <form
-          className="space-y-4"
+            className="space-y-4"
             onSubmit={(e) => {
               e.preventDefault();
               handleSubmit();
@@ -105,10 +108,7 @@ export default function Login() {
               value={confirmPassword}
               onChange={(val) => setConfirmPassword(val)}
             />
-            <Button
-              type="submit"
-              className="text-white w-full"
-            >
+            <Button type="submit" className="text-white w-full">
               Register
             </Button>
           </form>
@@ -116,7 +116,18 @@ export default function Login() {
             <Flowtext className="text-red-600 !text-base">{error}</Flowtext>
           )}
         </div>
-        <Flowtext className="hidden md:inline-block md:absolute bottom-2 right-2 !w-fit text-gray-500 italic !text-sm">Photo by {randomPhoto?.user?.name} on <a target="_blank" href={randomPhoto?.links?.html} className="underline">Unsplash</a></Flowtext>
+        {randomPhoto && (
+          <Flowtext className="hidden md:inline-block md:absolute bottom-2 right-2 !w-fit text-gray-500 italic !text-sm">
+            Photo by {randomPhoto?.user?.name} on{" "}
+            <a
+              target="_blank"
+              href={randomPhoto?.links?.html}
+              className="underline"
+            >
+              Unsplash
+            </a>
+          </Flowtext>
+        )}
       </div>
     </div>
   );

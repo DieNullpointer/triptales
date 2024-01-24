@@ -5,10 +5,10 @@ import { useEffect, useState } from "react";
 import { Flowtext, Subheading } from "@/components/atoms/Text";
 import { login } from "@/helpers/authHelpers";
 import { useRouter } from "next/router";
+import Fallbackimg from "@/resources/login_fallback.jpg";
 
 import { getRandom } from "@/helpers/imgHelpers";
-import { Card, CardBody, Dialog, DialogBody, DialogHeader } from "@material-tailwind/react";
-import Container from "@/components/atoms/Container";
+import { Dialog, DialogBody, DialogHeader } from "@material-tailwind/react";
 
 export function Login() {
   const [username, setUsername] = useState("");
@@ -44,11 +44,11 @@ export function Login() {
     <div className="flex justify-center items-center">
       <Dialog open={open} handler={handleOpen}>
         <DialogHeader>Thank you for singing up!</DialogHeader>
-        <DialogBody>To get started, please log in again</DialogBody>
+        <DialogBody>To get started, please log in again.</DialogBody>
       </Dialog>
       <div className="hidden md:block md:basis-3/4">
         <Image
-          src={randomPhoto?.urls.regular}
+          src={randomPhoto?.urls.regular || Fallbackimg.src}
           alt={""}
           className="h-screen object-cover w-full"
           wrapper="overflow-hidden items-center flex"
@@ -117,7 +117,7 @@ export function Login() {
             <Flowtext className="text-red-600 !text-base">{error}</Flowtext>
           )}
         </div>
-        <Flowtext className="hidden md:inline-block md:absolute bottom-2 right-2 !w-fit text-gray-500 italic !text-sm">
+        {randomPhoto && <Flowtext className="hidden md:inline-block md:absolute bottom-2 right-2 !w-fit text-gray-500 italic !text-sm">
           Photo by {randomPhoto?.user?.name} on{" "}
           <a
             target="_blank"
@@ -126,7 +126,7 @@ export function Login() {
           >
             Unsplash
           </a>
-        </Flowtext>
+        </Flowtext>}
       </div>
     </div>
   );
