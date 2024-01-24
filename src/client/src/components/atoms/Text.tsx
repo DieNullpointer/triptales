@@ -26,7 +26,7 @@ const classNames = (props: Props) =>
   );
 
 export const Heading: React.FC<Props> = (props) => (
-  <h1 className={`!text-3xl md:!text-4xl font-semibold ${classNames(props)}`}>
+  <h1 className={`!text-xl md:!text-4xl font-semibold ${classNames(props)}`}>
     {props.children}
   </h1>
 );

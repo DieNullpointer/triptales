@@ -16,7 +16,7 @@ const CustomInput: React.FC<Props> = ({
   type = "text",
   label,
   bottomText,
-  width = "32rem",
+  width = "100%",
   icon,
   onChange,
 }) => {

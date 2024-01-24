@@ -5,6 +5,7 @@ export interface Props {
   className?: string;
   onClick?: () => void;
   type?: "submit" | "button";
+  transparent?: boolean;
 }
 
 const Button: React.FC<Props> = ({
@@ -12,6 +13,7 @@ const Button: React.FC<Props> = ({
   children,
   className = "",
   onClick,
+  transparent = false
 }) => {
   return (
     <TButton
@@ -19,7 +21,7 @@ const Button: React.FC<Props> = ({
       onClick={onClick}
       ripple
       className={
-        "bg-primaryHover text-sm tracking-wider font-roboto " + className
+        `${!transparent ? 'bg-primaryHover' : 'bg-gray-200/60 !text-gray-700 hover:bg-gray-400/60 hover:!text-white shadow-none hover:shadow-none'} text-sm tracking-wider font-roboto ${className}`
       }
     >
       {children}
