@@ -7,6 +7,8 @@ import { login } from "@/helpers/authHelpers";
 import { useRouter } from "next/router";
 
 import { getRandom } from "@/helpers/imgHelpers";
+import { Card, CardBody, Dialog, DialogBody, DialogHeader } from "@material-tailwind/react";
+import Container from "@/components/atoms/Container";
 
 export function Login() {
   const [username, setUsername] = useState("");
@@ -15,6 +17,7 @@ export function Login() {
   const [error, setError] = useState("");
 
   const router = useRouter();
+  const [open, setOpen] = useState(router.query.registered === "true");
 
   const fetchRandomPhoto = async () => {
     try {
@@ -35,8 +38,14 @@ export function Login() {
     else setError(response.error);
   };
 
+  const handleOpen = () => setOpen(!open);
+
   return (
     <div className="flex justify-center items-center">
+      <Dialog open={open} handler={handleOpen}>
+        <DialogHeader>Thank you for singing up!</DialogHeader>
+        <DialogBody>To get started, please log in again</DialogBody>
+      </Dialog>
       <div className="hidden md:block md:basis-3/4">
         <Image
           src={randomPhoto?.urls.regular}
@@ -106,9 +115,18 @@ export function Login() {
           </form>
           {error && (
             <Flowtext className="text-red-600 !text-base">{error}</Flowtext>
-          )}        
+          )}
         </div>
-        <Flowtext className="hidden md:inline-block md:absolute bottom-2 right-2 w-fit text-gray-500 italic !text-sm">Photo by {randomPhoto?.user?.name} on <a target="_blank" href={randomPhoto?.links?.html} className="underline">Unsplash</a></Flowtext>
+        <Flowtext className="hidden md:inline-block md:absolute bottom-2 right-2 !w-fit text-gray-500 italic !text-sm">
+          Photo by {randomPhoto?.user?.name} on{" "}
+          <a
+            target="_blank"
+            href={randomPhoto?.links?.html}
+            className="underline"
+          >
+            Unsplash
+          </a>
+        </Flowtext>
       </div>
     </div>
   );
