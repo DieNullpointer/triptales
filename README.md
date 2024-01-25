@@ -20,6 +20,8 @@ https://github.com/DieNullpointer/triptales.git
 Unser Project soll eine Social Media App darstellen mit der man Bilder oder Videos aus seinem Urlaub posten und speichern kann.
 Diese Bilder sollen nach Urlaub und nach Tag sortiert sein.
 
+![Homepage](./Homepage.png)
+
 ## Starten
 Zuerst muss die startServer.cmd gestartet werden. Dieses Script startet das Backend (ASP.NET).
 
