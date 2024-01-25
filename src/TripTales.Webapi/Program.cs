@@ -19,7 +19,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 
 builder.Services.AddDbContext<TripTalesContext>(opt =>
-    opt.UseSqlite(builder.Configuration.GetConnectionString("Default")));
+    opt.UseSqlite(builder.Configuration.GetConnectionString("Default") ?? "DataSource=TripTales.db"));
 
 builder.Services.AddScoped<PostRepository>();
 builder.Services.AddScoped<UserRepository>();
