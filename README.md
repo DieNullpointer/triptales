@@ -19,11 +19,8 @@ https://github.com/DieNullpointer/triptales.git
 ## Kurzbeschreibung:
 Unser Project soll eine Social Media App darstellen mit der man Bilder oder Videos aus seinem Urlaub posten und speichern kann.
 Diese Bilder sollen nach Urlaub und nach Tag sortiert sein.
-## Farben:
-wir werden folgende Farben für unser Projekt verwenden:
 
-  whites:<br>
-    &nbsp; greenwhite: "#f1ffd1"<br>
-    &nbsp; warmwhite: "#faf2e1"<br>
-  primary: "#43fc26"<br>
-  secondary: "#2466ff"
+## Starten
+Zuerst muss die startServer.cmd gestartet werden. Dieses Script startet das Backend (ASP.NET).
+
+Danach sollte in der Konsole folgender Command eingegeben werden, um den Frontend Dev Server zu starten: ```npm run build```
