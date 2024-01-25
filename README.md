@@ -23,4 +23,4 @@ Diese Bilder sollen nach Urlaub und nach Tag sortiert sein.
 ## Starten
 Zuerst muss die startServer.cmd gestartet werden. Dieses Script startet das Backend (ASP.NET).
 
-Danach sollte in der Konsole folgender Command eingegeben werden, um den Frontend Dev Server zu starten: ```npm run build```
+Danach sollte in der Konsole folgender Command eingegeben werden: ```npm run build```, um den Frontend Dev Server zu starten.
