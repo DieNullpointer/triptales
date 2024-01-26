@@ -66,5 +66,7 @@ export async function getNextPost(start: number, iteration: number) {
 }
 
 export async function likePost(guid: string) {
-  await axios.put(`https://localhost:7174/api/Post/like/${guid}`);
+  let data;
+  await axios.put(`https://localhost:7174/api/Post/like/${guid}`).then((res) => {data = res.data});
+  return data;
 }

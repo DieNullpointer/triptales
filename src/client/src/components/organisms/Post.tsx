@@ -1,5 +1,5 @@
 import { TripDay, TripPost } from "@/types/types";
-import React from "react";
+import React, { useState } from "react";
 import Container from "../atoms/Container";
 import Image from "../atoms/Image";
 import defaultPfp from "@/resources/default_profilepic.png";
@@ -66,6 +66,12 @@ const Days: React.FC<{ days: TripDay[]; className?: string }> = ({
 
 const Post: React.FC<Props> = ({ data, small, loading }) => {
   const router = useRouter();
+  const [likes, setLikes] = useState<number>(data.likes);
+
+  const handleLikes = async () => {
+    const newLikes = (await likePost(data.guid));
+    setLikes(newLikes!);
+  };
 
   return !loading ? (
     <Container className={`relative m-12 ${small ? "h-fit" : "min-h-screen"}`}>
@@ -93,8 +99,8 @@ const Post: React.FC<Props> = ({ data, small, loading }) => {
             </Flowtext>
           </div>
           <div className="flex flex-row -ml-2 items-center">
-            <IconButton preset="like" onClick={() => likePost(data.guid)} />
-            <Flowtext className="w-fit ml-1">{data.likes}</Flowtext>
+            <IconButton preset="like" onClick={handleLikes} />
+            <Flowtext className="w-fit ml-1">{likes}</Flowtext>
           </div>
         </div>
       </div>
