@@ -51,7 +51,7 @@ export function getPost(guid: string) {
 export async function getNextPost(start: number, iteration: number) {
   let data;
   let error;
-  const response = await axios
+  await axios
     .get(
       `https://localhost:7174/api/Post/random?start=${start}&itemNr=${iteration}`
     )
@@ -63,4 +63,8 @@ export async function getNextPost(start: number, iteration: number) {
     });
     
   return {data, error};
+}
+
+export async function likePost(guid: string) {
+  await axios.put(`https://localhost:7174/api/Post/like/${guid}`);
 }

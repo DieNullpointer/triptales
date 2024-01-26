@@ -25,6 +25,8 @@ import ImageCollection from "../molecules/ImageCollection";
 import TestImage from "@/resources/DevImages/Antelope Canyon.jpg";
 import Button from "../atoms/Button";
 import { useRouter } from "next/router";
+import IconButton from "../molecules/IconButton";
+import { likePost } from "@/middleware/middleware";
 
 export interface Props {
   data: TripPost;
@@ -66,8 +68,8 @@ const Post: React.FC<Props> = ({ data, small, loading }) => {
   const router = useRouter();
 
   return !loading ? (
-    <Container className={`relative m-12 ${small ? 'h-fit' : 'min-h-screen'}`}>
-      <div className="flex lg:flex-row flex-col lg:items-center items-start lg:justify-between ">
+    <Container className={`relative m-12 ${small ? "h-fit" : "min-h-screen"}`}>
+      <div className="flex lg:flex-row flex-col lg:items-center items-start lg:justify-between">
         <div className="place-items-center flex flex-row">
           <Avatar size="small" />
           <div className="p-2 rounded ml-1">
@@ -82,12 +84,18 @@ const Post: React.FC<Props> = ({ data, small, loading }) => {
             </Flowtext>
           </div>
         </div>
-        <div className="md:m-4 m-2 w-full flex flex-row !text-slate-600 lg:w-auto">
-          <CalendarDaysIcon className="h-6 w-6 mr-1" />
-          <Flowtext italic className="">
-            {formatDateEuropean(data.begin)} <b>-</b>{" "}
-            {formatDateEuropean(data.end)}
-          </Flowtext>
+        <div className="md:m-4 m-2 w-full flex flex-col !text-slate-600 lg:w-auto">
+          <div className="flex flex-row justify-center">
+            <CalendarDaysIcon className="h-6 w-6 mr-1" />
+            <Flowtext italic className="">
+              {formatDateEuropean(data.begin)} <b>-</b>{" "}
+              {formatDateEuropean(data.end)}
+            </Flowtext>
+          </div>
+          <div className="flex flex-row justify-center items-center">
+            <IconButton preset="like" onClick={() => likePost(data.guid)} />
+            <Flowtext className="w-fit ml-1">{data.likes}</Flowtext>
+          </div>
         </div>
       </div>
       <div className="md:mt-1">
@@ -111,7 +119,10 @@ const Post: React.FC<Props> = ({ data, small, loading }) => {
       <>
         {small && (
           <div className="w-full flex items-center justify-center pt-4">
-            <Button transparent onClick={() => router.push("/post/" + data.guid)}>
+            <Button
+              transparent
+              onClick={() => router.push("/post/" + data.guid)}
+            >
               <Flowtext uppercase className="!text-sm" bold>
                 View full Post
               </Flowtext>
