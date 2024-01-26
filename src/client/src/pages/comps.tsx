@@ -2,6 +2,7 @@ import Button from "@/components/atoms/Button";
 import Input from "@/components/atoms/Input";
 import Spacing from "@/components/atoms/Spacing";
 import * as Text from "@/components/atoms/Text";
+import IconButton from "@/components/molecules/IconButton";
 import Link from "next/link";
 import useLocalStorage from "uselocalstoragenextjs";
 
@@ -67,6 +68,7 @@ export default function CompsPage() {
         <Button onClick={() => setLocalStorage("xyz123")}>Log In</Button>
         <Button onClick={() => setLocalStorage("")}>Log Out</Button>
       </div>
-    </div>
+      <IconButton onClick={() => {}} preset="like" />
+          </div>
   );
 }
