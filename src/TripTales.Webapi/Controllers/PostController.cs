@@ -314,7 +314,7 @@ namespace TripTales.Webapi.Controllers
                 await _db.SaveChangesAsync();
             }
             catch (DbUpdateException e) { return BadRequest(e.Message); }
-            return Ok();
+            return Ok(post.Likes.Count());
         }
     }
 }
