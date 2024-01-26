@@ -92,7 +92,7 @@ const Post: React.FC<Props> = ({ data, small, loading }) => {
               {formatDateEuropean(data.end)}
             </Flowtext>
           </div>
-          <div className="flex flex-row justify-center items-center">
+          <div className="flex flex-row -ml-2 items-center">
             <IconButton preset="like" onClick={() => likePost(data.guid)} />
             <Flowtext className="w-fit ml-1">{data.likes}</Flowtext>
           </div>
