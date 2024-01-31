@@ -18,14 +18,15 @@ export function getUser(guid: string) {
   };
 }
 
-export async function searchUsers(query: string) {
-  let data: User[] = [];
-  await axios
-    .get(`https://localhost:7174/api/User/search/${query}`)
-    .then((res) => {
-      data = res.data;
-    });
-  return data;
+export function getUserMe() {
+  const { data} = useSWR(
+    `https://localhost:7174/api/User/me`,
+    fetcher
+  );
+
+  return {
+    String: data,
+  };
 }
 
 export function getUserByRegistry(registryName: string): {
@@ -85,3 +86,4 @@ export async function likePost(guid: string) {
     });
   return data;
 }
+
