@@ -74,3 +74,13 @@ export async function register(credentials: {
     };
   }
 }
+
+export async function getAuthorizedAll() {
+  try {
+    const response = await axios.get("/user/me");
+    return response.data;
+  } catch (error) {
+    console.log("not logged in");
+    return "";
+  }
+}
