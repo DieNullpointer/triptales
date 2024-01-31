@@ -28,17 +28,6 @@ export function getUserMe() {
   };
 }
 
-export function getUserMe() {
-  const { data} = useSWR(
-    `https://localhost:7174/api/User/me`,
-    fetcher
-  );
-
-  return {
-    String: data,
-  };
-}
-
 export function getUserByRegistry(registryName: string): {
   user: User;
   profile?: string;
