@@ -1,6 +1,8 @@
 import Container from "@/components/atoms/Container";
 import CustomInput from "@/components/atoms/Input";
+import { Flowtext } from "@/components/atoms/Text";
 import SmallProfile from "@/components/molecules/SmallProfile";
+import Loading from "@/components/static/Loading";
 import { getAuthorized, getAuthorizedAll } from "@/helpers/authHelpers";
 import { searchUsers } from "@/middleware/middleware";
 import { User } from "@/types/types";
@@ -10,14 +12,17 @@ const Search: React.FC = () => {
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [results, setResults] = useState<User[]>();
+  const [loading, setLoading] = useState(false);
 
   const handleSearch = async () => {
     setResults(await searchUsers(debouncedSearch));
   };
 
   useEffect(() => {
+    setLoading(true);
     const delay = setTimeout(() => {
       setDebouncedSearch(search);
+      setLoading(false);
     }, 500);
 
     return () => {
@@ -53,11 +58,19 @@ const Search: React.FC = () => {
           </svg>
         }
       />
-      <div className="space-y-3 mt-4">
-        {results?.map((user) => (
-          <SmallProfile user={user} />
-        ))}
-      </div>
+      {!loading ? (
+        !results?.length ? (
+          <Flowtext center className="mt-4">No Results</Flowtext>
+        ) : (
+          <div className="space-y-3 mt-4">
+            {results?.map((user) => (
+              <SmallProfile user={user} />
+            ))}
+          </div>
+        )
+      ) : (
+        <Loading />
+      )}
     </Container>
   );
 };
