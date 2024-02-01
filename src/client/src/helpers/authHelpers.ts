@@ -14,6 +14,15 @@ export async function getAuthorized() {
   }
 }
 
+export async function follow(username: string) {
+  try {
+    await axios.post(`/user/follow/${username}`);
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
+
 export async function logout() {
   try {
     await axios.get("/user/logout");
