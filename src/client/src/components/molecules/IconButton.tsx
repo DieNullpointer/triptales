@@ -5,9 +5,15 @@ export interface Props {
   icon?: React.ReactNode;
   onClick: () => void;
   preset?: "like" | "none";
+  disabled?: boolean;
 }
 
-const IconButton: React.FC<Props> = ({ icon, onClick, preset = "none" }) => {
+const IconButton: React.FC<Props> = ({
+  icon,
+  onClick,
+  preset = "none",
+  disabled = false,
+}) => {
   const [active, setActive] = useState(false);
   const classNames =
     (preset === "like" ? (active ? "!text-red-500" : "!text-gray-400") : "") +
@@ -36,6 +42,7 @@ const IconButton: React.FC<Props> = ({ icon, onClick, preset = "none" }) => {
   return (
     <Button
       className={classNames}
+      disabled={disabled}
       onClick={() => {
         setActive(!active);
         onClick();
