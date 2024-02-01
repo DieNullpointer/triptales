@@ -307,8 +307,14 @@ namespace TripTales.Webapi.Controllers
             if (userSender is null) { return Unauthorized(); }
             var userRecipient = await _db.User.FirstOrDefaultAsync(a => a.RegistryName == username);
             if (userRecipient is null) { return BadRequest(); }
-            if (await _db.Follower.FirstOrDefaultAsync(a => a.Sender == userSender && a.Recipient == userRecipient) is not null)
-                return BadRequest("Freund gibt es schon!");
+            var follow = await _db.Follower.FirstOrDefaultAsync(a => a.Sender == userSender && a.Recipient == userRecipient);
+            if (follow is not null)
+            {
+                _db.Follower.Remove(follow);
+                try { await _db.SaveChangesAsync(); }
+                catch (DbUpdateException e) { return BadRequest(e.Message); }
+                return Ok();
+            }
             var follower = new Follower(userSender, userRecipient, DateTime.UtcNow.Date);
             _db.Follower.Add(follower);
             try { await _db.SaveChangesAsync(); }
