@@ -147,10 +147,26 @@ namespace TripTales.Webapi.Controllers
             }
             return Ok();
         }
-        
+
+        [Authorize]
         [HttpGet("{registryName}")]
         public async Task<IActionResult> GetUserByRegistryName(string registryName)
         {
+            var authenticated = HttpContext.User.Identity?.IsAuthenticated ?? false;
+            bool isFollowing = false;
+            if (authenticated)
+            {
+                var username = HttpContext.User.Identity?.Name;
+                if (username is null) { return Unauthorized(); }
+                // Valid token, but no user match in the database (maybe deleted by an admin).
+                var userSender = await _db.User.FirstOrDefaultAsync(a => a.RegistryName == username);
+                if (userSender is null) { return Unauthorized(); }
+                var userRecipient = await _db.User.FirstOrDefaultAsync(a => a.RegistryName == registryName);
+                if (userRecipient is null) { return BadRequest(); }
+                var follow = await _db.Follower.FirstOrDefaultAsync(a => a.Sender == userSender && a.Recipient == userRecipient);
+                if (follow is not null)
+                    isFollowing = true;
+            }
             var user = await _db.User.FirstOrDefaultAsync(u => u.RegistryName == registryName);
             if (user is null) return BadRequest("User gibt es nicht");
             string? profile = Path.Combine(Directory.GetCurrentDirectory(), $"wwwroot/Pictures/{registryName}-profile.jpg").Replace("\\", "/");
@@ -173,6 +189,7 @@ namespace TripTales.Webapi.Controllers
                     user.Description,
                     user.Email,
                     Likes = user.Likes.Count,
+                    Follow = isFollowing,
                     FollowerCount = user.FollowerRecipient.Count,
                     Following = user.FollowerSender.Select(a => new
                     {
