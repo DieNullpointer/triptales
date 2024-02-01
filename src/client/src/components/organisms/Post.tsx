@@ -1,5 +1,5 @@
 import { TripDay, TripPost } from "@/types/types";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Container from "../atoms/Container";
 import Image from "../atoms/Image";
 import defaultPfp from "@/resources/default_profilepic.png";
@@ -28,6 +28,7 @@ import { useRouter } from "next/router";
 import IconButton from "../molecules/IconButton";
 import { likePost } from "@/middleware/middleware";
 import { getAuthorized } from "@/helpers/authHelpers";
+import Link from "next/link";
 
 export interface Props {
   data: TripPost;
@@ -72,14 +73,16 @@ const Post: React.FC<Props> = ({ data, small, loading }) => {
 
   const init = async () => {
     setAuthorized(await getAuthorized());
-  }
+  };
 
   const handleLikes = async () => {
-    const newLikes = (await likePost(data.guid));
+    const newLikes = await likePost(data.guid);
     setLikes(newLikes!);
   };
 
-  init();
+  useEffect(() => {
+    init();
+  });
 
   return !loading ? (
     <Container className={`relative m-12 ${small ? "h-fit" : "min-h-screen"}`}>
@@ -90,12 +93,12 @@ const Post: React.FC<Props> = ({ data, small, loading }) => {
             <Subheading bold className="!text-base md:!text-xl">
               {data.user.displayName}
             </Subheading>
-            <Flowtext
+            <Link href={`/user/${data.user.registryName}`}><Flowtext
               italic
               className="!text-slate-600 !text-sm md:!text-sm -mt-1"
             >
               @{data.user.registryName}
-            </Flowtext>
+            </Flowtext></Link>
           </div>
         </div>
         <div className="md:m-4 m-2 w-full flex flex-col !text-slate-600 lg:w-auto">
@@ -107,10 +110,14 @@ const Post: React.FC<Props> = ({ data, small, loading }) => {
             </Flowtext>
           </div>
           {
-           <div className="flex flex-row -ml-2 items-center">
-            <IconButton preset="like" disabled={!authorized} onClick={handleLikes} />
-            <Flowtext className="w-fit ml-1">{likes}</Flowtext>
-          </div>
+            <div className="flex flex-row -ml-2 items-center">
+              <IconButton
+                preset="like"
+                disabled={!authorized}
+                onClick={handleLikes}
+              />
+              <Flowtext className="w-fit ml-1">{likes}</Flowtext>
+            </div>
           }
         </div>
       </div>
