@@ -49,6 +49,29 @@ export async function login(credentials: {
   }
 }
 
+export async function changeUser(credentials: {
+  registryName: string,
+  displayName: string,
+  password: string,
+  email: string,
+  description: string,
+  origin: string,
+  favDestination: string
+}) {
+  try {
+    const response = await axios.put("/user/change", credentials);
+
+    const resObj = {
+      status: response.status,
+      success: response.status === 200,
+      data: response.data,
+    };
+    return resObj;
+  } catch (error: any) {
+    return { sucess: false, error: error.response?.data };
+  }
+}
+
 export async function register(credentials: {
   registryName: string;
   password: string;
