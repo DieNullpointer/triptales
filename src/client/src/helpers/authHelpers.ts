@@ -14,9 +14,21 @@ export async function getAuthorized() {
   }
 }
 
+export async function getAuthorizedAll() {
+  try {
+    const response = await axios.get("/user/me");
+    return response.data;
+  } catch (error) {
+    console.log("not logged in");
+    return "";
+  }
+}
+
 export async function follow(username: string) {
   try {
-    await axios.post(`/user/follow/${username}`);
+    const response = await axios.post(`/user/follow/${username}`);
+    console.log(response);
+    
     return true;
   } catch (error) {
     return false;

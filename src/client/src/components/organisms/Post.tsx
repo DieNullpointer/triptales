@@ -29,6 +29,7 @@ import IconButton from "../molecules/IconButton";
 import { likePost } from "@/middleware/middleware";
 import { getAuthorized } from "@/helpers/authHelpers";
 import Link from "next/link";
+import SmallProfile from "../molecules/SmallProfile";
 
 export interface Props {
   data: TripPost;
@@ -87,20 +88,7 @@ const Post: React.FC<Props> = ({ data, small, loading }) => {
   return !loading ? (
     <Container className={`relative m-12 ${small ? "h-fit" : "min-h-screen"}`}>
       <div className="flex lg:flex-row flex-col lg:items-center items-start lg:justify-between">
-        <div className="place-items-center flex flex-row">
-          <Avatar size="small" />
-          <div className="p-2 rounded ml-1">
-            <Subheading bold className="!text-base md:!text-xl">
-              {data.user.displayName}
-            </Subheading>
-            <Link href={`/user/${data.user.registryName}`}><Flowtext
-              italic
-              className="!text-slate-600 !text-sm md:!text-sm -mt-1"
-            >
-              @{data.user.registryName}
-            </Flowtext></Link>
-          </div>
-        </div>
+        <SmallProfile user={data.user} />
         <div className="md:m-4 m-2 w-full flex flex-col !text-slate-600 lg:w-auto">
           <div className="flex flex-row justify-center">
             <CalendarDaysIcon className="h-6 w-6 mr-1" />

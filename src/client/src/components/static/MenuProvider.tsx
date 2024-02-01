@@ -14,6 +14,7 @@ import {
   InboxIcon,
   PowerIcon,
   HomeIcon,
+  MagnifyingGlassIcon,
   ArrowUpCircleIcon,
 } from "@heroicons/react/24/solid";
 import * as Auth from "@/helpers/authHelpers";
@@ -41,6 +42,12 @@ const MenuProvider: React.FC<{}> = () => {
           <HomeIcon className="h-5 w-5 text-white" />
         </ListItemPrefix>
         Homepage
+      </ListItem>
+      <ListItem className={itemsClass} onClick={() => router.push("/search")}>
+        <ListItemPrefix>
+          <MagnifyingGlassIcon className="h-5 w-5 text-white" />
+        </ListItemPrefix>
+        Search
       </ListItem>
       {auth ? (
         <>

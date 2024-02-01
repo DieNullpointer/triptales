@@ -3,12 +3,13 @@ import { ReactNode } from "react";
 
 export interface Props {
   type?: string;
-  label: string;
+  label?: string;
   bottomText?: string;
   width?: string;
   icon?: ReactNode;
   value?: string;
   onChange?: (value: string) => void;
+  placeholder?: string
 }
 
 const CustomInput: React.FC<Props> = ({
@@ -19,6 +20,7 @@ const CustomInput: React.FC<Props> = ({
   width = "100%",
   icon,
   onChange,
+  placeholder = ""
 }) => {
   return (
     <div style={{ width: width }}>
@@ -29,6 +31,7 @@ const CustomInput: React.FC<Props> = ({
         label={label}
         icon={icon}
         value={value}
+        placeholder={placeholder}
         onChange={(e) => onChange?.(e.target.value)}
       />
       {bottomText && (

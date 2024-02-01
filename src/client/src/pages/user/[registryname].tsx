@@ -65,10 +65,12 @@ export default function User() {
             {user?.description}
           </Flowtext>
         </Container>
-        <Container className="flex justify-end items-start" sectionMarker>
+        <Container className="flex justify-start space-y-2 flex-col" sectionMarker>
           {!authorized ? (
             <Follow registryName={user.registryName} />
           ) : <></>}
+          <Flowtext center className="!text-sm">Followers: {user?.followerCount}</Flowtext>
+          <Flowtext center className="!text-sm">Following: {user?.followingCount}</Flowtext>
         </Container>
       </Grid>
     </div>
