@@ -27,6 +27,7 @@ import Button from "../atoms/Button";
 import { useRouter } from "next/router";
 import IconButton from "../molecules/IconButton";
 import { likePost } from "@/middleware/middleware";
+import { getAuthorized } from "@/helpers/authHelpers";
 
 export interface Props {
   data: TripPost;
@@ -66,12 +67,19 @@ const Days: React.FC<{ days: TripDay[]; className?: string }> = ({
 
 const Post: React.FC<Props> = ({ data, small, loading }) => {
   const router = useRouter();
-  const [likes, setLikes] = useState<number>(data.likes);
+  const [likes, setLikes] = useState<number>(data?.likes || 0);
+  const [authorized, setAuthorized] = useState(false);
+
+  const init = async () => {
+    setAuthorized(await getAuthorized());
+  }
 
   const handleLikes = async () => {
     const newLikes = (await likePost(data.guid));
     setLikes(newLikes!);
   };
+
+  init();
 
   return !loading ? (
     <Container className={`relative m-12 ${small ? "h-fit" : "min-h-screen"}`}>
@@ -98,10 +106,12 @@ const Post: React.FC<Props> = ({ data, small, loading }) => {
               {formatDateEuropean(data.end)}
             </Flowtext>
           </div>
-          <div className="flex flex-row -ml-2 items-center">
-            <IconButton preset="like" onClick={handleLikes} />
+          {
+           <div className="flex flex-row -ml-2 items-center">
+            <IconButton preset="like" disabled={!authorized} onClick={handleLikes} />
             <Flowtext className="w-fit ml-1">{likes}</Flowtext>
           </div>
+          }
         </div>
       </div>
       <div className="md:mt-1">
