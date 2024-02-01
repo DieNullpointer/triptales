@@ -67,7 +67,7 @@ export default function User() {
         </Container>
         <Container className="flex justify-end items-start" sectionMarker>
           {!authorized ? (
-            <Follow />
+            <Follow registryName={user.registryName} />
           ) : <></>}
         </Container>
       </Grid>
