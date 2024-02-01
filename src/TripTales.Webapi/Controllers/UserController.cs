@@ -287,7 +287,6 @@ namespace TripTales.Webapi.Controllers
             {
                 opt.AfterMap((src, dest) =>
                 {
-                    user.SetPassword(userCmd.Password);
                     dest.Guid = user.Guid;
                 });
             });

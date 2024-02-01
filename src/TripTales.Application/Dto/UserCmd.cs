@@ -9,7 +9,6 @@ namespace TripTales.Application.Dto
     public record UserCmd
     (
         string Email,
-        string Password,
         string DisplayName, 
         string RegistryName,
         string? Description,
