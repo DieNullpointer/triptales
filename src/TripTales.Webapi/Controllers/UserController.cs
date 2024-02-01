@@ -55,37 +55,25 @@ namespace TripTales.Webapi.Controllers
             new
             {
                 h.Guid,
-                Friends = h.Friends.Select(f => new
+                FollowerCount = h.FollowerRecipient.Count,
+                Following = h.FollowerSender.Select(a => new
                 {
-                    f.Guid,
-                    f.DisplayName,
-                    f.RegistryName
-                }),
-                FriendRequestRecipient = h.FriendRequestsRecipient.Select(r => new
-                {
-                    Sender = new
+                    User = new
                     {
-                        r.Sender.Guid,
-                        r.Sender.RegistryName,
+                        a.Recipient.Guid,
+                        a.Recipient.RegistryName,
+                        a.Recipient.DisplayName
                     },
-                    Recipient = new
-                    {
-                        r.Recipient.Guid,
-                        r.Recipient.RegistryName
-                    }
                 }),
-                FriendRequestSender = h.FriendRequestsSender.Select(r => new
+                FollowingCount = h.FollowerSender.Count,
+                Follower = h.FollowerRecipient.Select(a => new
                 {
-                    Sender = new
+                    User = new
                     {
-                        r.Sender.Guid,
-                        r.Sender.RegistryName,
+                        a.Sender.Guid,
+                        a.Sender.RegistryName,
+                        a.Sender.DisplayName
                     },
-                    Recipient = new
-                    {
-                        r.Recipient.Guid,
-                        r.Recipient.RegistryName
-                    }
                 }),
                 h.DisplayName,
                 h.Email,
@@ -115,6 +103,17 @@ namespace TripTales.Webapi.Controllers
 
         [HttpGet("{guid:Guid}")]
         public async Task<IActionResult> GetUser(Guid guid) => await GetByGuid<UserDto>(guid);
+
+        [HttpGet("search/{username}")]
+        public async Task<IActionResult> SearchUser(string username)
+        {
+            return Ok(await _db.User.Where(a => a.RegistryName.Contains(username)).Select(a => new
+            {
+                a.Guid,
+                a.DisplayName,
+                a.RegistryName
+            }).ToListAsync());
+        }
 
         [Authorize]
         [HttpPut("addImages")]
@@ -174,12 +173,26 @@ namespace TripTales.Webapi.Controllers
                     user.Description,
                     user.Email,
                     Likes = user.Likes.Count,
-                    Friends = user.Friends.Select(a => new
+                    FollowerCount = user.FollowerRecipient.Count,
+                    Following = user.FollowerSender.Select(a => new
                     {
-                        a.Guid,
-                        a.RegistryName,
-                        a.DisplayName
-                    })
+                        User = new
+                        {
+                            a.Recipient.Guid,
+                            a.Recipient.RegistryName,
+                            a.Recipient.DisplayName
+                        },
+                    }),
+                    FollowingCount = user.FollowerSender.Count,
+                    Follower = user.FollowerRecipient.Select(a => new
+                    {
+                        User = new
+                        {
+                            a.Sender.Guid,
+                            a.Sender.RegistryName,
+                            a.Sender.DisplayName
+                        },
+                    }),
                 },
                 Profile = profile,
                 Banner = banner
@@ -284,6 +297,26 @@ namespace TripTales.Webapi.Controllers
         }
 
         [Authorize]
+        [HttpPost("follow/{username}")]
+        public async Task<IActionResult> Follow(string username)
+        {
+            var authenticated = HttpContext.User.Identity?.IsAuthenticated ?? false;
+            if (!authenticated) { return Unauthorized(); }
+            var registryName = HttpContext.User.Identity?.Name;
+            var userSender = await _db.User.FirstOrDefaultAsync(u => u.RegistryName == registryName);
+            if (userSender is null) { return Unauthorized(); }
+            var userRecipient = await _db.User.FirstOrDefaultAsync(a => a.RegistryName == username);
+            if (userRecipient is null) { return BadRequest(); }
+            if (await _db.Follower.FirstOrDefaultAsync(a => a.Sender == userSender && a.Recipient == userRecipient) is not null)
+                return BadRequest("Freund gibt es schon!");
+            var follower = new Follower(userSender, userRecipient, DateTime.UtcNow.Date);
+            _db.Follower.Add(follower);
+            try { await _db.SaveChangesAsync(); }
+            catch (DbUpdateException e) { return BadRequest(e.Message); }
+            return Ok();
+        }
+
+        /*[Authorize]
         [HttpPost("sendFriendRequest/{guid:Guid}")]
         public async Task<IActionResult> SendFriendRequest(Guid guid)
         {
@@ -343,6 +376,6 @@ namespace TripTales.Webapi.Controllers
                 return Ok();
             }
             return BadRequest();
-        }
+        }*/
     }
 }

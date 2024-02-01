@@ -29,9 +29,9 @@ namespace TripTales.Application.Model
         //where the user is from
         public string? Origin { get; set; }
         public string? FavDestination { get; set; }
-        public List<User> Friends { get; } = new();
-        public List<FriendRequest> FriendRequestsSender { get; } = new();
-        public List<FriendRequest> FriendRequestsRecipient { get; } = new();
+        //public List<User> Follower { get; } = new();
+        public List<Follower> FollowerSender { get; } = new();
+        public List<Follower> FollowerRecipient { get; } = new();
         public List<TripPost> Posts { get; } = new();
         public List<TripPost> Likes { get; } = new();
 
