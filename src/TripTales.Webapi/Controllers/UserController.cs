@@ -371,13 +371,13 @@ namespace TripTales.Webapi.Controllers
                 _db.Follower.Remove(follow);
                 try { await _db.SaveChangesAsync(); }
                 catch (DbUpdateException e) { return BadRequest(e.Message); }
-                return Ok();
+                return Ok(_db.Follower.Where(a => a.Recipient.Guid == userRecipient.Guid).Count());
             }
             var follower = new Follower(userSender, userRecipient, DateTime.UtcNow.Date);
             _db.Follower.Add(follower);
             try { await _db.SaveChangesAsync(); }
             catch (DbUpdateException e) { return BadRequest(e.Message); }
-            return Ok();
+            return Ok(_db.Follower.Where(a => a.Recipient.Guid == userRecipient.Guid).Count());
         }
     }
 }
