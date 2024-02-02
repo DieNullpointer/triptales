@@ -2,7 +2,7 @@ import { User } from "@/types/types";
 import axios from "axios";
 import useSWR from "swr";
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
+const fetcher = (url: string) => fetch(url, {credentials: 'include'}).then((res) => res.json());
 
 export function getUser(guid: string) {
   const { data, error, isLoading } = useSWR(
@@ -37,6 +37,19 @@ export function getUserByRegistry(registryName: string): {
       ? "https://localhost:7174/" + data?.profile
       : undefined,
     banner: data?.banner ? "https://localhost:7174/" + data?.banner : undefined,
+    error,
+    isLoading,
+  };
+}
+
+export function getSelf() {
+  const { data, error, isLoading } = useSWR(
+    `https://localhost:7174/api/User/me`,
+    fetcher
+  );
+
+  return {
+    data,
     error,
     isLoading,
   };
