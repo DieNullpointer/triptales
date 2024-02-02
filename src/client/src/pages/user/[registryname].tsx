@@ -19,12 +19,15 @@ import Follow from "@/components/static/Follow";
 export default function User() {
   const router = useRouter();
   const registryname: any = router.query?.registryname;
-  const [authorized, setAuthorized] = useState(false);
+  const [ownProfile, setOwnProfile] = useState(false);
+  const [authorized, setAuthorized] = useState(false)
   const { user, profile, banner, error, isLoading } =
     getUserByRegistry(registryname);
 
   const init = async () => {
-    setAuthorized(await getAuthorized() === user?.registryName) 
+    const loggedInUser = await getAuthorized();
+    setAuthorized(loggedInUser ? true : false);
+    setOwnProfile(authorized && loggedInUser === user?.registryName) 
   };
 
   useEffect(() => {
@@ -66,7 +69,7 @@ export default function User() {
           </Flowtext>
         </Container>
         <Container className="flex justify-start space-y-2 flex-col" sectionMarker>
-          {!authorized ? (
+          {authorized && !ownProfile ? (
             <Follow registryName={user.registryName} />
           ) : <></>}
           <Flowtext center className="!text-sm">Followers: {user?.followerCount}</Flowtext>
