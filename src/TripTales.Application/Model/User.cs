@@ -29,6 +29,7 @@ namespace TripTales.Application.Model
         //where the user is from
         public string? Origin { get; set; }
         public string? FavDestination { get; set; }
+        public string? ResetToken { get; set; }
         //public List<User> Follower { get; } = new();
         public List<Follower> FollowerSender { get; } = new();
         public List<Follower> FollowerRecipient { get; } = new();
@@ -44,6 +45,7 @@ namespace TripTales.Application.Model
             Description = description;
             Origin = origin;
             FavDestination = favDestination;
+            ResetToken = null;
         }
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         protected User() { }

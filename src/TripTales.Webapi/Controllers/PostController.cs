@@ -230,7 +230,7 @@ namespace TripTales.Webapi.Controllers
             if (itemNr >= count) return NotFound();
 
             int nr = (start+itemNr)%count;
-            var post = await _db.Posts.Include(a => a.Days).ThenInclude(a => a.Locations).Include(a => a.User).OrderBy(p=>p.Guid).Skip(nr).FirstOrDefaultAsync();
+            var post = await _db.Posts.Include(a => a.Likes).Include(a => a.Days).ThenInclude(a => a.Locations).Include(a => a.User).OrderBy(p=>p.Guid).Skip(nr).FirstOrDefaultAsync();
             if(post is null) return NotFound();
             var export = new
             {

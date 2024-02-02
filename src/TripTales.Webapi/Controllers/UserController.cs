@@ -1,22 +1,22 @@
 using AutoMapper;
-using Bogus.DataSets;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using TripTales.Application.Dto;
 using TripTales.Application.Infrastructure;
 using TripTales.Application.Infrastructure.Repositories;
 using TripTales.Application.Model;
-using TripTales.Application.Services;
+using TripTales.Webapi.Services;
 
 namespace TripTales.Webapi.Controllers
 {
@@ -25,13 +25,55 @@ namespace TripTales.Webapi.Controllers
     [AllowAnonymous]
     public class UserController : EntityReadController<User>
     {
-        private readonly AuthService _authService;
+        private readonly IEmailSender _emailSender;
         private readonly UserRepository _repo;
+        private readonly IConfiguration _config;
 
-        public UserController(TripTalesContext db, IMapper mapper, AuthService authService, UserRepository repo) : base(db, mapper)
+        public UserController(TripTalesContext db, IMapper mapper, UserRepository repo, IEmailSender emailSender, IConfiguration config) : base(db, mapper)
         {
-            _authService = authService;
             _repo = repo;
+            _emailSender = emailSender;
+            _config = config;
+        }
+
+        [HttpPost("resetPassword/{token}")]
+        public async Task<IActionResult> ResetPassword(string token, [FromBody] string password)
+        {
+            var user = await _db.User.FirstOrDefaultAsync(a => a.ResetToken == token);
+            if (user is null) return BadRequest("Token gibt es nicht");
+            user.ResetToken = null;
+            user.SetPassword(password);
+            try
+            {
+                await _db.SaveChangesAsync();
+            }
+            catch (DbUpdateException e) { return BadRequest(e.Message); }
+            return Ok();
+        }
+
+        [HttpGet("forgotPassword/{email}")]
+        public async Task<IActionResult> ForgotPassword(string email)
+        {
+            var user = await _db.User.FirstOrDefaultAsync(a => a.Email == email);
+            if (user is null) return BadRequest("User gibt es nicht");
+            var token = RandomToken();
+            user.ResetToken = token;
+            try
+            {
+                await _db.SaveChangesAsync();
+            }
+            catch (DbUpdateException e) { return BadRequest(e.Message); }
+            //await _emailSender.SendEmailAsync(email, "TripTales Password Reset", $"<p>Beim folgenden Link kann das Password zurückgesetzt werden: <a href='https://localhost:3000/user/resetPassword/{token}'>https://localhost:3000/user/resetPassword/{token}</a>.</p><br><p>Der Token wird dafür gebraucht: {user.ResetToken}</p>");
+            var url = _config["RedirectPasswordReset"];
+            return Redirect(url + $"?token={token}");
+        }
+
+        private string RandomToken()
+        {
+            var token = Convert.ToHexString(RandomNumberGenerator.GetBytes(64));
+            if (_db.User.Any(a => a.ResetToken == token))
+                return RandomToken();
+            return token;
         }
 
         [HttpPost("register")]
@@ -167,7 +209,7 @@ namespace TripTales.Webapi.Controllers
                 if (follow is not null)
                     isFollowing = true;
             }
-            var user = await _db.User.FirstOrDefaultAsync(u => u.RegistryName == registryName);
+            var user = await _db.User.Include(a => a.FollowerRecipient).Include(a => a.FollowerSender).FirstOrDefaultAsync(u => u.RegistryName == registryName);
             if (user is null) return BadRequest("User gibt es nicht");
             string? profile = Path.Combine(Directory.GetCurrentDirectory(), $"wwwroot/Pictures/{registryName}-profile.jpg").Replace("\\", "/");
             string? banner = Path.Combine(Directory.GetCurrentDirectory(), $"wwwroot/Pictures/{registryName}-banner.jpg").Replace("\\", "/");
@@ -337,67 +379,5 @@ namespace TripTales.Webapi.Controllers
             catch (DbUpdateException e) { return BadRequest(e.Message); }
             return Ok();
         }
-
-        /*[Authorize]
-        [HttpPost("sendFriendRequest/{guid:Guid}")]
-        public async Task<IActionResult> SendFriendRequest(Guid guid)
-        {
-            var authenticated = HttpContext.User.Identity?.IsAuthenticated ?? false;
-            if (!authenticated) { return Unauthorized(); }
-            var username = HttpContext.User.Identity?.Name;
-            var userSender = await _db.User.FirstOrDefaultAsync(u => u.RegistryName == username);
-            if (userSender is null) { return Unauthorized(); }
-            var userRecipient = await _db.User.FirstOrDefaultAsync(a => a.Guid == guid);
-            if(userRecipient is null) { return BadRequest(); }
-            if (await _db.FriendRequests.FirstOrDefaultAsync(a => a.Sender == userSender && a.Recipient == userRecipient) is not null)
-                return BadRequest("Freund gibt es schon!");
-            var friendRequest = new FriendRequest(userSender, userRecipient, DateTime.UtcNow.Date);
-            _db.FriendRequests.Add(friendRequest);
-            try { await _db.SaveChangesAsync(); }
-            catch (DbUpdateException e) { return BadRequest(e.Message); }
-            return Ok();
-        }
-
-        //response = accept or deny
-        [Authorize]
-        [HttpPost("responseFriendRequest/{guid:Guid}")]
-        public async Task<IActionResult> ResponseFriendRequest(Guid guid, [FromQuery] string response)
-        {
-            var authenticated = HttpContext.User.Identity?.IsAuthenticated ?? false;
-            if (!authenticated) { return Unauthorized(); }
-            if(response is null) { return BadRequest("Falschen Response ausgewählt!"); }
-            var username = HttpContext.User.Identity?.Name;
-            var userRecipient = await _db.User.FirstOrDefaultAsync(u => u.RegistryName == username);
-            if (userRecipient is null) { return Unauthorized(); }
-            var userSender = await _db.User.FirstOrDefaultAsync(a => a.Guid == guid);
-            if (userSender is null) { return BadRequest(); }
-            var friendRequest = await _db.FriendRequests.FirstOrDefaultAsync(a => a.Sender == userSender && a.Recipient == userRecipient);
-            if (friendRequest is null)
-                return BadRequest("User hat keine Freundschaftsanfrage geschickt");
-            if(response == "accept")
-            {
-                userRecipient.Friends.Add(userSender);
-                userSender.Friends.Add(userRecipient);
-                try
-                {
-                    await _db.SaveChangesAsync();
-                }
-                catch(DbUpdateException e) { return BadRequest(e.Message); }
-                return Ok();
-            }
-            if(response == "deny")
-            {
-                var friend = await _db.FriendRequests.FirstOrDefaultAsync(a => a.Sender == userSender && a.Recipient == userRecipient);
-                if (friend is null) { return BadRequest(); }
-                _db.FriendRequests.Remove(friend);
-                try
-                {
-                    await _db.SaveChangesAsync();
-                }
-                catch (DbUpdateException e) { return BadRequest(e.Message); }
-                return Ok();
-            }
-            return BadRequest();
-        }*/
     }
 }
