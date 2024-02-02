@@ -209,7 +209,7 @@ namespace TripTales.Webapi.Controllers
                 if (follow is not null)
                     isFollowing = true;
             }
-            var user = await _db.User.Include(a => a.FollowerRecipient).Include(a => a.FollowerSender).FirstOrDefaultAsync(u => u.RegistryName == registryName);
+            var user = await _db.User.Include(a => a.FollowerRecipient).ThenInclude(a => a.Sender).Include(a => a.FollowerSender).ThenInclude(a => a.Recipient).FirstOrDefaultAsync(u => u.RegistryName == registryName);
             if (user is null) return BadRequest("User gibt es nicht");
             string? profile = Path.Combine(Directory.GetCurrentDirectory(), $"wwwroot/Pictures/{registryName}-profile.jpg").Replace("\\", "/");
             string? banner = Path.Combine(Directory.GetCurrentDirectory(), $"wwwroot/Pictures/{registryName}-banner.jpg").Replace("\\", "/");
