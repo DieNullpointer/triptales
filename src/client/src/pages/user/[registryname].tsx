@@ -13,26 +13,31 @@ import { buildBase64Image } from "@/helpers/stringHelpers";
 import Avatar from "@/components/atoms/Avatar";
 import Button from "@/components/atoms/Button";
 import { useEffect, useState } from "react";
-import { getAuthorized } from "@/helpers/authHelpers";
+import { getAuthorized, getAuthorizedAll } from "@/helpers/authHelpers";
 import Follow from "@/components/static/Follow";
 
 export default function User() {
   const router = useRouter();
   const registryname: any = router.query?.registryname;
   const [ownProfile, setOwnProfile] = useState(false);
-  const [authorized, setAuthorized] = useState(false)
-  const { user, profile, banner, error, isLoading } =
-    getUserByRegistry(registryname);
+  const [authorized, setAuthorized] = useState(false);
+  const { user, profile, banner } = getUserByRegistry(registryname);
 
   const init = async () => {
     const loggedInUser = await getAuthorized();
     setAuthorized(loggedInUser ? true : false);
-    setOwnProfile(authorized && loggedInUser === user?.registryName) 
+    setOwnProfile(authorized && loggedInUser === user?.registryName);
   };
 
   useEffect(() => {
     init();
   });
+
+  useEffect(() => {
+    if (user) setFollowers(user.followerCount);
+  }, [user]);
+
+  const [followers, setFollowers] = useState<number>(0);
 
   return user ? (
     <div>
@@ -68,12 +73,27 @@ export default function User() {
             {user?.description}
           </Flowtext>
         </Container>
-        <Container className="flex justify-start space-y-2 flex-col" sectionMarker>
+        <Container
+          className="flex justify-start space-y-2 flex-col"
+          sectionMarker
+        >
           {authorized && !ownProfile ? (
-            <Follow registryName={user.registryName} />
-          ) : <></>}
-          <Flowtext center className="!text-sm">Followers: {user?.followerCount}</Flowtext>
-          <Flowtext center className="!text-sm">Following: {user?.followingCount}</Flowtext>
+            <Follow
+              registryName={user.registryName}
+              active={user.follow}
+              onClick={(active) => {
+                setFollowers(active ? followers - 1 : followers + 1);
+              }}
+            />
+          ) : (
+            <></>
+          )}
+          <Flowtext center className="!text-sm">
+            Followers: {followers}
+          </Flowtext>
+          <Flowtext center className="!text-sm">
+            Following: {user.followingCount}
+          </Flowtext>
         </Container>
       </Grid>
     </div>

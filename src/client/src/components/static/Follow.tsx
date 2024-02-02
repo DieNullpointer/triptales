@@ -6,14 +6,18 @@ import { follow } from "@/helpers/authHelpers";
 export interface Props {
   active?: boolean;
   registryName?: string;
+  onClick?: (active: boolean) => void;
 }
 
-const Follow: React.FC<Props> = ({ active = false, registryName }) => {
+const Follow: React.FC<Props> = ({ active = false, registryName, onClick }) => {
   const [toggle, setToggle] = useState(active);
 
   const handleOnClick = () => {
     setToggle(!toggle);
-    if (registryName) follow(registryName);
+    if (registryName) {
+      follow(registryName);
+      onClick?.(toggle);
+    }
   };
 
   return (

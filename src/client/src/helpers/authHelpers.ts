@@ -28,7 +28,7 @@ export async function follow(username: string) {
   try {
     const response = await axios.post(`/user/follow/${username}`);
     console.log(response);
-    
+
     return true;
   } catch (error) {
     return false;

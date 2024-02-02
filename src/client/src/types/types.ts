@@ -14,6 +14,7 @@ export interface User {
   friends: User[];
   followerCount: number;
   followingCount: number;
+  follow?: boolean;
 }
 
 export interface ProfileUser {
