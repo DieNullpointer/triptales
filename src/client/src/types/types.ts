@@ -12,6 +12,9 @@ export interface User {
   registryName: string;
   description: string;
   friends: User[];
+  followerCount: number;
+  followingCount: number;
+  follow?: boolean;
 }
 
 export interface ProfileUser {
