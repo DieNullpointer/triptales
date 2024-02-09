@@ -51,12 +51,20 @@ export default function Login() {
             router.push("/landingpage/register");
           }}
         >
-          <h1>Registrieren</h1>
+          <h1>Sign Up</h1>
         </Button>
       </div>
       {randomPhoto && (
         <Flowtext className="hidden md:inline-block md:absolute bottom-2 right-2 !w-fit text-gray-500 italic !text-sm">
-          Photo by {randomPhoto?.user?.name} on{" "}
+          Photo by{" "}
+          <a
+            target="_blank"
+            href={randomPhoto?.user.links.html}
+            className="underline"
+          >
+            {randomPhoto?.user.name}
+          </a>{" "}
+          on{" "}
           <a
             target="_blank"
             href={randomPhoto?.links?.html}
