@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection.Metadata;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using TripTales.Application.Model;
 
@@ -19,12 +20,15 @@ namespace TripTales.Application.Infrastructure
         public DbSet<TripDay> Days => Set<TripDay>();
         public DbSet<TripLocation> Locations => Set<TripLocation>();
         public DbSet<Follower> Follower => Set<Follower>();
+        public DbSet<Notification> Notifications => Set<Notification>();
         public TripTalesContext(DbContextOptions opt) : base(opt)
         {
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<User>().HasMany(e => e.Notifications).WithOne(e => e.User);
+            modelBuilder.Entity<User>().HasMany(e => e.NotificationSender).WithOne(e => e.Sender);
             modelBuilder.Entity<User>()
                 .HasMany(e => e.Posts)
                 .WithOne(e => e.User);
