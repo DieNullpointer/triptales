@@ -7,7 +7,7 @@ type Props = {
 
 const List: React.FC<Props> = ({ spaceBetween = 4, children }) => {
   return (
-    <div className={`flex flex-col items-center space-y-${spaceBetween}`}>
+    <div className={`flex flex-col items-start space-y-${spaceBetween}`}>
       {children}
     </div>
   );

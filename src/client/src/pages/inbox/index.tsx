@@ -31,8 +31,8 @@ export default function Inbox() {
   const init = async () => {
     const notifs = await getNotficiations();
     if (notifs) {
-      setRead(notifs.map((n: any) => n.isRead));
-      setRead(notifs.map((n: any) => !n.isRead));
+      setRead(notifs.filter((n: any) => n.isRead));
+      setUnread(notifs.filter((n: any) => !n.isRead));
     }
   };
 

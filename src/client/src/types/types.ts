@@ -6,7 +6,7 @@ export interface Response {
 
 export interface Notification {
   text: string,
-  notifcationType: "Follow" | "Like" | "System"
+  notificationType: "Follow" | "Like" | "System"
   isRead: boolean
 }
 
