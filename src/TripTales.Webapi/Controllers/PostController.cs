@@ -302,17 +302,19 @@ namespace TripTales.Webapi.Controllers
             // Valid token, but no user match in the database (maybe deleted by an admin).
             var user = await _db.User.FirstOrDefaultAsync(a => a.RegistryName == username);
             if (user is null) { return Unauthorized(); }
-            var post = await _db.Posts.Include(a => a.Likes).FirstOrDefaultAsync(a => a.Guid == guid);
+            var post = await _db.Posts.Include(a => a.User).Include(a => a.Likes).FirstOrDefaultAsync(a => a.Guid == guid);
             if (post is null) return BadRequest("Diesen Post gibt es nicht");
             if (post.Likes.Contains(user))
             {
                 post.Likes.Remove(user);
             }
-            else post.Likes.Add(user);
-            try
+            else
             {
-                await _db.SaveChangesAsync();
+                post.Likes.Add(user);
+                var notification = new Notification(post.User!, NotificationType.Like, user);
+                _db.Notifications.Add(notification);
             }
+            try { await _db.SaveChangesAsync(); }
             catch (DbUpdateException e) { return BadRequest(e.Message); }
             return Ok(post.Likes.Count());
         }

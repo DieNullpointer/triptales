@@ -10,11 +10,12 @@ namespace TripTales.Application.Model
 {
     public class Notification : IEntity<int>
     {
-        public Notification(User user, NotificationType notificationType)
+        public Notification(User user, NotificationType notificationType, User? sender = null)
         {
             User = user;
             NotificationType = notificationType;
             IsRead = false;
+            Sender = sender;
         }
 
         #pragma warning disable CS8618
@@ -28,5 +29,6 @@ namespace TripTales.Application.Model
         public User User { get; set; }
         public NotificationType NotificationType { get; set; }
         public bool IsRead { get; set; }
+        public User? Sender { get; set; }
     }
 }

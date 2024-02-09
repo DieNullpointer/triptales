@@ -36,7 +36,7 @@ namespace TripTales.Application.Model
         public List<TripPost> Posts { get; } = new();
         public List<TripPost> Likes { get; } = new();
         public List<Notification> Notifications { get; } = new();
-
+        public List<Notification> NotificationSender { get; } = new();
         public User(string email, string password, string registryName, string? displayName = null, string? description = null, string? origin = null, string? favDestination = null)
         {
             Email = email;

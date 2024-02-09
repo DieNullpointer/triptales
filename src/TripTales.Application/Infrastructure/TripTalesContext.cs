@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection.Metadata;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using TripTales.Application.Model;
 
@@ -26,6 +27,8 @@ namespace TripTales.Application.Infrastructure
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<User>().HasMany(e => e.Notifications).WithOne(e => e.User);
+            modelBuilder.Entity<User>().HasMany(e => e.NotificationSender).WithOne(e => e.Sender);
             modelBuilder.Entity<User>()
                 .HasMany(e => e.Posts)
                 .WithOne(e => e.User);

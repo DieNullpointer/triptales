@@ -36,6 +36,39 @@ namespace TripTales.Webapi.Controllers
             _config = config;
         }
 
+        [Authorize]
+        [HttpGet("notifications")]
+        public async Task<IActionResult> GetNotifications()
+        {
+            var authenticated = HttpContext.User.Identity?.IsAuthenticated ?? false;
+            if (!authenticated) { return Unauthorized(); }
+            var username = HttpContext.User.Identity?.Name;
+            if (username is null) { return Unauthorized(); }
+            var user = await _db.User.Include(a => a.Notifications).ThenInclude(a => a.Sender).FirstOrDefaultAsync(a => a.RegistryName == username);
+            if (user is null) { return Unauthorized(); }
+            var export = user.Notifications.Select(a => new
+            {
+                //The text changes depending on the notification type
+                Text = a.NotificationType switch
+                {
+                    NotificationType.Follow => $"{a.Sender?.RegistryName} started following you",
+                    NotificationType.Like => $"{a.Sender?.RegistryName} liked your post",
+                    NotificationType.SystemNews => "System News",
+                    _ => "Unknown"
+                },
+                NotificationType = a.NotificationType.ToString(),
+                a.IsRead
+            }).ToList();
+            //Mark all notifications as read and save
+            foreach (var notification in user.Notifications)
+            {
+                notification.IsRead = true;
+            }
+            try { await _db.SaveChangesAsync(); }
+            catch (DbUpdateException e) { return BadRequest(e.Message); }
+            return Ok(export);
+        }
+
         [HttpPost("resetPassword/{token}")]
         public async Task<IActionResult> ResetPassword(string token, [FromBody] string password)
         {
@@ -269,7 +302,7 @@ namespace TripTales.Webapi.Controllers
             if (!authenticated) { return Unauthorized(); }
             var username = HttpContext.User.Identity?.Name;
             if (username is null) { return Unauthorized(); }
-            var user = _db.User.FirstOrDefault(a => a.RegistryName == username);
+            var user = _db.User.Include(a => a.Notifications.Where(n => n.IsRead == false)).FirstOrDefault(a => a.RegistryName == username);
             if (user is null) { return Unauthorized(); }
             return Ok(new
             {
@@ -279,7 +312,8 @@ namespace TripTales.Webapi.Controllers
                 user.Email,
                 user.Origin,
                 user.FavDestination,
-                user.Guid
+                user.Guid,
+                user.Notifications.Count,
             });
         }
 
@@ -377,6 +411,8 @@ namespace TripTales.Webapi.Controllers
             }
             var follower = new Follower(userSender, userRecipient, DateTime.UtcNow.Date);
             _db.Follower.Add(follower);
+            var notification = new Notification(userRecipient, NotificationType.Follow, userSender);
+            _db.Notifications.Add(notification);
             try { await _db.SaveChangesAsync(); }
             catch (DbUpdateException e) { return BadRequest(e.Message); }
             return Ok(_db.Follower.Where(a => a.Recipient.Guid == userRecipient.Guid).Count());
