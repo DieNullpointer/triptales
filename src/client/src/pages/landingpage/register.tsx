@@ -60,9 +60,12 @@ export default function Login() {
       </div>
       <div className="md:basis-1/4 w-full">
         <div className="m-4 space-y-4">
+          <div>
           <Subheading center wide uppercase>
-            Registerpage
+            Sign Up
           </Subheading>
+          <Flowtext center uppercase>to create a free account</Flowtext>
+          </div>
           <form
             className="space-y-4"
             onSubmit={(e) => {
@@ -118,7 +121,15 @@ export default function Login() {
         </div>
         {randomPhoto && (
           <Flowtext className="hidden md:inline-block md:absolute bottom-2 right-2 !w-fit text-gray-500 italic !text-sm">
-            Photo by {randomPhoto?.user?.name} on{" "}
+            Photo by{" "}
+            <a
+              target="_blank"
+              href={randomPhoto?.user.links.html}
+              className="underline"
+            >
+              {randomPhoto?.user.name}
+            </a>{" "}
+            on{" "}
             <a
               target="_blank"
               href={randomPhoto?.links?.html}
