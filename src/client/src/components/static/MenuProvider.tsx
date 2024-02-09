@@ -51,14 +51,14 @@ const MenuProvider: React.FC<{}> = () => {
       </ListItem>
       {auth ? (
         <>
-          <ListItem className={itemsClass}>
+          <ListItem className={itemsClass} onClick={() => router.push("/inbox")}>
             <ListItemPrefix>
               <InboxIcon className="h-5 w-5 text-white" />
             </ListItemPrefix>
             Inbox
             <ListItemSuffix>
               <Chip
-                value="14"
+                value="0" //implement unread messages
                 size="sm"
                 variant="ghost"
                 className="rounded-full bg-primary/40 text-white "
