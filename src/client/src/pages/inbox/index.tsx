@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Tabs,
   TabsHeader,
@@ -7,8 +7,39 @@ import {
   TabPanel,
 } from "@material-tailwind/react";
 import { Flowtext, Heading, Subheading } from "@/components/atoms/Text";
+import { getNotficiations } from "@/helpers/authHelpers";
+import VerticalAlign from "@/components/atoms/List";
+import Spacing from "@/components/atoms/Spacing";
+import List from "@/components/atoms/List";
+import Notification from "@/components/static/Notification";
 
 export default function Inbox() {
+  const [unread, setUnread] = useState([]);
+  const [read, setRead] = useState([]);
+
+  const Empty: React.FC<{ type: "new" | "archived" }> = ({ type }) => (
+    <>
+      <Subheading center wide>
+        Feels empty here
+      </Subheading>
+      <Flowtext gutter>
+        You are either not logged in or you don't have any {type} notifications
+      </Flowtext>
+    </>
+  );
+
+  const init = async () => {
+    const notifs = await getNotficiations();
+    if (notifs) {
+      setRead(notifs.map((n: any) => n.isRead));
+      setRead(notifs.map((n: any) => !n.isRead));
+    }
+  };
+
+  useEffect(() => {
+    init();
+  }, []);
+
   const data = [
     {
       label: "New",
@@ -43,17 +74,46 @@ export default function Inbox() {
             </Tab>
           ))}
         </TabsHeader>
-        <TabsBody>
+        <TabsBody
+          animate={{
+            initial: { y: 250 },
+            mount: { y: 0 },
+            unmount: { y: 250 },
+          }}
+        >
           {data.map(({ value, desc }) => (
             <TabPanel key={value} value={value}>
               <Flowtext className="!text-base" center>
                 {desc}
               </Flowtext>
+              <Spacing />
+              {value === "new" ? (
+                !unread ? (
+                  <Empty type={value} />
+                ) : (
+                  <List>
+                    {unread.map((n) => (
+                      <Notification data={n} />
+                    ))}
+                  </List>
+                )
+              ) : value === "archived" ? (
+                !read ? (
+                  <Empty type={value} />
+                ) : (
+                  <List>
+                    {read.map((n) => (
+                      <Notification data={n} />
+                    ))}
+                  </List>
+                )
+              ) : (
+                <></>
+              )}
             </TabPanel>
           ))}
         </TabsBody>
       </Tabs>
-      <div></div>
     </div>
   );
 }

@@ -4,6 +4,12 @@ export interface Response {
   data: any;
 }
 
+export interface Notification {
+  text: string,
+  notifcationType: "Follow" | "Like" | "System"
+  isRead: boolean
+}
+
 export interface User {
   guid: string;
   email?: string;
