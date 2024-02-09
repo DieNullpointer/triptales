@@ -19,6 +19,7 @@ namespace TripTales.Application.Infrastructure
         public DbSet<TripDay> Days => Set<TripDay>();
         public DbSet<TripLocation> Locations => Set<TripLocation>();
         public DbSet<Follower> Follower => Set<Follower>();
+        public DbSet<Notification> Notifications => Set<Notification>();
         public TripTalesContext(DbContextOptions opt) : base(opt)
         {
         }

@@ -80,6 +80,7 @@ namespace TripTales.Webapi.Controllers
         public async Task<IActionResult> Register([FromBody] UserRegisterCmd user)
         {
             var user1 = _mapper.Map<User>(user);
+            user1.DisplayName = user1.RegistryName;
             try
             {
                 await _db.User.AddAsync(user1);
