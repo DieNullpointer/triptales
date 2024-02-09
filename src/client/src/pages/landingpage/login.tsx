@@ -56,9 +56,12 @@ export function Login() {
       </div>
       <div className="md:basis-1/4 w-full">
         <div className="m-4 space-y-4">
+          <div>
           <Subheading center uppercase wide>
-            Loginpage
+            Login
           </Subheading>
+          <Flowtext uppercase center>to Triptales</Flowtext>
+          </div>
           <form
             className="space-y-4"
             onSubmit={(e) => {
@@ -117,16 +120,26 @@ export function Login() {
             <Flowtext className="text-red-600 !text-base">{error}</Flowtext>
           )}
         </div>
-        {randomPhoto && <Flowtext className="hidden md:inline-block md:absolute bottom-2 right-2 !w-fit text-gray-500 italic !text-sm">
-          Photo by {randomPhoto?.user?.name} on{" "}
-          <a
-            target="_blank"
-            href={randomPhoto?.links?.html}
-            className="underline"
-          >
-            Unsplash
-          </a>
-        </Flowtext>}
+        {randomPhoto && (
+          <Flowtext className="hidden md:inline-block md:absolute bottom-2 right-2 !w-fit text-gray-500 italic !text-sm">
+            Photo by{" "}
+            <a
+              target="_blank"
+              href={randomPhoto?.user.links.html}
+              className="underline"
+            >
+              {randomPhoto?.user.name}
+            </a>{" "}
+            on{" "}
+            <a
+              target="_blank"
+              href={randomPhoto?.links?.html}
+              className="underline"
+            >
+              Unsplash
+            </a>
+          </Flowtext>
+        )}
       </div>
     </div>
   );
