@@ -14,6 +14,21 @@ export interface Props {
   tightHeight?: boolean;
 }
 
+export interface PropsIcon {
+  children: string | React.ReactNode;
+  wide?: boolean;
+  uppercase?: boolean;
+  bold?: boolean;
+  className?: string;
+  gutter?: boolean;
+  underline?: boolean;
+  center?: boolean;
+  sectionMarker?: boolean;
+  italic?: boolean;
+  tightHeight?: boolean;
+  icon: React.ReactNode;
+}
+
 const classNames = (props: Props) =>
   cleanClasses(
     `${props.wide ? "tracking-widest" : ""} ${
@@ -38,7 +53,18 @@ export const Subheading: React.FC<Props> = (props) => (
 );
 
 export const Flowtext: React.FC<Props> = (props) => (
-  <p className={`${props.tightHeight ? '!leading-tight' : ''} text-base md:text-lg ${classNames(props)}`}>
+  <p
+    className={`${
+      props.tightHeight ? "!leading-tight" : ""
+    } text-base md:text-lg ${classNames(props)}`}
+  >
     {props.children}
   </p>
+);
+
+export const IconText: React.FC<PropsIcon> = (props) => (
+  <div className="flex flex-row space-x-2 items-center">
+    {props.icon}
+    <Flowtext {...props}></Flowtext>
+  </div>
 );

@@ -6,7 +6,9 @@ export interface Response {
 
 export interface User {
   guid: string;
-  email: string;
+  email?: string;
+  favDestination?: string;
+  origin?: string;
   password: string;
   displayName: string;
   registryName: string;
