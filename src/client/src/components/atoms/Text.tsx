@@ -56,7 +56,7 @@ export const Flowtext: React.FC<Props> = (props) => (
   <p
     className={`${
       props.tightHeight ? "!leading-tight" : ""
-    } !text-base md:!text-lg ${classNames(props)}`}
+    } text-base md:text-lg ${classNames(props)}`}
   >
     {props.children}
   </p>

@@ -13,7 +13,7 @@ export default function Inbox() {
     {
       label: "New",
       value: "new",
-      desc: `Notifications and System Updates you haven't seen, will be shown here.They will be moved to "Archived" once you've seen them.`,
+      desc: `Notifications and System Updates you haven't seen, will be shown here. They will be moved to "Archived" once you've seen them.`,
     },
     {
       label: "Archived",
@@ -24,7 +24,17 @@ export default function Inbox() {
 
   return (
     <div>
-        <Subheading wide gutter underline center uppercase bold className="!hidden md:!block">Notifications</Subheading>
+      <Subheading
+        wide
+        gutter
+        underline
+        center
+        uppercase
+        bold
+        className="!hidden md:!block"
+      >
+        Notifications
+      </Subheading>
       <Tabs value="new">
         <TabsHeader>
           {data.map(({ label, value }) => (
@@ -36,7 +46,9 @@ export default function Inbox() {
         <TabsBody>
           {data.map(({ value, desc }) => (
             <TabPanel key={value} value={value}>
-              <Flowtext center>{desc}</Flowtext>
+              <Flowtext className="!text-base" center>
+                {desc}
+              </Flowtext>
             </TabPanel>
           ))}
         </TabsBody>
