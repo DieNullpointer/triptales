@@ -125,7 +125,7 @@ export function Login() {
             Photo by{" "}
             <a
               target="_blank"
-              href={randomPhoto?.user.links.html}
+              href={randomPhoto?.user.links.html + "?utm_source=triptales&utm_medium=referral"}
               className="underline"
             >
               {randomPhoto?.user.name}
@@ -133,7 +133,7 @@ export function Login() {
             on{" "}
             <a
               target="_blank"
-              href={randomPhoto?.links?.html}
+              href={randomPhoto?.links?.html + "?utm_source=triptales&utm_medium=referral"}
               className="underline"
             >
               Unsplash

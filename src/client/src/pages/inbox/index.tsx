@@ -8,7 +8,6 @@ import {
 } from "@material-tailwind/react";
 import { Flowtext, Heading, Subheading } from "@/components/atoms/Text";
 import { getNotficiations } from "@/helpers/authHelpers";
-import VerticalAlign from "@/components/atoms/List";
 import Spacing from "@/components/atoms/Spacing";
 import List from "@/components/atoms/List";
 import Notification from "@/components/static/Notification";

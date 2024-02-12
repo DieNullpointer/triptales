@@ -25,15 +25,15 @@ const MenuProvider: React.FC<{}> = () => {
     "text-white hover:bg-primary/20 active:focus:bg-primary/20 focus:bg-primary/20 hover:text-white focus:text-white active:text-white ";
   const router = useRouter();
 
-  const [auth, setAuth] = useState("");
+  const [auth, setAuth] = useState<any>();
 
   const checkLogin = async () => {
-    await setAuth(await Auth.getAuthorized());
+    await setAuth(await Auth.getAuthorizedAll());
   };
 
   useEffect(() => {
     checkLogin();
-  });
+  }, []);
 
   return (
     <List>
@@ -58,7 +58,7 @@ const MenuProvider: React.FC<{}> = () => {
             Inbox
             <ListItemSuffix>
               <Chip
-                value="0" //implement unread messages
+                value={auth?.count}
                 size="sm"
                 variant="ghost"
                 className="rounded-full bg-primary/40 text-white "
