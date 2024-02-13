@@ -65,7 +65,7 @@ const MenuProvider: React.FC<{}> = () => {
               />
             </ListItemSuffix>
           </ListItem>
-          <ListItem className={itemsClass} onClick={() => router.push("/user/" + auth)}>
+          <ListItem className={itemsClass} onClick={() => router.push("/user/" + auth.username)}>
             <ListItemPrefix>
               <UserCircleIcon className="h-5 w-5 text-white" />
             </ListItemPrefix>
