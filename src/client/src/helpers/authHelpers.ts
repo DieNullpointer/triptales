@@ -95,3 +95,12 @@ export async function register(credentials: {
     };
   }
 }
+
+export async function getNotficiations() {
+  try {
+    const response = await axios.get("/user/notifications");
+    return response.data;
+  } catch (error) {
+    return undefined; 
+  }
+}
