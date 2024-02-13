@@ -3,9 +3,8 @@ import Spacing from "@/components/atoms/Spacing";
 import Container from "@/components/atoms/Container";
 import { Flowtext, Heading, Subheading } from "@/components/atoms/Text";
 import Datepicker from "@/components/molecules/Datepicker";
-import { useContext } from "react";
 import { Textarea } from "@material-tailwind/react";
-
+import Button from "@/components/atoms/Button";
 
 
 export default function () {
@@ -31,6 +30,7 @@ export default function () {
 
     <Container>
       <Flowtext>Optional Fields</Flowtext>
+      <Button className="">+ Add Days</Button>
     </Container></>
   );
 }
