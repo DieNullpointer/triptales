@@ -1,8 +1,0 @@
-{
-  "dependencies": {
-    "@material-tailwind/react": "^2.1.2",
-    "axios": "^1.6.2",
-    "date-fns": "^3.3.1",
-    "react-day-picker": "^8.10.0"
-  }
-}

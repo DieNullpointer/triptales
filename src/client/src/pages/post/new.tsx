@@ -9,27 +9,22 @@ import Button from "@/components/atoms/Button";
 
 export default function () {
   return (<>
-    <Container>
-      <Heading center>CREATE A NEW POST</Heading>
+    <Container className="space-y-2">
+      <Subheading center uppercase>CREATE A NEW POST</Subheading>
       <Spacing space={10} line />
-      <Flowtext>Required Fields</Flowtext>
+      <Flowtext italic className="!text-sm">Required Fields</Flowtext>
       <Input
         label="Title"
       />
-      <Spacing space={4} />
       <Textarea
         label="Text"
         size="md"
       />
-      <Spacing space={4} />
       <Datepicker />
-      <Spacing space={4} />
-      <Datepicker />
-      <Spacing space={4} />
     </Container>
-
-    <Container>
-      <Flowtext>Optional Fields</Flowtext>
+    <Spacing />
+    <Container className="space-y-2">
+      <Flowtext italic className="!text-sm">Optional Fields</Flowtext>
       <Button className="">+ Add Days</Button>
     </Container></>
   );
