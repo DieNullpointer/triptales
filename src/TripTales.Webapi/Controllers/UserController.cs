@@ -405,6 +405,7 @@ namespace TripTales.Webapi.Controllers
             if (follow is not null)
             {
                 _db.Follower.Remove(follow);
+                _db.Notifications.RemoveRange(_db.Notifications.Where(a => a.User == userRecipient && a.Sender == userSender && a.NotificationType == NotificationType.Follow));
                 try { await _db.SaveChangesAsync(); }
                 catch (DbUpdateException e) { return BadRequest(e.Message); }
                 return Ok(_db.Follower.Where(a => a.Recipient.Guid == userRecipient.Guid).Count());
