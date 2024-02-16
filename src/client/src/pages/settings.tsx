@@ -9,14 +9,14 @@ export default function Settings() {
   const {data, error, isLoading} = getSelf();
   
   const [user, setUser] = useState<any>();
-  const [username, setUsername] = useState("");
+  const [displayname, setDisplayname] = useState("");
   const [description, setDescription] = useState("");
   const [email, setEmail] = useState("");
   const [origin, setOrigin] = useState("");
   const [favDestination, setFavDestination] = useState("");
 
   useEffect(() => {
-    setUsername(data?.username);
+    setDisplayname(data?.displayName);
     setDescription(data?.description);
     setEmail(data?.email);
     setOrigin(data?.origin);
@@ -24,7 +24,15 @@ export default function Settings() {
   }, [data]);
 
   const handleSubmit = async () => {
-    // CHANGESUBMIT HERE (sry had to delete)
+    const response = await changeUser({
+      registryName: data.username,
+      displayName: displayname,
+      password: data.password,
+      email: email,
+      description: description,
+      origin: origin,
+      favDestination: favDestination
+    })
   };
 
   return data ? (
@@ -32,8 +40,8 @@ export default function Settings() {
       <div className="m-4 space-y-4">
         <Input
           label="Username"
-          value={username}
-          onChange={(val) => setUsername(val)}
+          value={displayname}
+          onChange={(val) => setDisplayname(val)}
         />
         <Input
           label="Description"
