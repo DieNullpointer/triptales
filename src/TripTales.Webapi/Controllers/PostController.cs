@@ -307,6 +307,9 @@ namespace TripTales.Webapi.Controllers
             if (post.Likes.Contains(user))
             {
                 post.Likes.Remove(user);
+                var notification = _db.Notifications.FirstOrDefault(a => a.User == post.User && a.NotificationType == NotificationType.Like && a.Sender == user);
+                if(notification is not null)
+                    _db.Notifications.Remove(notification);
             }
             else
             {
