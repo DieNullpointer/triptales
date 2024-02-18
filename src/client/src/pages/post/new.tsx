@@ -31,6 +31,7 @@ export default function () {
     <Container>
       <Flowtext>Optional Fields</Flowtext>
       <Button className="">+ Add Days</Button>
+      <Flowtext>(Note: Add Day via Dialoge)</Flowtext>
     </Container></>
   );
 }
