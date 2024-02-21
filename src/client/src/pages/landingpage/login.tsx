@@ -5,8 +5,10 @@ import { useEffect, useState } from "react";
 import { Flowtext, Subheading } from "@/components/atoms/Text";
 import { login } from "@/helpers/authHelpers";
 import { useRouter } from "next/router";
+import Fallbackimg from "@/resources/login_fallback.jpg";
 
 import { getRandom } from "@/helpers/imgHelpers";
+import { Dialog, DialogBody, DialogHeader } from "@material-tailwind/react";
 
 export function Login() {
   const [username, setUsername] = useState("");
@@ -15,6 +17,7 @@ export function Login() {
   const [error, setError] = useState("");
 
   const router = useRouter();
+  const [open, setOpen] = useState(router.query.registered === "true");
 
   const fetchRandomPhoto = async () => {
     try {
@@ -35,21 +38,30 @@ export function Login() {
     else setError(response.error);
   };
 
+  const handleOpen = () => setOpen(!open);
+
   return (
     <div className="flex justify-center items-center">
+      <Dialog open={open} handler={handleOpen}>
+        <DialogHeader>Thank you for singing up!</DialogHeader>
+        <DialogBody>To get started, please log in again.</DialogBody>
+      </Dialog>
       <div className="hidden md:block md:basis-3/4">
         <Image
-          src={randomPhoto?.urls.regular}
+          src={randomPhoto?.urls.regular || Fallbackimg.src}
           alt={""}
           className="h-screen object-cover w-full"
           wrapper="overflow-hidden items-center flex"
         />
       </div>
-      <div className="md:basis-1/4">
+      <div className="md:basis-1/4 w-full">
         <div className="m-4 space-y-4">
+          <div>
           <Subheading center uppercase wide>
-            Loginpage
+            Login
           </Subheading>
+          <Flowtext uppercase center>to Triptales</Flowtext>
+          </div>
           <form
             className="space-y-4"
             onSubmit={(e) => {
@@ -106,9 +118,28 @@ export function Login() {
           </form>
           {error && (
             <Flowtext className="text-red-600 !text-base">{error}</Flowtext>
-          )}        
+          )}
         </div>
-        <Flowtext className="hidden md:inline-block md:absolute bottom-2 right-2 w-fit text-gray-500 italic !text-sm">Photo by {randomPhoto?.user?.name} on <a target="_blank" href={randomPhoto?.links?.html} className="underline">Unsplash</a></Flowtext>
+        {randomPhoto && (
+          <Flowtext className="hidden md:inline-block md:absolute bottom-2 right-2 !w-fit text-gray-500 italic !text-sm">
+            Photo by{" "}
+            <a
+              target="_blank"
+              href={randomPhoto?.user.links.html + "?utm_source=triptales&utm_medium=referral"}
+              className="underline"
+            >
+              {randomPhoto?.user.name}
+            </a>{" "}
+            on{" "}
+            <a
+              target="_blank"
+              href={randomPhoto?.links?.html + "?utm_source=triptales&utm_medium=referral"}
+              className="underline"
+            >
+              Unsplash
+            </a>
+          </Flowtext>
+        )}
       </div>
     </div>
   );

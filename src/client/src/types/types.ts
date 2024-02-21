@@ -4,14 +4,25 @@ export interface Response {
   data: any;
 }
 
+export interface Notification {
+  text: string,
+  notificationType: "Follow" | "Like" | "System"
+  isRead: boolean
+}
+
 export interface User {
   guid: string;
-  email: string;
+  email?: string;
+  favDestination?: string;
+  origin?: string;
   password: string;
   displayName: string;
   registryName: string;
   description: string;
   friends: User[];
+  followerCount: number;
+  followingCount: number;
+  follow?: boolean;
 }
 
 export interface ProfileUser {

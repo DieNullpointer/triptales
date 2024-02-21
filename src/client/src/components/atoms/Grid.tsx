@@ -19,7 +19,7 @@ const Grid: React.FC<Props> = ({
   even,
 }) => {
   const classNames = cleanClasses(
-    `!grid !grid-flow-col grid-cols-${cols} ${
+    `!grid !grid-flow-col ${cols ? "grid-cols-" + cols : "grid-cols-1"} ${
       expandCols ? "md:grid-cols-" + expandCols + "" : ""
     } ${even ? "auto-cols-fr" : ""} ${className}`
   );

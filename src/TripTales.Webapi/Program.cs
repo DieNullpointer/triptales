@@ -1,25 +1,20 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Tokens;
-using System;
 using TripTales.Application.Dto;
 using TripTales.Application.Infrastructure;
 using TripTales.Application.Infrastructure.Repositories;
-using TripTales.Application.Services;
+using TripTales.Webapi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 
 builder.Services.AddDbContext<TripTalesContext>(opt =>
-    opt.UseSqlite(builder.Configuration.GetConnectionString("Default")));
+    opt.UseSqlite(builder.Configuration.GetConnectionString("Default") ?? "DataSource=TripTales.db"));
 
 builder.Services.AddScoped<PostRepository>();
 builder.Services.AddScoped<UserRepository>();
@@ -27,7 +22,7 @@ builder.Services.AddScoped<UserRepository>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddAutoMapper(typeof(MappingProfile));
-builder.Services.AddTransient<AuthService>();
+builder.Services.AddTransient<IEmailSender, EmailSender>();
 
 builder.Services.Configure<CookiePolicyOptions>(options =>
 {

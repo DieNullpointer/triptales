@@ -1,5 +1,5 @@
 import { TripDay, TripPost } from "@/types/types";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Container from "../atoms/Container";
 import Image from "../atoms/Image";
 import defaultPfp from "@/resources/default_profilepic.png";
@@ -25,6 +25,11 @@ import ImageCollection from "../molecules/ImageCollection";
 import TestImage from "@/resources/DevImages/Antelope Canyon.jpg";
 import Button from "../atoms/Button";
 import { useRouter } from "next/router";
+import IconButton from "../molecules/IconButton";
+import { likePost } from "@/middleware/middleware";
+import { getAuthorized } from "@/helpers/authHelpers";
+import Link from "next/link";
+import SmallProfile from "../molecules/SmallProfile";
 
 export interface Props {
   data: TripPost;
@@ -64,30 +69,44 @@ const Days: React.FC<{ days: TripDay[]; className?: string }> = ({
 
 const Post: React.FC<Props> = ({ data, small, loading }) => {
   const router = useRouter();
+  const [likes, setLikes] = useState<number>(data?.likes || 0);
+  const [authorized, setAuthorized] = useState(false);
+
+  const init = async () => {
+    setAuthorized(await getAuthorized());
+  };
+
+  const handleLikes = async () => {
+    const newLikes = await likePost(data.guid);
+    setLikes(newLikes!);
+  };
+
+  useEffect(() => {
+    init();
+  });
 
   return !loading ? (
-    <Container className="relative min-h-screen m-12">
-      <div className="flex lg:flex-row flex-col lg:items-center items-start lg:justify-between ">
-        <div className="place-items-center flex flex-row">
-          <Avatar size="small" />
-          <div className="p-2 rounded ml-1">
-            <Subheading bold className="!text-base md:!text-xl">
-              {data.user.displayName}
-            </Subheading>
-            <Flowtext
-              italic
-              className="!text-slate-600 !text-sm md:!text-sm -mt-1"
-            >
-              @{data.user.registryName}
+    <Container className={`relative m-12 ${small ? "h-fit" : "min-h-screen"}`}>
+      <div className="flex lg:flex-row flex-col lg:items-center items-start lg:justify-between">
+        <SmallProfile user={data.user} />
+        <div className="md:m-4 m-2 w-full flex flex-col !text-slate-600 lg:w-auto">
+          <div className="flex flex-row justify-center">
+            <CalendarDaysIcon className="h-6 w-6 mr-1" />
+            <Flowtext italic className="">
+              {formatDateEuropean(data.begin)} <b>-</b>{" "}
+              {formatDateEuropean(data.end)}
             </Flowtext>
           </div>
-        </div>
-        <div className="md:m-4 m-2 w-full flex flex-row !text-slate-600 lg:w-auto">
-          <CalendarDaysIcon className="h-6 w-6 mr-1" />
-          <Flowtext italic className="">
-            {formatDateEuropean(data.begin)} <b>-</b>{" "}
-            {formatDateEuropean(data.end)}
-          </Flowtext>
+          {
+            <div className="flex flex-row -ml-2 items-center">
+              <IconButton
+                preset="like"
+                disabled={!authorized}
+                onClick={handleLikes}
+              />
+              <Flowtext className="w-fit ml-1">{likes}</Flowtext>
+            </div>
+          }
         </div>
       </div>
       <div className="md:mt-1">
@@ -95,20 +114,27 @@ const Post: React.FC<Props> = ({ data, small, loading }) => {
         <div className="flex flex-row">
           <Flowtext>{data.text}</Flowtext>
         </div>
-        <Days days={data.days} className="mx-2 mt-6" />
-        {data.images && (
+        {!small && (
           <>
-            <Spacing />
-            <Flowtext bold>Images</Flowtext>
-            <ImageCollection images={data.images} />
+            <Days days={data.days} className="mx-2 mt-6" />
+            {data.images && (
+              <>
+                <Spacing />
+                <Flowtext bold>Images</Flowtext>
+                <ImageCollection images={data.images} />
+              </>
+            )}
           </>
         )}
       </div>
       <>
         {small && (
-          <div className="w-full flex items-center justify-center pt-2">
-            <Button onClick={() => router.push("/post/" + data.guid)}>
-              <Flowtext uppercase className="!text-sm !text-white" bold>
+          <div className="w-full flex items-center justify-center pt-4">
+            <Button
+              transparent
+              onClick={() => router.push("/post/" + data.guid)}
+            >
+              <Flowtext uppercase className="!text-sm" bold>
                 View full Post
               </Flowtext>
             </Button>

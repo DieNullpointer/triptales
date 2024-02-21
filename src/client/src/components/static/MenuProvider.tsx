@@ -14,6 +14,7 @@ import {
   InboxIcon,
   PowerIcon,
   HomeIcon,
+  MagnifyingGlassIcon,
   ArrowUpCircleIcon,
 } from "@heroicons/react/24/solid";
 import * as Auth from "@/helpers/authHelpers";
@@ -24,15 +25,15 @@ const MenuProvider: React.FC<{}> = () => {
     "text-white hover:bg-primary/20 active:focus:bg-primary/20 focus:bg-primary/20 hover:text-white focus:text-white active:text-white ";
   const router = useRouter();
 
-  const [auth, setAuth] = useState("");
+  const [auth, setAuth] = useState<any>();
 
   const checkLogin = async () => {
-    await setAuth(await Auth.getAuthorized());
+    await setAuth(await Auth.getAuthorizedAll());
   };
 
   useEffect(() => {
     checkLogin();
-  });
+  }, []);
 
   return (
     <List>
@@ -42,23 +43,29 @@ const MenuProvider: React.FC<{}> = () => {
         </ListItemPrefix>
         Homepage
       </ListItem>
+      <ListItem className={itemsClass} onClick={() => router.push("/search")}>
+        <ListItemPrefix>
+          <MagnifyingGlassIcon className="h-5 w-5 text-white" />
+        </ListItemPrefix>
+        Search
+      </ListItem>
       {auth ? (
         <>
-          <ListItem className={itemsClass}>
+          <ListItem className={itemsClass} onClick={() => router.push("/inbox")}>
             <ListItemPrefix>
               <InboxIcon className="h-5 w-5 text-white" />
             </ListItemPrefix>
             Inbox
             <ListItemSuffix>
               <Chip
-                value="14"
+                value={auth?.count}
                 size="sm"
                 variant="ghost"
                 className="rounded-full bg-primary/40 text-white "
               />
             </ListItemSuffix>
           </ListItem>
-          <ListItem className={itemsClass} onClick={() => router.push("/user/" + auth)}>
+          <ListItem className={itemsClass} onClick={() => router.push("/user/" + auth.username)}>
             <ListItemPrefix>
               <UserCircleIcon className="h-5 w-5 text-white" />
             </ListItemPrefix>

@@ -38,7 +38,7 @@ export default function App({ Component, pageProps }: AppProps) {
                     <Bars3Icon className="h-6 w-6 text-slate-900" />
                   </Button>
                   <Subheading uppercase bold wide center>
-                    navigation
+                    Triptales
                   </Subheading>
                 </div>
                 <Component {...pageProps} />
