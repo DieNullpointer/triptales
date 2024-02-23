@@ -24,7 +24,7 @@ const Button: React.FC<Props> = ({
       ripple
       disabled={disabled}
       className={
-        `${!transparent ? 'bg-primaryHover' : 'bg-gray-200/60 !text-gray-700 hover:bg-gray-400/60 hover:!text-white shadow-none hover:shadow-none'} text-sm tracking-wider font-roboto ${className}`
+        `${!transparent ? 'bg-primaryHover' : 'bg-gray-200/60 !text-gray-700 hover:bg-gray-400/60 hover:!text-white shadow-none hover:shadow-none'} text-sm tracking-wider font-roboto ${className} flex items-center justify-center`
       }
     >
       {children}
