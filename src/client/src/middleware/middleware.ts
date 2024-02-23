@@ -2,8 +2,7 @@ import { User } from "@/types/types";
 import axios from "axios";
 import useSWR from "swr";
 
-const fetcher = (url: string) =>
-  fetch(url, { credentials: "include" }).then((res) => res.json());
+const fetcher = (url: string) => fetch(url, {credentials: 'include'}).then((res) => res.json());
 
 export function getUser(guid: string) {
   const { data, error, isLoading } = useSWR(
@@ -18,15 +17,7 @@ export function getUser(guid: string) {
   };
 }
 
-export async function searchUsers(query: string) {
-  let data: User[] = [];
-  await axios
-    .get(`https://localhost:7174/api/User/search/${query}`)
-    .then((res) => {
-      data = res.data;
-    });
-  return data;
-}
+
 
 export function getUserByRegistry(registryName: string): {
   user: User;
@@ -46,6 +37,19 @@ export function getUserByRegistry(registryName: string): {
       ? "https://localhost:7174/" + data?.profile
       : undefined,
     banner: data?.banner ? "https://localhost:7174/" + data?.banner : undefined,
+    error,
+    isLoading,
+  };
+}
+
+export function getSelf() {
+  const { data, error, isLoading } = useSWR(
+    `https://localhost:7174/api/User/me`,
+    fetcher
+  );
+
+  return {
+    data,
     error,
     isLoading,
   };
@@ -72,16 +76,14 @@ export async function getNextPost(start: number, iteration: number) {
     .catch((error) => {
       error = error;
     });
-
-  return { data, error };
+    
+  return {data, error};
 }
 
 export async function likePost(guid: string) {
   let data;
-  await axios
-    .put(`https://localhost:7174/api/Post/like/${guid}`)
-    .then((res) => {
-      data = res.data;
-    });
+  await axios.put(`https://localhost:7174/api/Post/like/${guid}`).then((res) => {data = res.data});
   return data;
 }
+
+
