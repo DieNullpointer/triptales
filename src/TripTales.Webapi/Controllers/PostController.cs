@@ -114,9 +114,19 @@ namespace TripTales.Webapi.Controllers
             return Ok(export);
         }
 
+        public record RegisterCmd
+        (
+            string Title,
+            string Text,
+            DateTime Begin,
+            DateTime End,
+            List<DayCmd> Days,
+            List<IFormFile> Images
+        );
+
         [Authorize]
         [HttpPost("add")]
-        public async Task<IActionResult> AddPost([FromBody] PostCmd postCmd)
+        public async Task<IActionResult> AddPost([FromForm] RegisterCmd postCmd)
         {
             var authenticated = HttpContext.User.Identity?.IsAuthenticated ?? false;
             if (!authenticated) { return Unauthorized(); }
@@ -125,13 +135,25 @@ namespace TripTales.Webapi.Controllers
             // Valid token, but no user match in the database (maybe deleted by an admin).
             var user = await _db.User.FirstOrDefaultAsync(a => a.RegistryName == username);
             if (user is null) { return Unauthorized(); }
-            var post = _mapper.Map<TripPost>(postCmd, opt => opt.AfterMap((dto, entity) =>
-            {
-                entity.Created = DateTime.UtcNow;
-                entity.User = user;
-            }));
+            var post = new TripPost(postCmd.Title, postCmd.Text, postCmd.Begin, postCmd.End, user);
             (bool success, string message) = await _repo.Insert(post);
-            if(success) { return Ok(); }
+            if(success)
+            {
+                string directoryPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Images", $"{post.Guid}");
+                if (!Directory.Exists(directoryPath))
+                    Directory.CreateDirectory(directoryPath);
+                var count = Directory.GetFiles(directoryPath).Count() + 1;
+                foreach (var file in postCmd.Images)
+                {
+                    var path = Path.Combine(directoryPath, $"{count}.jpg");
+                    using (var stream = new FileStream(path, FileMode.Create))
+                    {
+                        await file.CopyToAsync(stream);
+                    }
+                    count++;
+                }
+                return Ok();
+            }
             return BadRequest(message);
         }
 
