@@ -188,7 +188,7 @@ namespace TripTales.Webapi.Controllers
                 a.Guid,
                 a.DisplayName,
                 a.RegistryName
-            }).ToListAsync());
+            }).OrderBy(a => a.RegistryName).ToListAsync());
         }
 
         [Authorize]
