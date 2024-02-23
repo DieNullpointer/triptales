@@ -48,7 +48,7 @@ export default function Settings() {
           value={description}
           onChange={(val) => setDescription(val)}
         />
-        <Input label="email" value={email} onChange={(val) => setEmail(val)} />
+        <Input label="Email" value={email} onChange={(val) => setEmail(val)} />
         <Input
           label="Origin"
           value={origin}
