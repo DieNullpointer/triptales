@@ -6,6 +6,7 @@ export interface Props {
   onClick: () => void;
   preset?: "like" | "none";
   disabled?: boolean;
+  children?: React.ReactNode;
 }
 
 const IconButton: React.FC<Props> = ({
@@ -13,6 +14,7 @@ const IconButton: React.FC<Props> = ({
   onClick,
   preset = "none",
   disabled = false,
+  children
 }) => {
   const [active, setActive] = useState(false);
   const classNames =
