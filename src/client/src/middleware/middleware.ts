@@ -17,6 +17,10 @@ export function getUser(guid: string) {
   };
 }
 
+export async function searchUsers(query: string) {
+  const response = await axios.get(`https://localhost:7174/api/User/search/${query}`);
+  return response.data;
+}
 
 
 export function getUserByRegistry(registryName: string): {

@@ -59,7 +59,7 @@ const Search: React.FC = () => {
         }
       />
       {!loading ? (
-        !results?.length ? (
+        !results?.length || !debouncedSearch ? (
           <Flowtext center className="mt-4">No Results</Flowtext>
         ) : (
           <div className="space-y-3 mt-4">
