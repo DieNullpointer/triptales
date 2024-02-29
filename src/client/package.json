@@ -24,6 +24,7 @@
     "next": "13.5.2",
     "postcss": "8.4.30",
     "react": "18.2.0",
+    "react-cropper": "^2.3.3",
     "react-dom": "18.2.0",
     "react-tailwindcss-datepicker": "^1.6.6",
     "swr": "^2.2.4",
