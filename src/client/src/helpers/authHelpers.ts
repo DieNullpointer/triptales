@@ -1,5 +1,6 @@
 import { useRouter } from "next/router";
 import axios from "axios";
+import { File } from "buffer";
 
 axios.defaults.baseURL = "https://localhost:7174/api";
 axios.defaults.withCredentials = true;
@@ -126,4 +127,38 @@ export async function getNotficiations() {
   } catch (error) {
     return undefined; 
   }
+}
+
+export async function uploadPicture(credentials: {
+    profile: any
+}) {
+  try {
+    const response = await axios.put("/user/addImages", credentials, {headers: {"Content-Type": "multipart/form-data"}});
+
+    const resObj = {
+      status: response.status,
+      success: response.status === 200,
+      data: response.data,
+    };
+    return resObj;
+  } catch (error:any) {
+    return { sucess: false, error: error.response?.data };
+  }
+}
+
+export async function uploadBanner(credentials: {
+  banner: any
+}) {
+try {
+  const response = await axios.put("/user/addImages", credentials, {headers: {"Content-Type": "multipart/form-data"}});
+
+  const resObj = {
+    status: response.status,
+    success: response.status === 200,
+    data: response.data,
+  };
+  return resObj;
+} catch (error:any) {
+  return { sucess: false, error: error.response?.data };
+}
 }
