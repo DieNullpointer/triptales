@@ -21,6 +21,8 @@ namespace TripTales.Application.Infrastructure
         public DbSet<TripLocation> Locations => Set<TripLocation>();
         public DbSet<Follower> Follower => Set<Follower>();
         public DbSet<Notification> Notifications => Set<Notification>();
+        public DbSet<Comment> Comments => Set<Comment>();
+
         public TripTalesContext(DbContextOptions opt) : base(opt)
         {
         }
@@ -37,6 +39,7 @@ namespace TripTales.Application.Infrastructure
                 .WithMany(e => e.Likes);
             modelBuilder.Entity<Follower>().HasOne(f => f.Sender).WithMany(u => u.FollowerSender);
             modelBuilder.Entity<Follower>().HasOne(f => f.Recipient).WithMany(u => u.FollowerRecipient);
+            modelBuilder.Entity<Comment>().HasOne(c => c.Post).WithMany(p => p.Comments);
             //modelBuilder.Entity<FriendRequest>().HasIndex("SenderId", "RecipientId").IsUnique();
 
             //modelBuilder.Entity<User>()

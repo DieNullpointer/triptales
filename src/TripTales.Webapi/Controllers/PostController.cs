@@ -42,7 +42,7 @@ namespace TripTales.Webapi.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllPosts()
         {
-            var posts = await _db.Posts.Include(a => a.Likes).Include(a => a.User).Include(a => a.Days).ThenInclude(a => a.Locations).ToListAsync();
+            var posts = await _db.Posts.Include(a => a.Comments).Include(a => a.Likes).Include(a => a.User).Include(a => a.Days).ThenInclude(a => a.Locations).ToListAsync();
             var export = posts.Select(h => new
             {
                 h.Guid,
@@ -51,6 +51,13 @@ namespace TripTales.Webapi.Controllers
                 h.Title,
                 h.Text,
                 h.Created,
+                Comments = h.Comments.Select(c => new
+                {
+                    c.User.RegistryName,
+                    c.User.DisplayName,
+                    c.Text,
+                    c.Created
+                }),
                 Images = !Directory.Exists(Path.Combine("wwwroot", "Images", $"{h.Guid}")) ? null : SplitString(Directory.GetFiles(Path.Combine("wwwroot", "Images", $"{h.Guid}")).ToList()),
                 Likes = h.Likes.Count,
                 Days = h.Days.Select(d => new
@@ -79,7 +86,7 @@ namespace TripTales.Webapi.Controllers
         [HttpGet("{guid:Guid}")]
         public async Task<IActionResult> GetPost(Guid guid)
         {
-            var h = await _db.Posts.Include(a => a.User).Include(a => a.Days).ThenInclude(a => a.Locations).FirstOrDefaultAsync(a => a.Guid == guid);
+            var h = await _db.Posts.Include(a => a.Comments).Include(a => a.User).Include(a => a.Days).ThenInclude(a => a.Locations).FirstOrDefaultAsync(a => a.Guid == guid);
             if (h is null) return BadRequest();
             var export = new
             {
@@ -89,6 +96,13 @@ namespace TripTales.Webapi.Controllers
                 h.Title,
                 h.Text,
                 h.Created,
+                Comments = h.Comments.Select(c => new
+                {
+                    c.User.RegistryName,
+                    c.User.DisplayName,
+                    c.Text,
+                    c.Created
+                }),
                 Images = !Directory.Exists(Path.Combine("wwwroot", "Images", $"{h.Guid}")) ? null : SplitString(Directory.GetFiles(Path.Combine("wwwroot", "Images", $"{h.Guid}")).ToList()),
                 Likes = h.Likes.Count,
                 Days = h.Days.Select(d => new
@@ -208,6 +222,7 @@ namespace TripTales.Webapi.Controllers
                     System.IO.File.Delete(file);
             _db.Locations.RemoveRange(_db.Locations.Include(a => a.TripDay).ThenInclude(a => a.Post).Where(a => a.TripDay.Post == post).ToList());
             _db.Days.RemoveRange(post.Days);
+            _db.Comments.RemoveRange(_db.Comments.Include(a => a.Post).Where(a => a.Post == post).ToList());
             _db.Posts.Remove(post);
             try { await _db.SaveChangesAsync(); }
             catch(DbUpdateException e) { return BadRequest(e.Message); }
@@ -252,7 +267,7 @@ namespace TripTales.Webapi.Controllers
             if (itemNr >= count) return NotFound();
 
             int nr = (start+itemNr)%count;
-            var post = await _db.Posts.Include(a => a.Likes).Include(a => a.Days).ThenInclude(a => a.Locations).Include(a => a.User).OrderBy(p=>p.Guid).Skip(nr).FirstOrDefaultAsync();
+            var post = await _db.Posts.Include(a => a.Comments).Include(a => a.Likes).Include(a => a.Days).ThenInclude(a => a.Locations).Include(a => a.User).OrderBy(p=>p.Guid).Skip(nr).FirstOrDefaultAsync();
             if(post is null) return NotFound();
             var export = new
             {
@@ -263,6 +278,13 @@ namespace TripTales.Webapi.Controllers
                 post.Text,
                 Likes = post.Likes.Count,
                 post.Title,
+                Comments = post.Comments.Select(c => new
+                {
+                    c.User.RegistryName,
+                    c.User.DisplayName,
+                    c.Text,
+                    c.Created
+                }),
                 Days = post.Days.Select(d => new
                 {
                     d.Guid,
@@ -342,6 +364,124 @@ namespace TripTales.Webapi.Controllers
             try { await _db.SaveChangesAsync(); }
             catch (DbUpdateException e) { return BadRequest(e.Message); }
             return Ok(post.Likes.Count());
+        }
+
+        [Authorize]
+        [HttpPut("comment/remove/{guid:Guid}")]
+        public async Task<IActionResult> RemoveComment(Guid guid)
+        {
+            var authenticated = HttpContext.User.Identity?.IsAuthenticated ?? false;
+            if (!authenticated) { return Unauthorized(); }
+            var username = HttpContext?.User.Identity?.Name;
+            if (username is null) { return Unauthorized(); }
+            // Valid token, but no user match in the database (maybe deleted by an admin).
+            var user = await _db.User.FirstOrDefaultAsync(a => a.RegistryName == username);
+            if (user is null) { return Unauthorized(); }
+            var comment = await _db.Comments.Include(a => a.User).Include(a => a.Post).FirstOrDefaultAsync(a => a.Guid == guid);
+            if (comment is null) return BadRequest("Diesen Kommentar gibt es nicht");
+            if (comment.User != user) return BadRequest("Dieser Kommentar gehört nicht dir");
+            var h = comment.Post;
+            _db.Comments.Remove(comment);
+            try { await _db.SaveChangesAsync(); }
+            catch (DbUpdateException e) { return BadRequest(e.Message); }
+            return Ok(new
+            {
+                h.Guid,
+                h.Begin,
+                h.End,
+                h.Title,
+                h.Text,
+                h.Created,
+                Comments = h.Comments.Select(c => new
+                {
+                    c.User.RegistryName,
+                    c.User.DisplayName,
+                    c.Text,
+                    c.Created
+                }),
+                Images = !Directory.Exists(Path.Combine("wwwroot", "Images", $"{h.Guid}")) ? null : SplitString(Directory.GetFiles(Path.Combine("wwwroot", "Images", $"{h.Guid}")).ToList()),
+                Likes = h.Likes.Count,
+                Days = h.Days.Select(d => new
+                {
+                    d.Guid,
+                    d.Title,
+                    d.Text,
+                    d.Date,
+                    Locations = d.Locations.Select(l => new
+                    {
+                        l.Coordinates,
+                        Images = !Directory.Exists(Path.Combine("wwwroot", "Images", $"{l.Guid}")) ? null : SplitString(Directory.GetFiles(Path.Combine("wwwroot", "Images", $"{l.Guid}")).ToList()),
+                    })
+                }),
+                User = new
+                {
+                    h.User!.Guid,
+                    h.User!.RegistryName,
+                    h.User.DisplayName,
+                    ProfilePicture = System.IO.File.Exists(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Pictures", $"{h.User.RegistryName}-profile.jpg")) ? $"Pictures/{h.User.RegistryName}-profile.jpg" : null
+                }
+            });
+        }
+
+        [Authorize]
+        [HttpPut("comment")]
+        public async Task<IActionResult> Comment(CommentCmd commentCmd)
+        {
+            var authenticated = HttpContext.User.Identity?.IsAuthenticated ?? false;
+            if (!authenticated)
+            {
+                return Unauthorized();
+            }
+            var username = HttpContext?.User.Identity?.Name;
+            if (username is null)
+            {
+                return Unauthorized();
+            }
+            var user = await _db.User.FirstOrDefaultAsync(a => a.RegistryName == username);
+            if (user is null) { return Unauthorized(); }
+            var h = await _db.Posts.Include(a => a.User).Include(a => a.Likes).FirstOrDefaultAsync(a => a.Guid == commentCmd.postGuid);
+            if (h is null) return BadRequest("Diesen Post gibt es nicht");
+            var comment = new Comment(user, commentCmd.text, DateTime.UtcNow, h);
+            _db.Comments.Add(comment);
+            try { await _db.SaveChangesAsync(); }
+            catch (DbUpdateException e) { return BadRequest(e.Message); }
+            return Ok(new
+            {
+                h.Guid,
+                h.Begin,
+                h.End,
+                h.Title,
+                h.Text,
+                h.Created,
+                Comments = h.Comments.Select(c => new
+                {
+                    c.User.RegistryName,
+                    c.User.DisplayName,
+                    c.Text,
+                    c.Created
+                }),
+                Images = !Directory.Exists(Path.Combine("wwwroot", "Images", $"{h.Guid}")) ? null : SplitString(Directory.GetFiles(Path.Combine("wwwroot", "Images", $"{h.Guid}")).ToList()),
+                Likes = h.Likes.Count,
+                Days = h.Days.Select(d => new
+                {
+                    d.Guid,
+                    d.Title,
+                    d.Text,
+                    d.Date,
+                    Locations = d.Locations.Select(l => new
+                    {
+                        l.Coordinates,
+                        Images = !Directory.Exists(Path.Combine("wwwroot", "Images", $"{l.Guid}")) ? null : SplitString(Directory.GetFiles(Path.Combine("wwwroot", "Images", $"{l.Guid}")).ToList()),
+                    })
+                }),
+                User = new
+                {
+                    h.User!.Guid,
+                    h.User!.RegistryName,
+                    h.User.DisplayName,
+                    ProfilePicture = System.IO.File.Exists(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Pictures", $"{h.User.RegistryName}-profile.jpg")) ? $"Pictures/{h.User.RegistryName}-profile.jpg" : null
+                }
+            });
         }
     }
 }
