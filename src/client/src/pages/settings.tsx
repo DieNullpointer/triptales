@@ -12,6 +12,7 @@ import { Cropper, ReactCropperElement } from "react-cropper";
 import "cropperjs/dist/cropper.css";
 import { Dialog, DialogBody, DialogHeader } from "@material-tailwind/react";
 import Spacing from "@/components/atoms/Spacing";
+import { Flowtext } from "@/components/atoms/Text";
 
 export default function Settings() {
   const { data, error, isLoading } = getSelf();
@@ -32,7 +33,8 @@ export default function Settings() {
   }, [data]);
 
   const handleSubmit = async () => {
-    await changeUser({
+    // TODO open Dialog
+    const response: any = await changeUser({
       registryName: data.username,
       displayName: displayname,
       password: data.password,
@@ -41,6 +43,7 @@ export default function Settings() {
       origin: origin,
       favDestination: favDestination,
     });
+    if (response.success) handleSuccessDialogOpen();
   };
 
   const file2Base64 = (file: File): Promise<string> => {
@@ -65,11 +68,18 @@ export default function Settings() {
   const cropperRef = createRef<ReactCropperElement>();
 
   // the modal for cropper
-  const [open, setOpen] = useState(false);
+  const [mainDialogOpen, setMainDialogOpen] = useState(false);
+  const [successDialogOpen, setSuccessDialogOpen] = useState(false);
 
-  const handleOpen = () => {
-    if (open) setUploaded(null);
-    setOpen(!open);
+  const handleMainDialogOpen = () => {
+
+    
+    if (mainDialogOpen) setUploaded(null);
+    setMainDialogOpen(!mainDialogOpen);
+  };
+
+  const handleSuccessDialogOpen = () => {
+    setSuccessDialogOpen(!successDialogOpen);
   };
 
   const onFileInputChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
@@ -77,7 +87,7 @@ export default function Settings() {
     if (file) {
       file2Base64(file).then((base64) => {
         setUploaded(base64);
-        handleOpen();
+        handleMainDialogOpen();
       });
     }
   };
@@ -89,20 +99,23 @@ export default function Settings() {
   };
 
   const changeBanner = async () => {
-    const response = await uploadBanner({
+    const response: any = await uploadBanner({
       banner: bannerRef.current?.files?.item(0),
     });
+    if (response.success) handleSuccessDialogOpen();
   };
 
   const changePicture = async () => {
-    const response = await uploadPicture({
-      profile: pictureRef.current?.files?.item(0),
+    setMainDialogOpen(false);
+    const response: any = await uploadPicture({
+      profile: cropped,
     });
+    if (response.success) handleSuccessDialogOpen();
   };
 
   return data ? (
     <div className="w-full">
-      <Dialog open={open} handler={handleOpen}>
+      <Dialog open={mainDialogOpen} handler={handleMainDialogOpen}>
         <DialogHeader>Crop Avatar</DialogHeader>
         <DialogBody>
           <div className="space-y-2">
@@ -117,7 +130,7 @@ export default function Settings() {
             />
             <div className="flex space-x-4">
               <Button onClick={onCrop}>Crop Avatar</Button>
-              <Button onClick={() => {}}>Upload</Button>
+              <Button onClick={changePicture}>Upload</Button>
             </div>
             {cropped && (
               <Image
@@ -127,6 +140,15 @@ export default function Settings() {
               />
             )}
           </div>
+        </DialogBody>
+      </Dialog>
+      <Dialog open={successDialogOpen} handler={handleSuccessDialogOpen}>
+        <DialogHeader>Changes Saved Successfully</DialogHeader>
+        <DialogBody className="pt-0">
+          <Flowtext>
+            Your changes have been uploaded to the server and saved
+            successfully. To view them, please refresh the profile page.
+          </Flowtext>
         </DialogBody>
       </Dialog>
       <Spacing />
@@ -173,16 +195,8 @@ export default function Settings() {
         >
           Save Account Info
         </Button>
-
-        {/**
- *         <input
-          type="file"
-          accept="image/png,image/jpeg,image/gif"
-          onChange={changePicture}
-          ref={pictureRef}
-        />
- */}
         <input
+          id="avatarButton"
           type="file"
           className="hidden"
           ref={pictureRef}
@@ -190,6 +204,7 @@ export default function Settings() {
           accept="image/png,image/jpeg,image/gif"
         />
         <input
+          id="bannerButton"
           type="file"
           className="hidden"
           accept="image/png,image/jpeg,image/gif"
