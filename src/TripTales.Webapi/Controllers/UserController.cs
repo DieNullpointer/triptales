@@ -28,6 +28,7 @@ namespace TripTales.Webapi.Controllers
         private readonly IEmailSender _emailSender;
         private readonly UserRepository _repo;
         private readonly IConfiguration _config;
+        private static string[] _allowedExtensions = new string[] { ".jpg", ".jpeg", ".png", ".gif" };
 
         public UserController(TripTalesContext db, IMapper mapper, UserRepository repo, IEmailSender emailSender, IConfiguration config) : base(db, mapper)
         {
@@ -69,13 +70,14 @@ namespace TripTales.Webapi.Controllers
             return Ok(export);
         }
 
-        [HttpPost("resetPassword/{token}")]
-        public async Task<IActionResult> ResetPassword(string token, [FromBody] string password)
+        public record ResetPasswordCmd(string token, string password);
+        [HttpPost("resetPassword")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordCmd reset)
         {
-            var user = await _db.User.FirstOrDefaultAsync(a => a.ResetToken == token);
+            var user = await _db.User.FirstOrDefaultAsync(a => a.ResetToken == reset.token);
             if (user is null) return BadRequest("Token gibt es nicht");
             user.ResetToken = null;
-            user.SetPassword(password);
+            user.SetPassword(reset.password);
             try
             {
                 await _db.SaveChangesAsync();
@@ -98,7 +100,7 @@ namespace TripTales.Webapi.Controllers
             catch (DbUpdateException e) { return BadRequest(e.Message); }
             //await _emailSender.SendEmailAsync(email, "TripTales Password Reset", $"<p>Beim folgenden Link kann das Password zurückgesetzt werden: <a href='https://localhost:3000/user/resetPassword/{token}'>https://localhost:3000/user/resetPassword/{token}</a>.</p><br><p>Der Token wird dafür gebraucht: {user.ResetToken}</p>");
             var url = _config["RedirectPasswordReset"];
-            return Redirect(url + $"?token={token}");
+            return Ok($"?token={token}");
         }
 
         private string RandomToken()
@@ -163,20 +165,6 @@ namespace TripTales.Webapi.Controllers
                 })
             });
 
-        /*[HttpGet("image/{guid:Guid}")]
-        public IActionResult GetPicutre(Guid guid)
-        {
-            var user = _db.User.FirstOrDefault(a => a.Guid == guid);
-            if (user is null) return BadRequest("User gibt es nicht");
-            var myfile = System.IO.File.ReadAllBytes($"Pictures/{user.RegistryName}-picture.jpg");
-            var test = new
-            {
-                User = user,
-                Profile = File(myfile, "image/jpeg")
-            };
-            return Ok(test);
-        }*/
-
         [HttpGet("{guid:Guid}")]
         public async Task<IActionResult> GetUser(Guid guid) => await GetByGuid<UserDto>(guid);
 
@@ -202,7 +190,7 @@ namespace TripTales.Webapi.Controllers
             // Valid token, but no user match in the database (maybe deleted by an admin).
             var user = await _db.User.FirstOrDefaultAsync(a => a.RegistryName == username);
             if (user is null) { return Unauthorized(); }
-            string directoryPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Pictures");
+            /*string directoryPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Pictures");
             if (!Directory.Exists(directoryPath))
                 Directory.CreateDirectory(directoryPath);
             var bannerPath = Path.Combine(directoryPath, $"{username}-banner.jpg");
@@ -220,7 +208,33 @@ namespace TripTales.Webapi.Controllers
                 {
                     await profile.CopyToAsync(stream);
                 }
+            }*/
+            if(banner is not null)
+            {
+                if (banner.Length > 1024 * 1024) return BadRequest("Invalid filesize.");
+                var extension = new FileInfo(banner.FileName).Extension;
+                if (!_allowedExtensions.Contains(extension)) return BadRequest("Invalid extension.");
+                var filename = Guid.NewGuid().ToString("n") + extension;
+                using (var destStream = new FileStream(Path.Combine(_config["UploadDirectory"], filename), FileMode.Create, FileAccess.Write))
+                {
+                    await banner.CopyToAsync(destStream);
+                }
+
+                user.BannerPicture = $"{_config["UploadDirectory"]}/{filename}";
             }
+            if(profile is not null)
+            {
+                if (profile.Length > 1024 * 1024) return BadRequest("Invalid filesize.");
+                var extension = new FileInfo(profile.FileName).Extension;
+                if (!_allowedExtensions.Contains(extension)) return BadRequest("Invalid extension.");
+                var filename = Guid.NewGuid().ToString("n") + extension;
+                using (var destStream = new FileStream(Path.Combine(_config["UploadDirectory"], filename), FileMode.Create, FileAccess.Write))
+                {
+                    await profile.CopyToAsync(destStream);
+                }
+                user.ProfilePicture = $"{_config["UploadDirectory"]}/{filename}";
+            }
+            await _db.SaveChangesAsync();
             return Ok();
         }
 
