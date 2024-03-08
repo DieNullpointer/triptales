@@ -2,7 +2,8 @@ import { User } from "@/types/types";
 import axios from "axios";
 import useSWR from "swr";
 
-const fetcher = (url: string) => fetch(url, {credentials: 'include'}).then((res) => res.json());
+const fetcher = (url: string) =>
+  fetch(url, { credentials: "include" }).then((res) => res.json());
 
 export function getUser(guid: string) {
   const { data, error, isLoading } = useSWR(
@@ -18,10 +19,11 @@ export function getUser(guid: string) {
 }
 
 export async function searchUsers(query: string) {
-  const response = await axios.get(`https://localhost:7174/api/User/search/${query}`);
+  const response = await axios.get(
+    `https://localhost:7174/api/User/search/${query}`
+  );
   return response.data;
 }
-
 
 export function getUserByRegistry(registryName: string): {
   user: User;
@@ -80,14 +82,36 @@ export async function getNextPost(start: number, iteration: number) {
     .catch((error) => {
       error = error;
     });
-    
-  return {data, error};
+
+  return { data, error };
 }
 
 export async function likePost(guid: string) {
   let data;
-  await axios.put(`https://localhost:7174/api/Post/like/${guid}`).then((res) => {data = res.data});
+  await axios
+    .put(`https://localhost:7174/api/Post/like/${guid}`)
+    .then((res) => {
+      data = res.data;
+    });
   return data;
 }
 
+export async function forgotPassword(email: string) {
+  let data;
+  await axios
+    .get(`https://localhost:7174/api/User/forgotPassword/${email}`)
+    .then((res) => {
+      data = res.data;
+    });
+  return data;
+}
 
+export async function resetPassword(token: string | string[], password: string) {
+  let data;
+  await axios
+    .post(`https://localhost:7174/api/User/resetPassword/${token}`, {password})
+    .then((res) => {
+      data = res.data;
+    }).catch((error) => {});
+  return data;
+}

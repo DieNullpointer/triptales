@@ -5,7 +5,11 @@ import Avatar from "@/components/atoms/Avatar";
 import { changeUser, uploadPicture, uploadBanner } from "@/helpers/authHelpers";
 import { useEffect, useState, createRef, cache } from "react";
 import Loading from "@/components/static/Loading";
-import { getSelf, getUserByRegistry } from "@/middleware/middleware";
+import {
+  forgotPassword,
+  getSelf,
+  getUserByRegistry,
+} from "@/middleware/middleware";
 import defaultBanner from "@/resources/default_bannerpic.jpg";
 
 import { Cropper, ReactCropperElement } from "react-cropper";
@@ -72,8 +76,6 @@ export default function Settings() {
   const [successDialogOpen, setSuccessDialogOpen] = useState(false);
 
   const handleMainDialogOpen = () => {
-
-    
     if (mainDialogOpen) setUploaded(null);
     setMainDialogOpen(!mainDialogOpen);
   };
@@ -211,6 +213,7 @@ export default function Settings() {
           onChange={changeBanner}
           ref={bannerRef}
         />
+        <Spacing />
         <div className="flex space-x-4">
           <Button onClick={() => pictureRef.current?.click()}>
             Upload Avatar
@@ -219,6 +222,8 @@ export default function Settings() {
             Upload Banner
           </Button>
         </div>
+        <Spacing />
+        <Button onClick={() => forgotPassword(email)}>Reset Password</Button>
       </div>
     </div>
   ) : (
