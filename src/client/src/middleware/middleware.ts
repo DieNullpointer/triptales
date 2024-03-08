@@ -106,12 +106,16 @@ export async function forgotPassword(email: string) {
   return data;
 }
 
-export async function resetPassword(token: string | string[], password: string) {
-  let data;
+export async function resetPassword(
+  token: string | string[],
+  password: string
+) {
+  let response;
   await axios
-    .post(`https://localhost:7174/api/User/resetPassword/${token}`, {password})
+    .post(`https://localhost:7174/api/User/resetPassword`, { token, password })
     .then((res) => {
-      data = res.data;
-    }).catch((error) => {});
-  return data;
+      response = res;
+    })
+    .catch((error) => {});
+    return response;
 }

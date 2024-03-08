@@ -17,6 +17,8 @@ import "cropperjs/dist/cropper.css";
 import { Dialog, DialogBody, DialogHeader } from "@material-tailwind/react";
 import Spacing from "@/components/atoms/Spacing";
 import { Flowtext } from "@/components/atoms/Text";
+import { useRouter } from "next/router";
+import { log } from "console";
 
 export default function Settings() {
   const { data, error, isLoading } = getSelf();
@@ -27,6 +29,8 @@ export default function Settings() {
   const [email, setEmail] = useState("");
   const [origin, setOrigin] = useState("");
   const [favDestination, setFavDestination] = useState("");
+
+  const router = useRouter();
 
   useEffect(() => {
     setDisplayname(data?.displayName);
@@ -113,6 +117,11 @@ export default function Settings() {
       profile: cropped,
     });
     if (response.success) handleSuccessDialogOpen();
+  };
+
+  const handleResetPassword = async () => {
+    const response: any = await forgotPassword(email);
+    router.push(`/recovery/password${response!}`);
   };
 
   return data ? (
@@ -223,7 +232,7 @@ export default function Settings() {
           </Button>
         </div>
         <Spacing />
-        <Button onClick={() => forgotPassword(email)}>Reset Password</Button>
+        <Button onClick={handleResetPassword}>Reset Password</Button>
       </div>
     </div>
   ) : (

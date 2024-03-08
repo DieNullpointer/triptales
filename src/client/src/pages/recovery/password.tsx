@@ -1,6 +1,7 @@
 import Button from "@/components/atoms/Button";
 import CustomInput from "@/components/atoms/Input";
 import { Flowtext, Subheading } from "@/components/atoms/Text";
+import { logout } from "@/helpers/authHelpers";
 import { resetPassword } from "@/middleware/middleware";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
@@ -17,8 +18,12 @@ const Password: React.FC = () => {
     setError("");
     if (password !== cPassword) return setError("Passwords do not match");
     const response: any = await resetPassword(token!, password);
-    if (response?.success) router.push("/login");
-    else setError("An unknown error occured");
+    console.log(response);
+
+    if (response?.status === 200) {
+      logout();
+      router.push("/landingpage/login?pwchange=true");
+    } else setError("An unknown error occured");
   };
 
   return (
