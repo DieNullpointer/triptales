@@ -30,7 +30,8 @@ namespace TripTales.Application.Model
         public string? Origin { get; set; }
         public string? FavDestination { get; set; }
         public string? ResetToken { get; set; }
-        //public List<User> Follower { get; } = new();
+        public string? ProfilePicture { get; set; }
+        public string? BannerPicture { get; set; }
         public List<Follower> FollowerSender { get; } = new();
         public List<Follower> FollowerRecipient { get; } = new();
         public List<TripPost> Posts { get; } = new();
