@@ -5,7 +5,11 @@ import Avatar from "@/components/atoms/Avatar";
 import { changeUser, uploadPicture, uploadBanner } from "@/helpers/authHelpers";
 import { useEffect, useState, createRef, cache } from "react";
 import Loading from "@/components/static/Loading";
-import { getSelf, getUserByRegistry } from "@/middleware/middleware";
+import {
+  forgotPassword,
+  getSelf,
+  getUserByRegistry,
+} from "@/middleware/middleware";
 import defaultBanner from "@/resources/default_bannerpic.jpg";
 
 import { Cropper, ReactCropperElement } from "react-cropper";
@@ -13,6 +17,8 @@ import "cropperjs/dist/cropper.css";
 import { Dialog, DialogBody, DialogHeader } from "@material-tailwind/react";
 import Spacing from "@/components/atoms/Spacing";
 import { Flowtext } from "@/components/atoms/Text";
+import { useRouter } from "next/router";
+import { log } from "console";
 
 export default function Settings() {
   const { data, error, isLoading } = getSelf();
@@ -23,6 +29,8 @@ export default function Settings() {
   const [email, setEmail] = useState("");
   const [origin, setOrigin] = useState("");
   const [favDestination, setFavDestination] = useState("");
+
+  const router = useRouter();
 
   useEffect(() => {
     setDisplayname(data?.displayName);
@@ -72,8 +80,6 @@ export default function Settings() {
   const [successDialogOpen, setSuccessDialogOpen] = useState(false);
 
   const handleMainDialogOpen = () => {
-
-    
     if (mainDialogOpen) setUploaded(null);
     setMainDialogOpen(!mainDialogOpen);
   };
@@ -111,6 +117,11 @@ export default function Settings() {
       profile: cropped,
     });
     if (response.success) handleSuccessDialogOpen();
+  };
+
+  const handleResetPassword = async () => {
+    const response: any = await forgotPassword(email);
+    router.push(`/recovery/password${response!}`);
   };
 
   return data ? (
@@ -211,6 +222,7 @@ export default function Settings() {
           onChange={changeBanner}
           ref={bannerRef}
         />
+        <Spacing />
         <div className="flex space-x-4">
           <Button onClick={() => pictureRef.current?.click()}>
             Upload Avatar
@@ -219,6 +231,8 @@ export default function Settings() {
             Upload Banner
           </Button>
         </div>
+        <Spacing />
+        <Button onClick={handleResetPassword}>Reset Password</Button>
       </div>
     </div>
   ) : (

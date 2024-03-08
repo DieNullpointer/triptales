@@ -17,7 +17,9 @@ export function Login() {
   const [error, setError] = useState("");
 
   const router = useRouter();
-  const [open, setOpen] = useState(router.query.registered === "true");
+  const [open, setOpen] = useState(
+    router.query.registered === "true" || router.query.pwchange === "true"
+  );
 
   const fetchRandomPhoto = async () => {
     try {
@@ -43,8 +45,17 @@ export function Login() {
   return (
     <div className="flex justify-center items-center">
       <Dialog open={open} handler={handleOpen}>
-        <DialogHeader>Thank you for singing up!</DialogHeader>
-        <DialogBody>To get started, please log in again.</DialogBody>
+        {router.query.registered === "true" ? (
+          <>
+            <DialogHeader>Thank you for singing up!</DialogHeader>
+            <DialogBody>To get started, please log in again.</DialogBody>
+          </>
+        ) : (
+          <>
+            <DialogHeader>Your password has been changed!</DialogHeader>
+            <DialogBody>For security reasons, please log in again.</DialogBody>
+          </>
+        )}
       </Dialog>
       <div className="hidden md:block md:basis-3/4">
         <Image
@@ -57,10 +68,12 @@ export function Login() {
       <div className="md:basis-1/4 w-full">
         <div className="m-4 space-y-4">
           <div>
-          <Subheading center uppercase wide>
-            Login
-          </Subheading>
-          <Flowtext uppercase center>to Triptales</Flowtext>
+            <Subheading center uppercase wide>
+              Login
+            </Subheading>
+            <Flowtext uppercase center>
+              to Triptales
+            </Flowtext>
           </div>
           <form
             className="space-y-4"
@@ -125,7 +138,10 @@ export function Login() {
             Photo by{" "}
             <a
               target="_blank"
-              href={randomPhoto?.user.links.html + "?utm_source=triptales&utm_medium=referral"}
+              href={
+                randomPhoto?.user.links.html +
+                "?utm_source=triptales&utm_medium=referral"
+              }
               className="underline"
             >
               {randomPhoto?.user.name}
@@ -133,7 +149,10 @@ export function Login() {
             on{" "}
             <a
               target="_blank"
-              href={randomPhoto?.links?.html + "?utm_source=triptales&utm_medium=referral"}
+              href={
+                randomPhoto?.links?.html +
+                "?utm_source=triptales&utm_medium=referral"
+              }
               className="underline"
             >
               Unsplash
