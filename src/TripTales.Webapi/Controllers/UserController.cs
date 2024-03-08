@@ -100,7 +100,7 @@ namespace TripTales.Webapi.Controllers
             catch (DbUpdateException e) { return BadRequest(e.Message); }
             //await _emailSender.SendEmailAsync(email, "TripTales Password Reset", $"<p>Beim folgenden Link kann das Password zurückgesetzt werden: <a href='https://localhost:3000/user/resetPassword/{token}'>https://localhost:3000/user/resetPassword/{token}</a>.</p><br><p>Der Token wird dafür gebraucht: {user.ResetToken}</p>");
             var url = _config["RedirectPasswordReset"];
-            return Ok($"?token={token}");
+            return Ok(token);
         }
 
         private string RandomToken()
@@ -173,15 +173,17 @@ namespace TripTales.Webapi.Controllers
         {
             return Ok(await _db.User.Where(a => a.RegistryName.Contains(username)).Select(a => new
             {
+                a.ProfilePicture,
                 a.Guid,
                 a.DisplayName,
                 a.RegistryName
             }).OrderBy(a => a.RegistryName).ToListAsync());
         }
 
+        public record UploadImagesCmd(IFormFile? banner, IFormFile? profile);
         [Authorize]
         [HttpPut("addImages")]
-        public async Task<IActionResult> UpdateImages([FromForm] IFormFile? banner, IFormFile? profile)
+        public async Task<IActionResult> UpdateImages([FromForm] UploadImagesCmd upload)
         {
             var authenticated = HttpContext.User.Identity?.IsAuthenticated ?? false;
             if (!authenticated) { return Unauthorized(); }
@@ -190,47 +192,28 @@ namespace TripTales.Webapi.Controllers
             // Valid token, but no user match in the database (maybe deleted by an admin).
             var user = await _db.User.FirstOrDefaultAsync(a => a.RegistryName == username);
             if (user is null) { return Unauthorized(); }
-            /*string directoryPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Pictures");
-            if (!Directory.Exists(directoryPath))
-                Directory.CreateDirectory(directoryPath);
-            var bannerPath = Path.Combine(directoryPath, $"{username}-banner.jpg");
-            var profilePath = Path.Combine(directoryPath, $"{username}-profile.jpg");
-            if(banner is not null)
+            if(upload.banner is not null)
             {
-                using (var stream = new FileStream(bannerPath, FileMode.Create))
-                {
-                    await banner.CopyToAsync(stream);
-                }
-            }
-            if(profile is not null)
-            {
-                using (var stream = new FileStream(profilePath, FileMode.Create))
-                {
-                    await profile.CopyToAsync(stream);
-                }
-            }*/
-            if(banner is not null)
-            {
-                if (banner.Length > 1024 * 1024) return BadRequest("Invalid filesize.");
-                var extension = new FileInfo(banner.FileName).Extension;
+                if (upload.banner.Length > 5242880) return BadRequest("Invalid filesize.");
+                var extension = new FileInfo(upload.banner.FileName).Extension;
                 if (!_allowedExtensions.Contains(extension)) return BadRequest("Invalid extension.");
                 var filename = Guid.NewGuid().ToString("n") + extension;
                 using (var destStream = new FileStream(Path.Combine(_config["UploadDirectory"], filename), FileMode.Create, FileAccess.Write))
                 {
-                    await banner.CopyToAsync(destStream);
+                    await upload.banner.CopyToAsync(destStream);
                 }
 
                 user.BannerPicture = $"{_config["UploadDirectory"]}/{filename}";
             }
-            if(profile is not null)
+            if(upload.profile is not null)
             {
-                if (profile.Length > 1024 * 1024) return BadRequest("Invalid filesize.");
-                var extension = new FileInfo(profile.FileName).Extension;
+                if (upload.profile.Length > 5242880) return BadRequest("Invalid filesize.");
+                var extension = new FileInfo(upload.profile.FileName).Extension;
                 if (!_allowedExtensions.Contains(extension)) return BadRequest("Invalid extension.");
                 var filename = Guid.NewGuid().ToString("n") + extension;
                 using (var destStream = new FileStream(Path.Combine(_config["UploadDirectory"], filename), FileMode.Create, FileAccess.Write))
                 {
-                    await profile.CopyToAsync(destStream);
+                    await upload.profile.CopyToAsync(destStream);
                 }
                 user.ProfilePicture = $"{_config["UploadDirectory"]}/{filename}";
             }
@@ -259,16 +242,6 @@ namespace TripTales.Webapi.Controllers
             }
             var user = await _db.User.Include(a => a.FollowerRecipient).ThenInclude(a => a.Sender).Include(a => a.FollowerSender).ThenInclude(a => a.Recipient).FirstOrDefaultAsync(u => u.RegistryName == registryName);
             if (user is null) return BadRequest("User gibt es nicht");
-            string? profile = Path.Combine(Directory.GetCurrentDirectory(), $"wwwroot/Pictures/{registryName}-profile.jpg").Replace("\\", "/");
-            string? banner = Path.Combine(Directory.GetCurrentDirectory(), $"wwwroot/Pictures/{registryName}-banner.jpg").Replace("\\", "/");
-            if (!System.IO.File.Exists(profile))
-                profile = null;
-            else
-                profile = $"Pictures/{registryName}-profile.jpg";
-            if (!System.IO.File.Exists(banner))
-                banner = null;
-            else
-                banner = $"Pictures/{registryName}-banner.jpg";
             var test = new
             {
                 User = new
@@ -302,8 +275,8 @@ namespace TripTales.Webapi.Controllers
                         },
                     }),
                 },
-                Profile = profile,
-                Banner = banner
+                Profile = user.ProfilePicture,
+                Banner = user.BannerPicture
             };
             return Ok(test);
         }
@@ -320,6 +293,8 @@ namespace TripTales.Webapi.Controllers
             if (user is null) { return Unauthorized(); }
             return Ok(new
             {
+                user.ProfilePicture,
+                user.BannerPicture,
                 user.DisplayName,
                 Username = user.RegistryName,
                 user.Description,

@@ -77,7 +77,7 @@ namespace TripTales.Webapi.Controllers
                     h.User!.Guid,
                     h.User!.RegistryName,
                     h.User.DisplayName,
-                    ProfilePicture = System.IO.File.Exists(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Pictures", $"{h.User.RegistryName}-profile.jpg")) ? $"Pictures/{h.User.RegistryName}-profile.jpg" : null
+                    h.User.ProfilePicture
                 }
             });
             return Ok(export);
@@ -122,7 +122,7 @@ namespace TripTales.Webapi.Controllers
                     h.User!.Guid,
                     h.User!.RegistryName,
                     h.User.DisplayName,
-                    ProfilePicture = System.IO.File.Exists(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Pictures", $"{h.User.RegistryName}-profile.jpg")) ? $"Pictures/{h.User.RegistryName}-profile.jpg" : null
+                    h.User.ProfilePicture
                 }
             };
             return Ok(export);
@@ -302,7 +302,7 @@ namespace TripTales.Webapi.Controllers
                     post.User!.Guid,
                     post.User!.RegistryName,
                     post.User.DisplayName,
-                    ProfilePicture = System.IO.File.Exists(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Pictures", $"{post.User.RegistryName}-profile.jpg")) ? $"Pictures/{post.User.RegistryName}-profile.jpg" : null
+                    post.User.ProfilePicture
                 }
             };
             return Ok(export);
@@ -418,7 +418,7 @@ namespace TripTales.Webapi.Controllers
                     h.User!.Guid,
                     h.User!.RegistryName,
                     h.User.DisplayName,
-                    ProfilePicture = System.IO.File.Exists(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Pictures", $"{h.User.RegistryName}-profile.jpg")) ? $"Pictures/{h.User.RegistryName}-profile.jpg" : null
+                    h.User.ProfilePicture
                 }
             });
         }
@@ -479,7 +479,7 @@ namespace TripTales.Webapi.Controllers
                     h.User!.Guid,
                     h.User!.RegistryName,
                     h.User.DisplayName,
-                    ProfilePicture = System.IO.File.Exists(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Pictures", $"{h.User.RegistryName}-profile.jpg")) ? $"Pictures/{h.User.RegistryName}-profile.jpg" : null
+                    h.User.ProfilePicture
                 }
             });
         }
