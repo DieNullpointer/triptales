@@ -4,7 +4,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
+using System.IO;
 using TripTales.Application.Dto;
 using TripTales.Application.Infrastructure;
 using TripTales.Application.Infrastructure.Repositories;
@@ -76,7 +78,12 @@ if (app.Environment.IsDevelopment())
     app.UseCors("AllowNextDevserver");
 }
 app.UseCookiePolicy();
-app.UseStaticFiles();
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(
+           Path.Combine(builder.Environment.ContentRootPath, "Pictures")),
+    RequestPath = "/Pictures"
+});
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
