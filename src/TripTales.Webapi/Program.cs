@@ -65,12 +65,6 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         o.AccessDeniedPath = "/account/signin";
     });
 
-/*builder.Services.AddAuthentication().AddMicrosoftAccount(microsoftOptions =>
-{
-    microsoftOptions.ClientId = builder.Configuration["Microsoft:ClientId"];
-    microsoftOptions.ClientSecret = builder.Configuration["Microsoft:ClientSecret"];
-});*/
-
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowNextDevserver",
@@ -110,6 +104,7 @@ app.UseStaticFiles(new StaticFileOptions
            Path.Combine(builder.Environment.ContentRootPath, "Pictures")),
     RequestPath = "/Pictures"
 });
+app.UseStaticFiles();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
