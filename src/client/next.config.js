@@ -4,7 +4,8 @@ const nextConfig = {
   distDir: 'build',
   eslint: {
     ignoreDuringBuilds: true
-  }
+  },
+  assetPrefix: './'
 }
 
 module.exports = nextConfig
