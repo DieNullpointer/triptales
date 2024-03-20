@@ -1,3 +1,4 @@
+import React from "react";
 import Button from "@/components/atoms/Button";
 import Input from "@/components/atoms/Input";
 import Image from "@/components/atoms/Image";
@@ -8,6 +9,7 @@ import { getRandom } from "@/helpers/imgHelpers";
 import { useRouter } from "next/router";
 import { register } from "@/helpers/authHelpers";
 import Fallbackimg from "@/resources/login_fallback.jpg";
+import { usernameValid } from "@/helpers/stringHelpers";
 
 export default function Login() {
   const [username, setUsername] = useState("");
@@ -61,10 +63,12 @@ export default function Login() {
       <div className="md:basis-1/4 w-full">
         <div className="m-4 space-y-4">
           <div>
-          <Subheading center wide uppercase>
-            Sign Up
-          </Subheading>
-          <Flowtext center uppercase>to create a free account</Flowtext>
+            <Subheading center wide uppercase>
+              Sign Up
+            </Subheading>
+            <Flowtext center uppercase>
+              to create a free account
+            </Flowtext>
           </div>
           <form
             className="space-y-4"
@@ -90,7 +94,10 @@ export default function Login() {
                 </svg>
               }
               value={username}
-              onChange={(val) => setUsername(val)}
+              onChange={(val) => {
+                if (usernameValid(val)) setUsername(val);
+              }}
+              bottomText="Username must follow username rules [a-z0-9_.-]"
             />
             <Input
               type="text"
@@ -124,7 +131,10 @@ export default function Login() {
             Photo by{" "}
             <a
               target="_blank"
-              href={randomPhoto?.user.links.html + "?utm_source=triptales&utm_medium=referral"}
+              href={
+                randomPhoto?.user.links.html +
+                "?utm_source=triptales&utm_medium=referral"
+              }
               className="underline"
             >
               {randomPhoto?.user.name}
@@ -132,7 +142,10 @@ export default function Login() {
             on{" "}
             <a
               target="_blank"
-              href={randomPhoto?.links?.html + "?utm_source=triptales&utm_medium=referral"}
+              href={
+                randomPhoto?.links?.html +
+                "?utm_source=triptales&utm_medium=referral"
+              }
               className="underline"
             >
               Unsplash
