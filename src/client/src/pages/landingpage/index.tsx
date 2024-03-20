@@ -53,6 +53,14 @@ export default function Login() {
         >
           <h1>Sign Up</h1>
         </Button>
+        <Button
+          className="text-white w-full"
+          onClick={() => {
+            router.push("https://localhost:7174/account/signin");
+          }}
+        >
+          <h1>Signin with Microsoft</h1>
+        </Button>
       </div>
       {randomPhoto && (
         <Flowtext className="hidden md:inline-block md:absolute bottom-2 right-2 !w-fit text-gray-500 italic !text-sm">

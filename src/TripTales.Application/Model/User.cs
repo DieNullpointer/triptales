@@ -21,8 +21,8 @@ namespace TripTales.Application.Model
         public int Id { get; set; }
         public Guid Guid { get; set; }
         public string Email { get; set; }
-        public string Salt { get; set; }
-        public string PasswordHash { get; set; }
+        public string? Salt { get; set; }
+        public string? PasswordHash { get; set; }
         public string? DisplayName { get; set; }
         public string RegistryName { get; set; }
         public string? Description { get; set; }
@@ -30,6 +30,7 @@ namespace TripTales.Application.Model
         public string? Origin { get; set; }
         public string? FavDestination { get; set; }
         public string? ResetToken { get; set; }
+        public string? RefreshToken { get; set; }
         public string? ProfilePicture { get; set; }
         public string? BannerPicture { get; set; }
         public List<Follower> FollowerSender { get; } = new();
@@ -38,6 +39,12 @@ namespace TripTales.Application.Model
         public List<TripPost> Likes { get; } = new();
         public List<Notification> Notifications { get; } = new();
         public List<Notification> NotificationSender { get; } = new();
+        public User(string email, string registryName, string refreshToken)
+        {
+            Email = email;
+            RegistryName = registryName;
+            RefreshToken = refreshToken;
+        }
         public User(string email, string password, string registryName, string? displayName = null, string? description = null, string? origin = null, string? favDestination = null)
         {
             Email = email;
@@ -49,6 +56,7 @@ namespace TripTales.Application.Model
             FavDestination = favDestination;
             ResetToken = null;
         }
+
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         protected User() { }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
@@ -60,7 +68,7 @@ namespace TripTales.Application.Model
             Salt = GenerateRandomSalt();
             PasswordHash = CalculateHash(password, Salt);
         }
-        public bool CheckPassword(string password) => PasswordHash == CalculateHash(password, Salt);
+        public bool CheckPassword(string password) => PasswordHash == CalculateHash(password, Salt!);
         /// <summary>
         /// Generates a random number with the given length of bits.
         /// </summary>
