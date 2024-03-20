@@ -19,6 +19,7 @@ import Spacing from "@/components/atoms/Spacing";
 import { Flowtext } from "@/components/atoms/Text";
 import { useRouter } from "next/router";
 import { log } from "console";
+import { dataUrlToFile } from "@/helpers/imgHelpers";
 
 export default function Settings() {
   const { data, error, isLoading } = getSelf();
@@ -30,6 +31,9 @@ export default function Settings() {
   const [origin, setOrigin] = useState("");
   const [favDestination, setFavDestination] = useState("");
 
+  const [updatedBanner, setUpdatedBanner] = useState<string>();
+  const [updatedProfile, setUpdatedProfile] = useState<string>();
+
   const router = useRouter();
 
   useEffect(() => {
@@ -38,6 +42,8 @@ export default function Settings() {
     setEmail(data?.email);
     setOrigin(data?.origin);
     setFavDestination(data?.favDestination);
+    setUpdatedBanner(banner);
+    setUpdatedProfile(profile);
   }, [data]);
 
   const handleSubmit = async () => {
@@ -88,8 +94,9 @@ export default function Settings() {
     setSuccessDialogOpen(!successDialogOpen);
   };
 
-  const onFileInputChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
+  const changeProfile: React.ChangeEventHandler<HTMLInputElement> = (e) => {
     const file = e.target?.files?.[0];
+
     if (file) {
       file2Base64(file).then((base64) => {
         setUploaded(base64);
@@ -108,15 +115,30 @@ export default function Settings() {
     const response: any = await uploadBanner({
       banner: bannerRef.current?.files?.item(0),
     });
-    if (response.success) handleSuccessDialogOpen();
+    if (response.success) {
+      handleSuccessDialogOpen();
+      file2Base64(bannerRef.current?.files?.item(0)!).then((base64) => {
+        setUpdatedBanner(base64);
+      });
+    }
   };
 
   const changePicture = async () => {
     setMainDialogOpen(false);
+    console.log(cropped);
+    const file = dataUrlToFile(
+      cropped!,
+      `uploaded_${new Date().getTime()}.png`
+    );
+    console.log(file);
+
     const response: any = await uploadPicture({
-      profile: cropped,
+      profile: file,
     });
-    if (response.success) handleSuccessDialogOpen();
+    if (response.success) {
+      setUpdatedProfile(cropped!);
+      handleSuccessDialogOpen();
+    }
   };
 
   const handleResetPassword = async () => {
@@ -141,7 +163,9 @@ export default function Settings() {
             />
             <div className="flex space-x-4">
               <Button onClick={onCrop}>Crop Avatar</Button>
-              <Button onClick={changePicture}>Upload</Button>
+              <Button disabled={!cropped} onClick={changePicture}>
+                Upload
+              </Button>
             </div>
             {cropped && (
               <Image
@@ -165,13 +189,13 @@ export default function Settings() {
       <Spacing />
       <div className="relative bottom-9">
         <Image
-          src={banner || defaultBanner.src}
+          src={updatedBanner || banner || defaultBanner.src}
           alt=""
           className="w-full"
           wrapper="max-h-60 overflow-hidden items-center flex rounded-lg"
         />
         <Avatar
-          profile={profile}
+          profile={updatedProfile || profile}
           size="large"
           className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2"
         />
@@ -211,7 +235,7 @@ export default function Settings() {
           type="file"
           className="hidden"
           ref={pictureRef}
-          onChange={onFileInputChange}
+          onChange={changeProfile}
           accept="image/png,image/jpeg,image/gif"
         />
         <input
