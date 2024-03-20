@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System;
 using Microsoft.Extensions.Logging;
 using TripTales.Webapi.Services;
+using System.Linq;
 
 namespace TripTales.Webapi.Controllers
 {
@@ -48,7 +49,7 @@ namespace TripTales.Webapi.Controllers
             await _adClient.AddOrUpdateUser(email: me.Mail, refreshToken: refreshToken);
             var claims = new List<Claim>
                 {
-                    new Claim(ClaimTypes.Name, me.Mail)
+                    new Claim(ClaimTypes.Name, me.Mail.Split("@").First()),
                     //new Claim("Userdata", JsonSerializer.Serialize(currentUser)),
                 };
             var claimsIdentity = new ClaimsIdentity(
@@ -57,6 +58,7 @@ namespace TripTales.Webapi.Controllers
 
             var authProperties = new AuthenticationProperties
             {
+                AllowRefresh = true,
                 ExpiresUtc = DateTimeOffset.UtcNow.AddHours(3),
             };
 

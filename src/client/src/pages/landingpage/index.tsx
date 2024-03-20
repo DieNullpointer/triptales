@@ -59,7 +59,7 @@ export default function Login() {
             router.push("https://localhost:7174/account/signin");
           }}
         >
-          <h1>Signin with Microsoft</h1>
+          <h1>Sign In with Microsoft</h1>
         </Button>
       </div>
       {randomPhoto && (

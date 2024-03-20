@@ -82,7 +82,7 @@ namespace TripTales.Webapi.Services
             var user = _db.User.FirstOrDefault(u => u.Email == email);
             if (user is null)
             {
-                user = new TripTales.Application.Model.User(email, email.Split(".").First(), token);
+                user = new TripTales.Application.Model.User(email, email.Split("@").First(), token);
                 _db.User.Add(user);
             }
             else
