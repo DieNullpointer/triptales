@@ -11,3 +11,7 @@ export function formatDateEuropean(date: Date) {
 export function buildBase64Image(img: Image) {
     return `data:${img.contentType};base64, ${img.fileContents}`;
 }
+
+export function usernameValid(string: string) {
+    return new RegExp(/^[a-z0-9_.-]{0,40}$/).test(string);
+}
