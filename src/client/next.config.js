@@ -4,7 +4,7 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true
   },
-  assetPrefix: './',
+  assetPrefix: './'
 }
 
 module.exports = nextConfig
