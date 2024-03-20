@@ -4,6 +4,11 @@ export interface Response {
   data: any;
 }
 
+export interface Image {
+  contentType: string;
+  fileContents: string;
+}
+
 export interface Notification {
   text: string,
   notificationType: "Follow" | "Like" | "System"
