@@ -25,6 +25,24 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.AddTransient<IEmailSender, EmailSender>();
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped(opt =>
+{
+    var adConfig = builder.Configuration.GetSection("AzureAd");
+    var secret = builder.Configuration["Secret"];
+
+    var httpContextAccessor = opt.GetRequiredService<IHttpContextAccessor>();
+    var httpContext = httpContextAccessor.HttpContext ?? throw new ServiceException("No HTTP Context");
+    var redirectUrl = $"{httpContext.Request.Scheme}://{httpContext.Request.Host}{httpContext.Request.PathBase}/{adConfig["RedirectUrl"]}";
+    return new AzureAdClient(
+        tenantId: adConfig["TenantId"],
+        clientId: adConfig["ClientId"],
+        redirectUrl: redirectUrl,
+        clientSecret: adConfig["ClientSecret"],
+        scope: adConfig["Scope"],
+        secret: secret,
+        db: opt.GetRequiredService<TripTalesContext>());
+});
 
 builder.Services.Configure<CookiePolicyOptions>(options =>
 {
@@ -43,7 +61,15 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
             context.Response.StatusCode = StatusCodes.Status401Unauthorized;
             return System.Threading.Tasks.Task.CompletedTask;
         };
+        o.LoginPath = "/account/signin";
+        o.AccessDeniedPath = "/account/signin";
     });
+
+/*builder.Services.AddAuthentication().AddMicrosoftAccount(microsoftOptions =>
+{
+    microsoftOptions.ClientId = builder.Configuration["Microsoft:ClientId"];
+    microsoftOptions.ClientSecret = builder.Configuration["Microsoft:ClientSecret"];
+});*/
 
 builder.Services.AddCors(options =>
 {
