@@ -333,15 +333,21 @@ namespace TripTales.Webapi.Controllers
             if (post.Likes.Contains(user))
             {
                 post.Likes.Remove(user);
-                var notification = _db.Notifications.FirstOrDefault(a => a.User == post.User && a.NotificationType == NotificationType.Like && a.Sender == user);
-                if(notification is not null)
-                    _db.Notifications.Remove(notification);
+                if(post.User != user)
+                {
+                    var notification = _db.Notifications.FirstOrDefault(a => a.User == post.User && a.NotificationType == NotificationType.Like && a.Sender == user);
+                    if (notification is not null)
+                        _db.Notifications.Remove(notification);
+                }
             }
             else
             {
                 post.Likes.Add(user);
-                var notification = new Notification(post.User!, NotificationType.Like, user);
-                _db.Notifications.Add(notification);
+                if(post.User != user)
+                {
+                    var notification = new Notification(post.User!, NotificationType.Like, user);
+                    _db.Notifications.Add(notification);
+                }
             }
             try { await _db.SaveChangesAsync(); }
             catch (DbUpdateException e) { return BadRequest(e.Message); }
