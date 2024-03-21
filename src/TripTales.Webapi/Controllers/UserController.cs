@@ -192,6 +192,7 @@ namespace TripTales.Webapi.Controllers
             // Valid token, but no user match in the database (maybe deleted by an admin).
             var user = await _db.User.FirstOrDefaultAsync(a => a.RegistryName == username);
             if (user is null) { return Unauthorized(); }
+            // If the folder does not exist, create it.
             if(upload.banner is not null)
             {
                 if (upload.banner.Length > 5242880) return BadRequest("Invalid filesize.");
