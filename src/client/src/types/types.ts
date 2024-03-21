@@ -59,7 +59,6 @@ export interface TripDay {
   date: any;
   title: string;
   text: string;
-  images: [{ image: string }];
 }
 
 export interface TripLocation {

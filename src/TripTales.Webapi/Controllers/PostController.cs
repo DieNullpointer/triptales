@@ -135,7 +135,7 @@ namespace TripTales.Webapi.Controllers
             DateTime Begin,
             DateTime End,
             List<DayCmd> Days,
-            List<IFormFile> Images
+            List<IFormFile>? Images
         );
 
         [Authorize]
