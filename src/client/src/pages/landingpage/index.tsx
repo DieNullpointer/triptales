@@ -4,7 +4,7 @@ import router from "next/router";
 import { useEffect, useState } from "react";
 import { getRandom } from "@/helpers/imgHelpers";
 import Spacing from "@/components/atoms/Spacing";
-import { Flowtext, Subheading } from "@/components/atoms/Text";
+import { Flowtext, Heading, Subheading } from "@/components/atoms/Text";
 import Fallbackimg from "@/resources/login_fallback.jpg";
 
 export default function Login() {
@@ -43,7 +43,7 @@ export default function Login() {
             router.push("/landingpage/login");
           }}
         >
-          <h1>Login</h1>
+          Login
         </Button>
         <Button
           className="text-white w-full"
@@ -51,7 +51,7 @@ export default function Login() {
             router.push("/landingpage/register");
           }}
         >
-          <h1>Sign Up</h1>
+          Sign Up
         </Button>
         <Button
           className="text-white w-full"
@@ -59,7 +59,7 @@ export default function Login() {
             router.push("https://localhost:7174/account/signin");
           }}
         >
-          <h1>Sign In with Microsoft</h1>
+          Sign In with Microsoft
         </Button>
       </div>
       {randomPhoto && (
