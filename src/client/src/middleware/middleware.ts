@@ -40,7 +40,7 @@ export function getUserByRegistry(registryName: string): {
   return {
     user: data?.user,
     profile: data?.profile
-      ? "https://localhost:7174/" + data?.profile
+      ? data?.profile
       : undefined,
     banner: data?.banner ? "https://localhost:7174/" + data?.banner : undefined,
     error,
