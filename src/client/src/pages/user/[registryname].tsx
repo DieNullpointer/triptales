@@ -1,25 +1,17 @@
-import Image from "@/components/atoms/Image";
-import { getUser, getUserByRegistry } from "@/middleware/middleware";
+import { getUserByRegistry } from "@/middleware/middleware";
 import { useRouter } from "next/router";
-
-import defaultBanner from "@/resources/default_bannerpic.jpg";
-import defaultPfp from "@/resources/default_profilepic.png";
 import {
   Flowtext,
-  Heading,
   IconText,
   Subheading,
 } from "@/components/atoms/Text";
 import Loading from "@/components/static/Loading";
 import Spacing from "@/components/atoms/Spacing";
 import Container from "@/components/atoms/Container";
-import Grid from "@/components/atoms/Grid";
-import Avatar from "@/components/atoms/Avatar";
 import { useEffect, useState } from "react";
 import { getAuthorized } from "@/helpers/authHelpers";
 import Follow from "@/components/static/Follow";
 import Button from "@/components/atoms/Button";
-import IconButton from "@/components/molecules/IconButton";
 import ProfileHeader from "@/components/molecules/ProfileHeader";
 
 export default function User() {
