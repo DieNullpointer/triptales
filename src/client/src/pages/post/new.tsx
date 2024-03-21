@@ -13,6 +13,8 @@ import Button from "@/components/atoms/Button";
 import { TripDay } from "@/types/types";
 import { useState } from "react";
 import { DateValueType } from "react-tailwindcss-datepicker";
+import { createPost } from "@/helpers/authHelpers";
+import { AxiosResponse } from "axios";
 
 export default function CreatePost() {
   const [title, setTitle] = useState("");
@@ -30,7 +32,24 @@ export default function CreatePost() {
 
   const [dayDialogOpen, setDayDialogOpen] = useState(false);
 
-  const handleUpload = async () => {};
+  const [error, setError] = useState("");
+
+  const handleUpload = async () => {
+    const response: any = await createPost({
+      title,
+      text,
+      days: days.map((day) => {
+        return { date: day.date.startDate, title: day.title, text: day.text };
+      }),
+      begin: date?.startDate,
+      end: date?.endDate,
+    });
+    if (!response?.success) {
+      console.log(response?.response?.data?.errors?.[0]);
+
+      setError("");
+    }
+  };
 
   const handleAddDay = () => {
     setDays([...days, currentDay!]);
@@ -68,7 +87,6 @@ export default function CreatePost() {
         props?.text || props?.text === "" ? props.text : currentDay?.text || "",
       date:
         props?.date || props?.date === "" ? props.date : currentDay?.date || "",
-      images: [{ image: "" }],
       title:
         props?.title || props?.title === ""
           ? props.title
@@ -87,13 +105,20 @@ export default function CreatePost() {
             Add a day to your Trip. Days are displayed in a timeline from start
             to end.
           </Flowtext>
+          <Flowtext uppercase bold wide className="!text-base !text-slate-800">
+            Day{" "}
+            {currentlyEditing || currentlyEditing === 0
+              ? (currentlyEditing as number) + 1
+              : days.length + 1}
+            :
+          </Flowtext>
           <Input
-            label="Title"
+            label="Title*"
             value={currentDay?.title}
             onChange={(val) => updateDay({ title: val })}
           />
           <Textarea
-            label="Text"
+            label="Text*"
             size="md"
             value={currentDay?.text}
             onChange={(e) => updateDay({ text: e.target.value })}
@@ -118,9 +143,9 @@ export default function CreatePost() {
         <Flowtext italic className="!text-sm">
           Required Fields
         </Flowtext>
-        <Input label="Title" value={title} onChange={(val) => setTitle(val)} />
+        <Input label="Title*" value={title} onChange={(val) => setTitle(val)} />
         <Textarea
-          label="Text"
+          label="Text*"
           size="md"
           value={text}
           onChange={(e) => setText(e.target.value)}
@@ -181,7 +206,15 @@ export default function CreatePost() {
           <></>
         )}
         <Spacing />
-        <Button onClick={handleUpload}>CREATE POST</Button>
+        <Button type="submit" onClick={handleUpload}>
+          CREATE POST
+        </Button>
+
+        {error ? (
+          <Flowtext className="!text-red-500 !text-base">{error}</Flowtext>
+        ) : (
+          <></>
+        )}
       </Container>
     </>
   );
