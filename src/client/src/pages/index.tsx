@@ -16,8 +16,6 @@ export default function Home() {
     if (data) {
       setFeedIterationNr(feedIterationNr + 1);
       setFeed([...feed, data]);
-      console.log(data);
-      console.log(feed);
     }
   };
   useEffect(() => {

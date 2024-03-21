@@ -1,7 +1,5 @@
 import { useRouter } from "next/router";
 import axios from "axios";
-import { File } from "buffer";
-import process from 'node:process'
 
 axios.defaults.baseURL = process.env.NODE_ENV == 'production' ? "/api" : "https://localhost:7174/api";
 axios.defaults.withCredentials = true;
@@ -73,13 +71,13 @@ export async function login(credentials: {
 }
 
 export async function changeUser(credentials: {
-  registryName: string,
-  displayName: string,
-  password: string,
-  email: string,
-  description: string,
-  origin: string,
-  favDestination: string
+  registryName: string;
+  displayName: string;
+  password: string;
+  email: string;
+  description: string;
+  origin: string;
+  favDestination: string;
 }) {
   try {
     const response = await axios.put("/user/change", credentials);
@@ -126,15 +124,15 @@ export async function getNotficiations() {
     const response = await axios.get("/user/notifications");
     return response.data;
   } catch (error) {
-    return undefined; 
+    return undefined;
   }
 }
 
-export async function uploadPicture(credentials: {
-    profile: any
-}) {
+export async function uploadPicture(credentials: { profile: any }) {
   try {
-    const response = await axios.put("/user/addImages", credentials, {headers: {"Content-Type": "multipart/form-data"}});
+    const response = await axios.put("/user/addImages", credentials, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
 
     const resObj = {
       status: response.status,
@@ -142,24 +140,35 @@ export async function uploadPicture(credentials: {
       data: response.data,
     };
     return resObj;
-  } catch (error:any) {
+  } catch (error: any) {
     return { sucess: false, error: error.response?.data };
   }
 }
 
-export async function uploadBanner(credentials: {
-  banner: any
-}) {
-try {
-  const response = await axios.put("/user/addImages", credentials, {headers: {"Content-Type": "multipart/form-data"}});
+export async function uploadBanner(credentials: { banner: any }) {
+  try {
+    const response = await axios.put("/user/addImages", credentials, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
 
-  const resObj = {
-    status: response.status,
-    success: response.status === 200,
-    data: response.data,
-  };
-  return resObj;
-} catch (error:any) {
-  return { sucess: false, error: error.response?.data };
+    const resObj = {
+      status: response.status,
+      success: response.status === 200,
+      data: response.data,
+    };
+    return resObj;
+  } catch (error: any) {
+    return { sucess: false, error: error.response?.data };
+  }
 }
+
+export async function createPost(post: any) {
+  try {
+    const response = await axios.post("/post/add", post, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    return response;
+  } catch (err) {
+    return err;
+  }
 }

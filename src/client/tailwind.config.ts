@@ -18,14 +18,15 @@ export default withMT({
       sans: ["Roboto", "sans-serif"],
       roboto: ["Roboto", "sans-serif"],
     },
-    extend: {},
-    colors: {
-      greenwhite: "#f1ffd1",
-      warmwhite: "#faf2e1",
-      primary: "#3ce322",
-      primaryHover: "#308270",
-      secondary: "#2466ff",
-      ...colors,
+    extend: {
+      colors: {
+        greenwhite: "#f1ffd1",
+        warmwhite: "#faf2e1",
+        primary: "#3ce322",
+        primaryHover: "#308270",
+        secondary: "#2466ff",
+        ...colors,
+      },
     },
   },
   variants: {

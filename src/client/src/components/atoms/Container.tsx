@@ -7,6 +7,7 @@ export interface Props {
   center?: boolean;
   id?: string;
   sectionMarker?: boolean;
+  onClick?: () => void;
 }
 
 const Container: React.FC<Props> = ({
@@ -14,10 +15,12 @@ const Container: React.FC<Props> = ({
   center,
   className = "",
   children,
-  sectionMarker
+  sectionMarker,
+  onClick
 }) => (
   <div
     id={id}
+    onClick={onClick}
     className={cleanClasses(
       `${center ? "justify-center items-center" : ""} ${
         sectionMarker ? "bg-slate-100 p-2 rounded-lg" : ""
