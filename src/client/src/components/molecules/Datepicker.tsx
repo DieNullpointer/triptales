@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import DatepickerI from "react-tailwindcss-datepicker";
 import { DateValueType } from "react-tailwindcss-datepicker";
 
-const Datepicker = () => {
+const Datepicker: React.FC<{ single?: boolean, className?: string }> = ({ single = false, className = "" }) => {
   const [value, setValue] = useState<DateValueType>({
     startDate: null,
     endDate: null,
@@ -19,8 +19,9 @@ const Datepicker = () => {
       onChange={handleValueChange}
       primaryColor="emerald"
       inputClassName="w-full rounded-md border border-gray-400/80 p-2 pl-3"
-      placeholder="Startdate ~ Enddate"
+      placeholder={`${!single ? "Startdate ~ Enddate" : "Date"}`}
       showShortcuts={true}
+      asSingle={single}
       displayFormat="DD.MM.YYYY"
     />
   );
