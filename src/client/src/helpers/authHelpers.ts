@@ -1,8 +1,9 @@
 import { useRouter } from "next/router";
 import axios from "axios";
 import { File } from "buffer";
+import process from 'node:process'
 
-axios.defaults.baseURL = "https://localhost:7174/api";
+axios.defaults.baseURL = process.env.NODE_ENV == 'production' ? "/api" : "https://localhost:7174/api";
 axios.defaults.withCredentials = true;
 
 export async function getAuthorized() {

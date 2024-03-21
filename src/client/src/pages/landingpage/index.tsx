@@ -6,6 +6,7 @@ import { getRandom } from "@/helpers/imgHelpers";
 import Spacing from "@/components/atoms/Spacing";
 import { Flowtext, Heading, Subheading } from "@/components/atoms/Text";
 import Fallbackimg from "@/resources/login_fallback.jpg";
+import process from 'node:process'
 
 export default function Login() {
   const [randomPhoto, setRandomPhoto] = useState<any>();
@@ -56,7 +57,7 @@ export default function Login() {
         <Button
           className="text-white w-full"
           onClick={() => {
-            router.push("https://localhost:7174/account/signin");
+            router.push(process.env.NODE_ENV == 'production' ? "/account/signin" : "https://localhost:7174/account/signin");
           }}
         >
           Sign In with Microsoft
