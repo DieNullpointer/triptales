@@ -23,6 +23,7 @@ namespace TripTales.Application.Model
         public List<TripDay> Days { get; } = new();
         public List<User> Likes { get; } = new();
         public List<Comment> Comments { get; } = new();
+        public List<string> Images { get; } = new();
 
         public TripPost(string title, string text, DateTime begin, DateTime end, User user)
         {

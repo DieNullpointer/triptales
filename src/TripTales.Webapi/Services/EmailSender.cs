@@ -1,5 +1,4 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
 using System.Net.Mail;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
@@ -15,7 +14,14 @@ namespace TripTales.Webapi.Services
         }
         public Task SendEmailAsync(string email, string subject, string message)
         {
-            var client = new SmtpClient("smtp.office365.com", 587)
+            /*var client = new SmtpClient("smtp.office365.com", 587)
+            {
+                DeliveryMethod = SmtpDeliveryMethod.Network,
+                EnableSsl = true,
+                UseDefaultCredentials = false,
+                Credentials = new NetworkCredential(_config["Email"], _config["Password"]),
+            };*/
+            var client = new SmtpClient("smtp.gmail.com", 587)
             {
                 DeliveryMethod = SmtpDeliveryMethod.Network,
                 EnableSsl = true,

@@ -98,7 +98,7 @@ namespace TripTales.Webapi.Controllers
                 await _db.SaveChangesAsync();
             }
             catch (DbUpdateException e) { return BadRequest(e.Message); }
-            //await _emailSender.SendEmailAsync(email, "TripTales Password Reset", $"<p>Beim folgenden Link kann das Password zurückgesetzt werden: <a href='https://localhost:3000/user/resetPassword/{token}'>https://localhost:3000/user/resetPassword/{token}</a>.</p><br><p>Der Token wird dafür gebraucht: {user.ResetToken}</p>");
+            await _emailSender.SendEmailAsync(email, "TripTales Password Reset", $"<p>Beim folgenden Link kann das Password zurückgesetzt werden: <a href='https://localhost:3000/user/resetPassword/{token}'>https://localhost:3000/user/resetPassword/{token}</a>.</p><br><p>Der Token wird dafür gebraucht: {user.ResetToken}</p>");
             var url = _config["RedirectPasswordReset"];
             return Ok(token);
         }
@@ -243,6 +243,7 @@ namespace TripTales.Webapi.Controllers
             }
             var user = await _db.User.Include(a => a.FollowerRecipient).ThenInclude(a => a.Sender).Include(a => a.FollowerSender).ThenInclude(a => a.Recipient).FirstOrDefaultAsync(u => u.RegistryName == registryName);
             if (user is null) return BadRequest("User gibt es nicht");
+
             var test = new
             {
                 User = new
