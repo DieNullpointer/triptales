@@ -56,7 +56,7 @@ export interface TripPost {
 
 export interface TripDay {
   guid: string;
-  date: Date;
+  date: any;
   title: string;
   text: string;
   images: [{ image: string }];

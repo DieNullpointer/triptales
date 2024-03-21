@@ -12,28 +12,69 @@ import {
 import Button from "@/components/atoms/Button";
 import { TripDay } from "@/types/types";
 import { useState } from "react";
+import { DateValueType } from "react-tailwindcss-datepicker";
 
 export default function CreatePost() {
+  const [title, setTitle] = useState("");
+  const [text, setText] = useState("");
+  const [date, setDate] = useState<DateValueType>({
+    startDate: "",
+    endDate: "",
+  });
+
   const [days, setDays] = useState<TripDay[]>([]);
   const [currentDay, setCurrentDay] = useState<TripDay>();
+  const [currentlyEditing, setCurrentlyEditing] = useState<boolean | number>(
+    false
+  );
 
   const [dayDialogOpen, setDayDialogOpen] = useState(false);
 
-  const handleAddDay = () => {};
+  const handleUpload = async () => {};
+
+  const handleAddDay = () => {
+    setDays([...days, currentDay!]);
+    handleDayDialog();
+  };
+
+  const handleEditDay = () => {
+    const newDays = days;
+    newDays[currentlyEditing as number] = currentDay!;
+    console.log(newDays);
+    setDays(newDays);
+    handleDayDialog();
+  };
+
+  const handleClearDays = () => {
+    setDays([]);
+  };
+
+  const handleEditDialog = (day: TripDay, idx: number) => {
+    handleDayDialog();
+    setCurrentDay(day);
+    setCurrentlyEditing(idx);
+  };
 
   const handleDayDialog = () => {
     setDayDialogOpen(!dayDialogOpen);
+    setCurrentDay(undefined);
+    setCurrentlyEditing(false);
   };
 
   const updateDay = (props: any) => {
     setCurrentDay({
       guid: "",
-      text: props?.text || currentDay?.text || "",
-      date: props?.date || currentDay?.date || "",
-      images: props?.images || currentDay?.images,
-      title: props?.title || currentDay?.title ||"",
-    })
-  }
+      text:
+        props?.text || props?.text === "" ? props.text : currentDay?.text || "",
+      date:
+        props?.date || props?.date === "" ? props.date : currentDay?.date || "",
+      images: [{ image: "" }],
+      title:
+        props?.title || props?.title === ""
+          ? props.title
+          : currentDay?.title || "",
+    });
+  };
 
   return (
     <>
@@ -49,13 +90,24 @@ export default function CreatePost() {
           <Input
             label="Title"
             value={currentDay?.title}
-            onChange={(val) =>
-              updateDay({ title: val})
-            }
+            onChange={(val) => updateDay({ title: val })}
           />
-          <Textarea label="Text" size="md" />
-          <Datepicker single />
-          <Button onClick={handleAddDay}>Add Day</Button>
+          <Textarea
+            label="Text"
+            size="md"
+            value={currentDay?.text}
+            onChange={(e) => updateDay({ text: e.target.value })}
+          />
+          <Datepicker
+            single
+            value={currentDay?.date}
+            onChange={(vals) => updateDay({ date: vals })}
+          />
+          {currentlyEditing !== 0 && !currentlyEditing ? (
+            <Button onClick={handleAddDay}>ADD DAY</Button>
+          ) : (
+            <Button onClick={handleEditDay}>SAVE DAY</Button>
+          )}
         </DialogBody>
       </Dialog>
       <Container className="space-y-2">
@@ -66,26 +118,70 @@ export default function CreatePost() {
         <Flowtext italic className="!text-sm">
           Required Fields
         </Flowtext>
-        <Input label="Title" />
-        <Textarea label="Text" size="md" />
-        <Datepicker />
+        <Input label="Title" value={title} onChange={(val) => setTitle(val)} />
+        <Textarea
+          label="Text"
+          size="md"
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+        />
+        <Datepicker value={date} onChange={(vals) => setDate(vals)} />
       </Container>
       <Spacing />
       <Container className="space-y-2">
         <Flowtext italic className="!text-sm">
           Optional Fields
         </Flowtext>
-        <Container sectionMarker>
+        <Container
+          sectionMarker
+          className="grid md:grid-cols-4 grid-cols-3 gap-2"
+        >
           <>
             {days &&
               days.map((day, idx) => (
-                <Container onClick={() => {}} key={idx}>
-                  <>{day.title}</>
+                <Container
+                  onClick={() => {
+                    handleEditDialog(day, idx);
+                  }}
+                  key={idx}
+                  className="h-full w-full hover:cursor-pointer p-2 rounded bg-green-300/60 hover:bg-green-300 hover:!text-white transition-all ease-in-out"
+                >
+                  <Flowtext
+                    uppercase
+                    center
+                    wide
+                    className="!text-gray-600/80 !text-base"
+                  >
+                    click to edit
+                  </Flowtext>
+                  <Flowtext
+                    uppercase
+                    center
+                    bold
+                    wide
+                    className="!text-gray-800/80"
+                  >
+                    day {idx + 1}
+                  </Flowtext>
                 </Container>
               ))}
           </>
-          <Button onClick={handleDayDialog}>Add Day</Button>
+          <Button onClick={handleDayDialog} className="w-full">
+            ADD DAY
+          </Button>
         </Container>
+        {days.length ? (
+          <>
+            <Flowtext italic className="!text-sm !-mt-1 !text-gray-600/80">
+              All changes saved
+            </Flowtext>
+            <Button onClick={handleClearDays}>CLEAR DAYS</Button>
+          </>
+        ) : (
+          <></>
+        )}
+        <Spacing />
+        <Button onClick={handleUpload}>CREATE POST</Button>
       </Container>
     </>
   );
