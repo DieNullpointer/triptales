@@ -2,12 +2,14 @@ import { User } from "@/types/types";
 import axios from "axios";
 import useSWR from "swr";
 
+const baseUrl = process.env.NODE_ENV == 'production' ? "/api" : "https://localhost:7174/api";
+
 const fetcher = (url: string) =>
   fetch(url, { credentials: "include" }).then((res) => res.json());
 
 export function getUser(guid: string) {
   const { data, error, isLoading } = useSWR(
-    `https://localhost:7174/api/User/${guid}`,
+    `${baseUrl}/user/${guid}`,
     fetcher
   );
 
@@ -20,7 +22,7 @@ export function getUser(guid: string) {
 
 export async function searchUsers(query: string) {
   const response = await axios.get(
-    `https://localhost:7174/api/User/search/${query}`
+    `${baseUrl}/user/search/${query}`
   );
   return response.data;
 }
@@ -33,7 +35,7 @@ export function getUserByRegistry(registryName: string): {
   isLoading: boolean;
 } {
   const { data, error, isLoading } = useSWR(
-    `https://localhost:7174/api/User/${registryName}`,
+    `${baseUrl}/user/${registryName}`,
     fetcher
   );
 
@@ -50,7 +52,7 @@ export function getUserByRegistry(registryName: string): {
 
 export function getSelf() {
   const { data, error, isLoading } = useSWR(
-    `https://localhost:7174/api/User/me`,
+    `${baseUrl}/user/me`,
     fetcher
   );
 
@@ -63,7 +65,7 @@ export function getSelf() {
 
 export function getPost(guid: string) {
   const { data, error, isLoading } = useSWR(
-    `https://localhost:7174/api/Post/${guid}`,
+    `${baseUrl}/post/${guid}`,
     fetcher
   );
   return { post: data, error, isLoading };
@@ -74,7 +76,7 @@ export async function getNextPost(start: number, iteration: number) {
   let error;
   await axios
     .get(
-      `https://localhost:7174/api/Post/random?start=${start}&itemNr=${iteration}`
+      `${baseUrl}/post/random?start=${start}&itemNr=${iteration}`
     )
     .then((res) => {
       data = res.data;
@@ -89,7 +91,7 @@ export async function getNextPost(start: number, iteration: number) {
 export async function likePost(guid: string) {
   let data;
   await axios
-    .put(`https://localhost:7174/api/Post/like/${guid}`)
+    .put(`${baseUrl}/post/like/${guid}`)
     .then((res) => {
       data = res.data;
     });
@@ -99,7 +101,7 @@ export async function likePost(guid: string) {
 export async function forgotPassword(email: string) {
   let data;
   await axios
-    .get(`https://localhost:7174/api/User/forgotPassword/${email}`)
+    .get(`${baseUrl}/user/forgotPassword/${email}`)
     .then((res) => {
       data = res.data;
     });
@@ -112,7 +114,7 @@ export async function resetPassword(
 ) {
   let response;
   await axios
-    .post(`https://localhost:7174/api/User/resetPassword`, { token, password })
+    .post(`${baseUrl}/user/resetPassword`, { token, password })
     .then((res) => {
       response = res;
     })

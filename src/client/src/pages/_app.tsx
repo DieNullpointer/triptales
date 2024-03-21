@@ -14,6 +14,7 @@ import { useRouter } from "next/router";
 export default function App({ Component, pageProps }: AppProps) {
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const router = useRouter();
+  console.log("Currently on " + process.env.NODE_ENV);
 
   return (
     <div className={"text-slate-800 font-roboto flex w-full"}>
