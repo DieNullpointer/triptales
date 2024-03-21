@@ -24,12 +24,15 @@ import ImageCollection from "../molecules/ImageCollection";
 
 import TestImage from "@/resources/DevImages/Antelope Canyon.jpg";
 import Button from "../atoms/Button";
+import Input from "@/components/atoms/Input";
 import { useRouter } from "next/router";
 import IconButton from "../molecules/IconButton";
 import { likePost } from "@/middleware/middleware";
 import { getAuthorized } from "@/helpers/authHelpers";
 import Link from "next/link";
 import SmallProfile from "../molecules/SmallProfile";
+import { createComment } from "@/helpers/authHelpers";
+
 
 export interface Props {
   data: TripPost;
@@ -79,6 +82,15 @@ const Post: React.FC<Props> = ({ data, small, loading }) => {
     setLikes(data.likes);
     setLiking(data.liking);
   };
+
+  const [comment, setComment] = useState("");
+
+  const handleComment = async () => {
+    const response = await createComment({
+      text: comment,
+      postGuid: data?.guid,
+    })
+  }
 
   const handleLikes = async () => {
     const newLikes = await likePost(data.guid);
@@ -132,6 +144,28 @@ const Post: React.FC<Props> = ({ data, small, loading }) => {
             )}
           </>
         )}
+        <div>
+          {!small && (
+            <>
+              <Flowtext center bold wide uppercase>
+                Kommentare
+              </Flowtext>
+              <Input label="New Comment" 
+                value={comment}
+                onChange={(val) => setComment(val)}>
+
+              </Input>
+              <Button
+                type="submit"
+                className="text-white w-full"
+                onClick={handleComment}
+              >
+                  Save Account Info
+              </Button>
+              
+            </>
+          )}
+        </div>
       </div>
       <>
         {small && (

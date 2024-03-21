@@ -172,3 +172,21 @@ export async function createPost(post: any) {
     return err;
   }
 }
+
+export async function createComment(credentials: {
+  text: string;
+  postGuid: string;
+}) {
+  try {
+    const response = await axios.put("/Post/comment", credentials);
+
+    const resObj = {
+      status: response.status,
+      success: response.status === 200,
+      data: response.data,
+    };
+    return resObj;
+  } catch (error: any) {
+    return { sucess: false, error: error.response?.data };
+  }
+}
