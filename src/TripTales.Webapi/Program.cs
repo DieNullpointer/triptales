@@ -98,6 +98,11 @@ if (app.Environment.IsDevelopment())
     app.UseCors("AllowNextDevserver");
 }
 app.UseCookiePolicy();
+// if pictures directory does not exist, create it
+if (!Directory.Exists(Path.Combine(builder.Environment.ContentRootPath, "Pictures")))
+{
+    Directory.CreateDirectory(Path.Combine(builder.Environment.ContentRootPath, "Pictures"));
+}
 app.UseStaticFiles(new StaticFileOptions
 {
     FileProvider = new PhysicalFileProvider(
