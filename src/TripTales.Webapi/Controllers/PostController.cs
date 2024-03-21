@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -20,20 +21,13 @@ namespace TripTales.Webapi.Controllers
     public class PostController : EntityReadController<TripPost>
     {
         private readonly PostRepository _repo;
+        private readonly IConfiguration _config;
+        private static string[] _allowedExtensions = new string[] { ".jpg", ".jpeg", ".png" };
 
-        public PostController(TripTalesContext db, IMapper mapper, PostRepository repo) : base(db, mapper)
+        public PostController(TripTalesContext db, IMapper mapper, PostRepository repo, IConfiguration config) : base(db, mapper)
         {
             _repo = repo;
-        }
-
-        private List<string> SplitString(List<string> input)
-        {
-            var list = new List<string>();
-            foreach (var item in input)
-            {
-                list.Add(item.Split("wwwroot\\").Last());
-            }
-            return list;
+            _config = config;
         }
 
         [HttpGet]
@@ -55,19 +49,14 @@ namespace TripTales.Webapi.Controllers
                     c.Text,
                     c.Created
                 }),
-                Images = !Directory.Exists(Path.Combine("wwwroot", "Images", $"{h.Guid}")) ? null : SplitString(Directory.GetFiles(Path.Combine("wwwroot", "Images", $"{h.Guid}")).ToList()),
+                h.Images,
                 Likes = h.Likes.Count,
                 Days = h.Days.Select(d => new
                 {
                     d.Guid,
                     d.Title,
                     d.Text,
-                    d.Date,
-                    Locations = d.Locations.Select(l => new
-                    {
-                        l.Coordinates,
-                        Images = !Directory.Exists(Path.Combine("wwwroot", "Images", $"{l.Guid}")) ? null : SplitString(Directory.GetFiles(Path.Combine("wwwroot", "Images", $"{l.Guid}")).ToList()),
-                    })
+                    d.Date
                 }),
                 User = new
                 {
@@ -100,19 +89,14 @@ namespace TripTales.Webapi.Controllers
                     c.Text,
                     c.Created
                 }),
-                Images = !Directory.Exists(Path.Combine("wwwroot", "Images", $"{h.Guid}")) ? null : SplitString(Directory.GetFiles(Path.Combine("wwwroot", "Images", $"{h.Guid}")).ToList()),
+                h.Images,
                 Likes = h.Likes.Count,
                 Days = h.Days.Select(d => new
                 {
                     d.Guid,
                     d.Title,
                     d.Text,
-                    d.Date,
-                    Locations = d.Locations.Select(l => new
-                    {
-                        l.Coordinates,
-                        Images = !Directory.Exists(Path.Combine("wwwroot", "Images", $"{l.Guid}")) ? null : SplitString(Directory.GetFiles(Path.Combine("wwwroot", "Images", $"{l.Guid}")).ToList()),
-                    })
+                    d.Date
                 }),
                 User = new
                 {
@@ -131,8 +115,8 @@ namespace TripTales.Webapi.Controllers
             string Text,
             DateTime Begin,
             DateTime End,
-            List<DayCmd> Days,
-            List<IFormFile> Images
+            List<DayCmd>? Days,
+            List<IFormFile>? Images
         );
 
         [Authorize]
@@ -150,25 +134,30 @@ namespace TripTales.Webapi.Controllers
             (bool success, string message) = await _repo.Insert(post);
             if(success)
             {
-                string directoryPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Images", $"{post.Guid}");
-                if (!Directory.Exists(directoryPath))
-                    Directory.CreateDirectory(directoryPath);
-                var count = Directory.GetFiles(directoryPath).Count() + 1;
-                foreach (var file in postCmd.Images)
+                if(postCmd.Images is not null )
                 {
-                    var path = Path.Combine(directoryPath, $"{count}.jpg");
-                    using (var stream = new FileStream(path, FileMode.Create))
+                    foreach( var image in postCmd.Images )
                     {
-                        await file.CopyToAsync(stream);
+                        var extension = new FileInfo(image.FileName).Extension;
+                        if (_allowedExtensions.Contains(extension))
+                        {
+                            var filename = Guid.NewGuid().ToString() + extension;
+                            using (var stream = new FileStream(Path.Combine(_config["UploadDirectory"], filename), FileMode.Create, FileAccess.Write))
+                            {
+                                await image.CopyToAsync(stream);
+                            }
+                            post.Images.Add($"{_config["UploadDirectory"]}/{filename}");
+                        }
                     }
-                    count++;
                 }
-                return Ok();
+                try { await _db.SaveChangesAsync(); }
+                catch (DbUpdateException e) { return BadRequest(e.Message); }
+                return Ok(post.Guid);
             }
             return BadRequest(message);
         }
 
-        [Authorize]
+        /*[Authorize]
         [HttpPut("addImages/{guid:Guid}")]
         public async Task<IActionResult> AddImages(Guid guid, [FromForm] List<IFormFile> formFile)
         {
@@ -196,7 +185,7 @@ namespace TripTales.Webapi.Controllers
                 count++;
             }
             return Ok();
-        }
+        }*/
 
         [Authorize]
         [HttpDelete("delete/{guid:Guid}")]
@@ -282,17 +271,13 @@ namespace TripTales.Webapi.Controllers
                     c.Text,
                     c.Created
                 }),
+                post.Images,
                 Days = post.Days.Select(d => new
                 {
                     d.Guid,
                     d.Title,
                     d.Text,
-                    d.Date,
-                    Locations = d.Locations.Select(l => new
-                    {
-                        l.Coordinates,
-                        Images = !Directory.Exists(Path.Combine("wwwroot", "Images", $"{l.Guid}")) ? null : SplitString(Directory.GetFiles(Path.Combine("wwwroot", "Images", $"{l.Guid}")).ToList()),
-                    })
+                    d.Date
                 }),
                 User = new
                 {
@@ -396,19 +381,14 @@ namespace TripTales.Webapi.Controllers
                     c.Text,
                     c.Created
                 }),
-                Images = !Directory.Exists(Path.Combine("wwwroot", "Images", $"{h.Guid}")) ? null : SplitString(Directory.GetFiles(Path.Combine("wwwroot", "Images", $"{h.Guid}")).ToList()),
+                h.Images,
                 Likes = h.Likes.Count,
                 Days = h.Days.Select(d => new
                 {
                     d.Guid,
                     d.Title,
                     d.Text,
-                    d.Date,
-                    Locations = d.Locations.Select(l => new
-                    {
-                        l.Coordinates,
-                        Images = !Directory.Exists(Path.Combine("wwwroot", "Images", $"{l.Guid}")) ? null : SplitString(Directory.GetFiles(Path.Combine("wwwroot", "Images", $"{l.Guid}")).ToList()),
-                    })
+                    d.Date
                 }),
                 User = new
                 {
@@ -457,19 +437,14 @@ namespace TripTales.Webapi.Controllers
                     c.Text,
                     c.Created
                 }),
-                Images = !Directory.Exists(Path.Combine("wwwroot", "Images", $"{h.Guid}")) ? null : SplitString(Directory.GetFiles(Path.Combine("wwwroot", "Images", $"{h.Guid}")).ToList()),
+                h.Images,
                 Likes = h.Likes.Count,
                 Days = h.Days.Select(d => new
                 {
                     d.Guid,
                     d.Title,
                     d.Text,
-                    d.Date,
-                    Locations = d.Locations.Select(l => new
-                    {
-                        l.Coordinates,
-                        Images = !Directory.Exists(Path.Combine("wwwroot", "Images", $"{l.Guid}")) ? null : SplitString(Directory.GetFiles(Path.Combine("wwwroot", "Images", $"{l.Guid}")).ToList()),
-                    })
+                    d.Date
                 }),
                 User = new
                 {

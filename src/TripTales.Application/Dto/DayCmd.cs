@@ -10,7 +10,7 @@ namespace TripTales.Application.Dto
     (
         DateTime Date,
         string Title,
-        string Text,
+        string Text
         //List<LocationCmd>? Locations
     );
 }
