@@ -48,6 +48,7 @@ export interface TripPost {
     registryName: string;
     displayName: string;
     guid: string;
+    profilePicture: string;
   };
   images: string[];
   days: TripDay[];

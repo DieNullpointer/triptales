@@ -1,4 +1,3 @@
-
 import React from "react";
 import defaultPfp from "@/resources/default_profilepic.png";
 import { buildBase64Image } from "@/helpers/stringHelpers";
@@ -17,7 +16,7 @@ const Avatar: React.FC<Props> = ({
 }) => {
   return (
     <Image
-      src={profile || defaultPfp.src}
+      src={profile ? `https://localhost:7174/${profile}` : defaultPfp.src}
       alt=""
       height={size === "large" ? 110 : 80}
       width={size === "large" ? 110 : 80}
