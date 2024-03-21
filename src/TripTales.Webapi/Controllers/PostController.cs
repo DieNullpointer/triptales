@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Castle.Core.Internal;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -33,7 +34,7 @@ namespace TripTales.Webapi.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllPosts()
         {
-            var posts = await _db.Posts.Include(a => a.Comments).Include(a => a.Likes).Include(a => a.User).Include(a => a.Days).ThenInclude(a => a.Locations).ToListAsync();
+            var posts = await _db.Posts.Include(a => a.Images).Include(a => a.Comments).Include(a => a.Likes).Include(a => a.User).Include(a => a.Days).ThenInclude(a => a.Locations).ToListAsync();
             var export = posts.Select(h => new
             {
                 h.Guid,
@@ -49,7 +50,10 @@ namespace TripTales.Webapi.Controllers
                     c.Text,
                     c.Created
                 }),
-                h.Images,
+                Images = h.Images.Select(a => new
+                {
+                    a.Path
+                }),
                 Likes = h.Likes.Count,
                 Days = h.Days.Select(d => new
                 {
@@ -72,7 +76,7 @@ namespace TripTales.Webapi.Controllers
         [HttpGet("{guid:Guid}")]
         public async Task<IActionResult> GetPost(Guid guid)
         {
-            var h = await _db.Posts.Include(a => a.Comments).Include(a => a.User).Include(a => a.Days).ThenInclude(a => a.Locations).FirstOrDefaultAsync(a => a.Guid == guid);
+            var h = await _db.Posts.Include(a => a.Images).Include(a => a.Comments).Include(a => a.User).Include(a => a.Days).ThenInclude(a => a.Locations).FirstOrDefaultAsync(a => a.Guid == guid);
             if (h is null) return BadRequest();
             var export = new
             {
@@ -89,7 +93,10 @@ namespace TripTales.Webapi.Controllers
                     c.Text,
                     c.Created
                 }),
-                h.Images,
+                Images = h.Images.Select(a => new
+                {
+                    a.Path
+                }),
                 Likes = h.Likes.Count,
                 Days = h.Days.Select(d => new
                 {
@@ -115,7 +122,7 @@ namespace TripTales.Webapi.Controllers
             string Text,
             DateTime Begin,
             DateTime End,
-            List<DayCmd>? Days,
+            List<DayCmd> Days,
             List<IFormFile>? Images
         );
 
@@ -134,7 +141,19 @@ namespace TripTales.Webapi.Controllers
             (bool success, string message) = await _repo.Insert(post);
             if(success)
             {
-                if(postCmd.Images is not null )
+                if(postCmd.Days is not null)
+                {
+                    var tripDays = _mapper.Map<List<TripDay>>(postCmd.Days);
+                    foreach (var tripDay in tripDays)
+                    {
+                        tripDay.Post = post;
+                    }
+                    _db.Days.AddRange(tripDays);
+                    post.Days.AddRange(tripDays);
+                    try { await _db.SaveChangesAsync(); }
+                    catch (DbUpdateException e) { return BadRequest(e.Message); }
+                }
+                if(postCmd.Images is not null)
                 {
                     foreach( var image in postCmd.Images )
                     {
@@ -146,46 +165,18 @@ namespace TripTales.Webapi.Controllers
                             {
                                 await image.CopyToAsync(stream);
                             }
-                            post.Images.Add($"{_config["UploadDirectory"]}/{filename}");
+                            var postImage = new PostImages($"{_config["UploadDirectory"]}/{filename}", post);
+                            _db.Images.Add(postImage);
+                            post.Images.Add(postImage);
                         }
                     }
+                    try { await _db.SaveChangesAsync(); }
+                    catch (DbUpdateException e) { return BadRequest(e.Message); }
                 }
-                try { await _db.SaveChangesAsync(); }
-                catch (DbUpdateException e) { return BadRequest(e.Message); }
                 return Ok(post.Guid);
             }
             return BadRequest(message);
         }
-
-        /*[Authorize]
-        [HttpPut("addImages/{guid:Guid}")]
-        public async Task<IActionResult> AddImages(Guid guid, [FromForm] List<IFormFile> formFile)
-        {
-            var authenticated = HttpContext.User.Identity?.IsAuthenticated ?? false;
-            if (!authenticated) { return Unauthorized(); }
-            var username = HttpContext?.User.Identity?.Name;
-            if (username is null) { return Unauthorized(); }
-            // Valid token, but no user match in the database (maybe deleted by an admin).
-            var user = await _db.User.FirstOrDefaultAsync(a => a.RegistryName == username);
-            if (user is null) { return Unauthorized(); }
-            var post = await _db.Posts.FirstOrDefaultAsync(a => a.Guid == guid);
-            if (post is null)
-                return BadRequest("Diesen Post gibt es nicht");
-            string directoryPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Images", $"{guid}");
-            if (!Directory.Exists(directoryPath))
-                Directory.CreateDirectory(directoryPath);
-            var count = Directory.GetFiles(directoryPath).Count() + 1;
-            foreach (var file in formFile)
-            {
-                var path = Path.Combine(directoryPath, $"{count}.jpg");
-                using (var stream = new FileStream(path, FileMode.Create))
-                {
-                    await file.CopyToAsync(stream);
-                }
-                count++;
-            }
-            return Ok();
-        }*/
 
         [Authorize]
         [HttpDelete("delete/{guid:Guid}")]
@@ -253,7 +244,7 @@ namespace TripTales.Webapi.Controllers
             if (itemNr >= count) return NotFound();
 
             int nr = (start+itemNr)%count;
-            var post = await _db.Posts.Include(a => a.Comments).Include(a => a.Likes).Include(a => a.Days).ThenInclude(a => a.Locations).Include(a => a.User).OrderBy(p=>p.Guid).Skip(nr).FirstOrDefaultAsync();
+            var post = await _db.Posts.Include(a => a.Images).Include(a => a.Comments).Include(a => a.Likes).Include(a => a.Days).ThenInclude(a => a.Locations).Include(a => a.User).OrderBy(p=>p.Guid).Skip(nr).FirstOrDefaultAsync();
             if(post is null) return NotFound();
             var export = new
             {
@@ -271,7 +262,10 @@ namespace TripTales.Webapi.Controllers
                     c.Text,
                     c.Created
                 }),
-                post.Images,
+                Images = post.Images.Select(a => new
+                {
+                    a.Path
+                }),
                 Days = post.Days.Select(d => new
                 {
                     d.Guid,
@@ -387,7 +381,7 @@ namespace TripTales.Webapi.Controllers
                     c.Text,
                     c.Created
                 }),
-                h.Images,
+                Images = h.Images.Select(a => new { a.Path }),
                 Likes = h.Likes.Count,
                 Days = h.Days.Select(d => new
                 {
@@ -443,7 +437,7 @@ namespace TripTales.Webapi.Controllers
                     c.Text,
                     c.Created
                 }),
-                h.Images,
+                Images = h.Images.Select(a => new { a.Path }),
                 Likes = h.Likes.Count,
                 Days = h.Days.Select(d => new
                 {
