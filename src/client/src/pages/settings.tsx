@@ -20,6 +20,7 @@ import { Flowtext } from "@/components/atoms/Text";
 import { useRouter } from "next/router";
 import { log } from "console";
 import { dataUrlToFile } from "@/helpers/imgHelpers";
+import ProfileHeader from "@/components/molecules/ProfileHeader";
 
 export default function Settings() {
   const { data, error, isLoading } = getSelf();
@@ -187,20 +188,8 @@ export default function Settings() {
         </DialogBody>
       </Dialog>
       <Spacing />
-      <div className="relative bottom-9">
-        <Image
-          src={updatedBanner || banner || defaultBanner.src}
-          alt=""
-          className="w-full"
-          wrapper="max-h-60 overflow-hidden items-center flex rounded-lg"
-        />
-        <Avatar
-          profile={updatedProfile || profile}
-          size="large"
-          className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2"
-        />
-      </div>
-      <Spacing />
+      <ProfileHeader banner={updatedBanner} profile={updatedProfile} />
+      <Spacing space={updatedBanner? 14 : 6 } />
       <div className="m-4 space-y-4">
         <Input
           label="Username"
