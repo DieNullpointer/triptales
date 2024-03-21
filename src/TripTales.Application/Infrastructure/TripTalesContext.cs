@@ -22,6 +22,7 @@ namespace TripTales.Application.Infrastructure
         public DbSet<Follower> Follower => Set<Follower>();
         public DbSet<Notification> Notifications => Set<Notification>();
         public DbSet<Comment> Comments => Set<Comment>();
+        public DbSet<PostImages> Images => Set<PostImages>();
 
         public TripTalesContext(DbContextOptions opt) : base(opt)
         {
