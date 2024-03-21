@@ -1,9 +1,7 @@
 import { useRouter } from "next/router";
 import axios from "axios";
 import { File } from "buffer";
-import { TripPost } from "@/types/types";
-import process from 'node:process'
-import { TripPost } from "@/types/types";
+import process from 'process'
 
 axios.defaults.baseURL = process.env.NODE_ENV == 'production' ? "/api" : "https://localhost:7174/api";
 axios.defaults.withCredentials = true;

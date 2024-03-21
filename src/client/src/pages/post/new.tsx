@@ -15,8 +15,11 @@ import { useState } from "react";
 import { DateValueType } from "react-tailwindcss-datepicker";
 import { createPost } from "@/helpers/authHelpers";
 import { AxiosResponse } from "axios";
+import { useRouter } from "next/router";
 
 export default function CreatePost() {
+  const router = useRouter();
+
   const [title, setTitle] = useState("");
   const [text, setText] = useState("");
   const [date, setDate] = useState<DateValueType>({
@@ -44,9 +47,11 @@ export default function CreatePost() {
       begin: date?.startDate,
       end: date?.endDate,
     });
-    if (!response?.success) {
+    
+    if (response?.status === 200) {
+      router.push("/post/" + response.data);
+    } else {
       console.log(response?.response?.data?.errors?.[0]);
-
       setError("");
     }
   };
