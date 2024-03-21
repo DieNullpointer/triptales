@@ -98,7 +98,9 @@ export default function CreatePost() {
     <>
       <Dialog open={dayDialogOpen} handler={handleDayDialog}>
         <DialogHeader className="pb-0 flex-col">
-          <Subheading center>Add a Day</Subheading>
+          <Subheading center>
+            {currentlyEditing !== 0 && !currentlyEditing ? "Add a Day" : `Edit Day ${currentlyEditing as number + 1}`}
+          </Subheading>
         </DialogHeader>
         <DialogBody className="pt-0 space-y-2">
           <Flowtext gutter center italic className="!text-base">
