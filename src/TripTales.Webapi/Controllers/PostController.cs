@@ -238,49 +238,41 @@ namespace TripTales.Webapi.Controllers
         /// <param name="itemNr"></param>
         /// <returns></returns>
         [HttpGet("random")]
-        public async Task<IActionResult> GetRandom([FromQuery] int start = 0, [FromQuery] int itemNr = 0) 
+        public async Task<IActionResult> GetRandom() 
         {
-            var count = _db.Posts.Count();
-            if (itemNr >= count) return NotFound();
-
-            int nr = (start+itemNr)%count;
-            var post = await _db.Posts.Include(a => a.Images).Include(a => a.Comments).Include(a => a.Likes).Include(a => a.Days).ThenInclude(a => a.Locations).Include(a => a.User).OrderBy(p=>p.Guid).Skip(nr).FirstOrDefaultAsync();
-            if(post is null) return NotFound();
-            var export = new
+            var rnd = new Random().Next(5, _db.Posts.Count() - 1);
+            // Get Random Elements of Posts
+            var post = new List<TripPost>();
+            for(int i = 0; i < rnd; i++)
             {
-                post.Guid,
-                post.Begin,
-                post.End,
-                post.Created,
-                post.Text,
-                Likes = post.Likes.Count,
-                post.Title,
-                Comments = post.Comments.Select(c => new
+                TripPost? posts;
+                do
                 {
-                    c.User.RegistryName,
-                    c.User.DisplayName,
-                    c.Text,
-                    c.Created
-                }),
-                Images = post.Images.Select(a => new
-                {
-                    a.Path
-                }),
-                Days = post.Days.Select(d => new
-                {
-                    d.Guid,
-                    d.Title,
-                    d.Text,
-                    d.Date
-                }),
+                    int randomIndex = new Random().Next(1, _db.Posts.Count() - 1);
+                    posts = await _db.Posts.Include(a => a.Images).Include(a => a.Comments).Include(a => a.Likes).Include(a => a.Days).ThenInclude(a => a.Locations).Include(a => a.User).Skip(randomIndex).FirstOrDefaultAsync();
+                } while (post.Contains(posts!) && posts is null);
+                post.Add(posts!);
+            }
+
+            //var post = await _db.Posts.Include(a => a.Images).Include(a => a.Comments).Include(a => a.Likes).Include(a => a.Days).ThenInclude(a => a.Locations).Include(a => a.User).OrderBy(p=>p.Guid).Take(7).ToListAsync();
+            if(post is null) return NotFound();
+            var export = post.Select(a => new
+            {
+                a.Guid,
+                a.Begin,
+                a.End,
+                a.Title,
+                a.Text,
+                a.Created,
+                Likes = a.Likes.Count,
+                Liking = a.Likes.Contains(a.User!),
                 User = new
                 {
-                    post.User!.Guid,
-                    post.User!.RegistryName,
-                    post.User.DisplayName,
-                    post.User.ProfilePicture
+                    a.User!.RegistryName,
+                    a.User.DisplayName,
+                    a.User.ProfilePicture
                 }
-            };
+            });
             return Ok(export);
         }
 
