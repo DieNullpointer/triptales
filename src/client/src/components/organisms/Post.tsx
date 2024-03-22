@@ -86,6 +86,7 @@ const Post: React.FC<Props> = ({ data, small, loading }) => {
   };
 
   useEffect(() => {
+    console.log(data);
     init();
   }, [data]);
 
