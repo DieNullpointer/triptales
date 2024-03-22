@@ -7,6 +7,7 @@ export interface Props {
   type?: "submit" | "button";
   transparent?: boolean;
   disabled?: boolean;
+  enabled?: boolean;
 }
 
 const Button: React.FC<Props> = ({
@@ -15,7 +16,8 @@ const Button: React.FC<Props> = ({
   className = "",
   onClick,
   transparent = false,
-  disabled = false
+  disabled = false,
+  enabled = false,
 }) => {
   return (
     <TButton
@@ -23,6 +25,7 @@ const Button: React.FC<Props> = ({
       onClick={onClick}
       ripple
       disabled={disabled}
+      defaultChecked={enabled}
       className={
         `${!transparent ? 'bg-primaryHover' : 'bg-gray-200/60 !text-gray-700 hover:bg-gray-400/60 hover:!text-white shadow-none hover:shadow-none'} text-sm tracking-wider font-roboto ${className} flex items-center justify-center`
       }
