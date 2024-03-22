@@ -44,7 +44,7 @@ export interface TripPost {
   end: Date;
   created: Date;
   likes: number;
-  liking?: boolean;
+  liking: boolean;
   user: {
     registryName: string;
     displayName: string;
