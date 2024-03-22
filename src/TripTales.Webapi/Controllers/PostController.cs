@@ -76,7 +76,7 @@ namespace TripTales.Webapi.Controllers
         [HttpGet("{guid:Guid}")]
         public async Task<IActionResult> GetPost(Guid guid)
         {
-            var h = await _db.Posts.Include(a => a.Images).Include(a => a.Comments).Include(a => a.User).Include(a => a.Days).ThenInclude(a => a.Locations).FirstOrDefaultAsync(a => a.Guid == guid);
+            var h = await _db.Posts.Include(a => a.Likes).Include(a => a.Images).Include(a => a.Comments).Include(a => a.User).Include(a => a.Days).FirstOrDefaultAsync(a => a.Guid == guid);
             if (h is null) return BadRequest();
             var export = new
             {
@@ -98,6 +98,7 @@ namespace TripTales.Webapi.Controllers
                     a.Path
                 }),
                 Likes = h.Likes.Count,
+                Liking = h.Likes.Contains(h.User!),
                 Days = h.Days.Select(d => new
                 {
                     d.Guid,
