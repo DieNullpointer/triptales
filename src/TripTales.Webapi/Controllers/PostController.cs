@@ -77,6 +77,20 @@ namespace TripTales.Webapi.Controllers
         public async Task<IActionResult> GetPost(Guid guid)
         {
             var h = await _db.Posts.Include(a => a.Likes).Include(a => a.Images).Include(a => a.Comments).Include(a => a.User).Include(a => a.Days).FirstOrDefaultAsync(a => a.Guid == guid);
+            if (h is null)
+            {
+                return NotFound();
+            }
+            bool liking = false;
+            var authenticated = HttpContext.User.Identity?.IsAuthenticated ?? false;
+            if (authenticated)
+            {
+                var username = HttpContext.User.Identity?.Name;
+                if (username is null) { return Unauthorized(); }
+                var user = await _db.User.FirstOrDefaultAsync(a => a.RegistryName == username);
+                if (user is null) { return Unauthorized(); }
+                liking = h.Likes.Any(a => a.Guid == user.Guid);
+            }
             if (h is null) return BadRequest();
             var export = new
             {
@@ -98,7 +112,7 @@ namespace TripTales.Webapi.Controllers
                     a.Path
                 }),
                 Likes = h.Likes.Count,
-                Liking = h.Likes.Contains(h.User!),
+                Liking = liking,
                 Days = h.Days.Select(d => new
                 {
                     d.Guid,
@@ -254,7 +268,16 @@ namespace TripTales.Webapi.Controllers
                 } while (post.Contains(posts!) && posts is null);
                 post.Add(posts!);
             }
-            if(post is null) return NotFound();
+            var authenticated = HttpContext.User.Identity?.IsAuthenticated ?? false;
+            User? user = null;
+            if (authenticated)
+            {
+                var username = HttpContext.User.Identity?.Name;
+                if (username is null) { return Unauthorized(); }
+                user = await _db.User.FirstOrDefaultAsync(a => a.RegistryName == username);
+                if (user is null) { return Unauthorized(); }
+            }
+            if (post is null) return NotFound();
             var export = post.Select(a => new
             {
                 a.Guid,
@@ -264,7 +287,7 @@ namespace TripTales.Webapi.Controllers
                 a.Text,
                 a.Created,
                 Likes = a.Likes.Count,
-                Liking = a.Likes.Contains(a.User!),
+                Liking = a.Likes.Any(a => a.Guid == user?.Guid),
                 User = new
                 {
                     a.User!.RegistryName,
