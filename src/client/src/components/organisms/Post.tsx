@@ -69,11 +69,15 @@ const Days: React.FC<{ days: TripDay[]; className?: string }> = ({
 
 const Post: React.FC<Props> = ({ data, small, loading }) => {
   const router = useRouter();
-  const [likes, setLikes] = useState<number>(data?.likes || 0);
+  const [likes, setLikes] = useState<number>(0);
+  const [liking, setLiking] = useState<boolean>(false);
   const [authorized, setAuthorized] = useState(false);
 
   const init = async () => {
     setAuthorized(await getAuthorized());
+    console.log(data);
+    setLikes(data.likes);
+    setLiking(data.liking);
   };
 
   const handleLikes = async () => {
@@ -82,8 +86,9 @@ const Post: React.FC<Props> = ({ data, small, loading }) => {
   };
 
   useEffect(() => {
+    console.log(data);
     init();
-  });
+  }, [data]);
 
   return !loading ? (
     <Container className={`relative m-12 ${small ? "h-fit" : "min-h-screen"}`}>
@@ -102,6 +107,7 @@ const Post: React.FC<Props> = ({ data, small, loading }) => {
               <IconButton
                 preset="like"
                 disabled={!authorized}
+                enabled={data.liking}
                 onClick={handleLikes}
               />
               <Flowtext className="w-fit ml-1">{likes}</Flowtext>
