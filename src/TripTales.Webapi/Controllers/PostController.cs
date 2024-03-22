@@ -253,8 +253,6 @@ namespace TripTales.Webapi.Controllers
                 } while (post.Contains(posts!) && posts is null);
                 post.Add(posts!);
             }
-
-            //var post = await _db.Posts.Include(a => a.Images).Include(a => a.Comments).Include(a => a.Likes).Include(a => a.Days).ThenInclude(a => a.Locations).Include(a => a.User).OrderBy(p=>p.Guid).Take(7).ToListAsync();
             if(post is null) return NotFound();
             var export = post.Select(a => new
             {
