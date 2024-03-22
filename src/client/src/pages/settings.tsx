@@ -21,12 +21,14 @@ import { useRouter } from "next/router";
 import { log } from "console";
 import { dataUrlToFile } from "@/helpers/imgHelpers";
 import ProfileHeader from "@/components/molecules/ProfileHeader";
+import { usernameValid } from "@/helpers/stringHelpers";
 
 export default function Settings() {
   const { data, error, isLoading } = getSelf();
 
   const { user, profile, banner } = getUserByRegistry(data?.username);
   const [displayname, setDisplayname] = useState("");
+  const [username, setUsername] = useState("");
   const [description, setDescription] = useState("");
   const [email, setEmail] = useState("");
   const [origin, setOrigin] = useState("");
@@ -39,6 +41,7 @@ export default function Settings() {
 
   useEffect(() => {
     setDisplayname(data?.displayName);
+    setUsername(data?.username);
     setDescription(data?.description);
     setEmail(data?.email);
     setOrigin(data?.origin);
@@ -48,9 +51,8 @@ export default function Settings() {
   }, [data]);
 
   const handleSubmit = async () => {
-    // TODO open Dialog
     const response: any = await changeUser({
-      registryName: data.username,
+      registryName: username,
       displayName: displayname,
       password: data.password,
       email: email,
@@ -189,12 +191,20 @@ export default function Settings() {
       </Dialog>
       <Spacing />
       <ProfileHeader banner={updatedBanner} profile={updatedProfile} />
-      <Spacing space={updatedBanner? 14 : 6 } />
+      <Spacing space={updatedBanner ? 14 : 6} />
       <div className="m-4 space-y-4">
         <Input
-          label="Username"
+          label="Display Name"
           value={displayname}
           onChange={(val) => setDisplayname(val)}
+        />
+        <Input
+          label="Username"
+          value={username}
+          onChange={(val) => {
+            if (usernameValid(val)) setUsername(val);
+          }}
+          bottomText="Username must follow username rules [a-z0-9_.-]"
         />
         <Input
           label="Description"
