@@ -82,6 +82,7 @@ const Post: React.FC<Props> = ({ data, small, loading }) => {
   };
 
   useEffect(() => {
+    console.log(data);
     init();
   });
 
@@ -102,6 +103,7 @@ const Post: React.FC<Props> = ({ data, small, loading }) => {
               <IconButton
                 preset="like"
                 disabled={!authorized}
+                enabled={data.liking}
                 onClick={handleLikes}
               />
               <Flowtext className="w-fit ml-1">{likes}</Flowtext>
