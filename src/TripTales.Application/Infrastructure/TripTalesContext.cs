@@ -90,7 +90,7 @@ namespace TripTales.Application.Infrastructure
                 var daten = f.Date.Between(dateb.AddDays(5), dateb.AddDays(10)).Date;
                 var post = new TripPost(f.Random.Words(10), f.Random.Words(30), dateb, daten, f.PickRandom(users));
                 return post;
-            }).Generate(5).ToList();
+            }).Generate(10).ToList();
             Posts.AddRange(posts);
             SaveChanges();
 

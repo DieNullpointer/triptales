@@ -11,16 +11,16 @@ export interface Props {
 const SmallProfile: React.FC<Props> = ({user}) => {
     return (
         <div className="place-items-center flex flex-row">
-          <Avatar profile={user.profilePicture} size="small" />
+          <Avatar profile={user?.profilePicture} size="small" />
           <div className="p-2 rounded ml-1">
             <Subheading bold className="!text-base md:!text-xl">
-              {user.displayName}
+              {user?.displayName}
             </Subheading>
-            <Link href={`/user/${user.registryName}`}><Flowtext
+            <Link href={`/user/${user?.registryName}`}><Flowtext
               italic
               className="!text-slate-600 !text-sm md:!text-sm -mt-1"
             >
-              @{user.registryName}
+              @{user?.registryName}
             </Flowtext></Link>
           </div>
         </div>

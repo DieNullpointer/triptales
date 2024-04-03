@@ -71,12 +71,12 @@ export function getPost(guid: string) {
   return { post: data, error, isLoading };
 }
 
-export async function getNextPost(start: number, iteration: number) {
+export async function getRandomPosts() {
   let data;
   let error;
   await axios
     .get(
-      `${baseUrl}/post/random?start=${start}&itemNr=${iteration}`
+      `${baseUrl}/post/random`
     )
     .then((res) => {
       data = res.data;
