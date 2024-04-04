@@ -169,6 +169,6 @@ export default function User() {
       <Spacing space={8} />
     </div>
   ) : (
-    <Loading />
+    <Loading timeout />
   );
 }

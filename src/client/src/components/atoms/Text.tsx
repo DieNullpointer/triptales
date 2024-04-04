@@ -12,6 +12,8 @@ export interface Props {
   sectionMarker?: boolean;
   italic?: boolean;
   tightHeight?: boolean;
+  light?: boolean;
+  bright?: boolean;
 }
 
 export interface PropsIcon {
@@ -27,6 +29,8 @@ export interface PropsIcon {
   italic?: boolean;
   tightHeight?: boolean;
   icon: React.ReactNode;
+  light?: boolean;
+  bright?: boolean;
 }
 
 const classNames = (props: Props) =>
@@ -37,7 +41,7 @@ const classNames = (props: Props) =>
       props.underline ? "border-b pb-1  border-black" : ""
     } ${props.bold ? "font-bold" : ""} ${props.center ? "text-center" : ""} ${
       props.sectionMarker ? "p-2 bg-slate-100 rounded-lg" : ""
-    } ${props.italic ? "italic" : ""} w-full ${props.className}`
+    } ${props.italic ? "italic" : ""} ${props.light ? "text-gray-800/80" : ""} ${props.bright ? "text-gray-600/80" : ""} w-full ${props.className}`
   );
 
 export const Heading: React.FC<Props> = (props) => (

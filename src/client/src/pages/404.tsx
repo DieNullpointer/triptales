@@ -1,22 +1,9 @@
-import * as Text from "@/components/atoms/Text";
+import NotFound from "@/components/molecules/NotFound";
 
-
-export default function ()
-{
-    return (
-        <div className="flex flex-row justify-center items-center text-center h-full" >
-            <div>
-            <Text.Heading>
-                404
-            </Text.Heading>
-            <Text.Subheading>
-                Page Not Found
-            </Text.Subheading>
-            <Text.Flowtext>
-                Oops...The link you clicked may be broken or the page may have been removed. We're sorry. 
-            </Text.Flowtext>
-            </div>
-            
-        </div>
-    );
+export default function () {
+  return (
+    <div className="flex !min-h-screen items-center">
+      <NotFound />
+    </div>
+  );
 }

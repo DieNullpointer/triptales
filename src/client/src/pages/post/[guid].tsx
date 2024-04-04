@@ -8,5 +8,5 @@ export default function PostPage() {
   const guid: any = router.query?.guid;
   const { post, error, isLoading } = getPost(guid);
 
-  return <>{post ? <Post data={post} /> : <Loading />}</>;
+  return <>{post ? <Post data={post} /> : <Loading timeout />}</>;
 }
