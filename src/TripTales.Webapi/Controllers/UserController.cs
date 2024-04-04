@@ -70,6 +70,40 @@ namespace TripTales.Webapi.Controllers
             return Ok(export);
         }
 
+        [Authorize]
+        [HttpPost("emailToken")]
+        public async Task<IActionResult> CreateEmailToken()
+        {
+            var authenticated = HttpContext.User.Identity?.IsAuthenticated ?? false;
+            if (!authenticated) { return Unauthorized(); }
+            var username = HttpContext.User.Identity?.Name;
+            if (username is null) { return Unauthorized(); }
+            var user = await _db.User.FirstOrDefaultAsync(a => a.RegistryName == username);
+            if (user is null) { return Unauthorized(); }
+            var token = RandomToken();
+            user.ResetToken = token;
+            try { await _db.SaveChangesAsync(); }
+            catch (DbUpdateException e) { return BadRequest(e.Message); }
+            await _emailSender.SendEmailAsync(user.Email, "TripTales Email Change", $"<p>Beim folgenden Link kann die Email geändert werden: <a href='https://localhost:3000/user/changeEmail/{token}'>https://localhost:3000/user/changeEmail/{token}</a>.</p><br><p>Der Token wird dafür gebraucht: {user.ResetToken}</p>");
+            return Ok();
+        }
+
+        public record ChangeEmailCmd(string token, string email);
+        [HttpPost("changeEmail")]
+        public async Task<IActionResult> ChangeEmail([FromBody] ChangeEmailCmd change)
+        {
+            var user = await _db.User.FirstOrDefaultAsync(a => a.ResetToken == change.token);
+            if (user is null) return BadRequest("Token gibt es nicht");
+            user.Email = change.email;
+            user.ResetToken = null;
+            try
+            {
+                await _db.SaveChangesAsync();
+            }
+            catch (DbUpdateException e) { return BadRequest(e.Message); }
+            return Ok();
+        }
+
         public record ResetPasswordCmd(string token, string password);
         [HttpPost("resetPassword")]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordCmd reset)
