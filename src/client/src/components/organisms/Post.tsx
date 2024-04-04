@@ -1,4 +1,4 @@
-import { TripDay, TripPost } from "@/types/types";
+import { TripDay, TripPost, Comment } from "@/types/types";
 import React, { useEffect, useState } from "react";
 import Container from "../atoms/Container";
 import Image from "../atoms/Image";
@@ -33,7 +33,6 @@ import Link from "next/link";
 import SmallProfile from "../molecules/SmallProfile";
 import { createComment } from "@/helpers/authHelpers";
 
-
 export interface Props {
   data: TripPost;
   small?: boolean;
@@ -51,7 +50,7 @@ const Days: React.FC<{ days: TripDay[]; className?: string }> = ({
   return (
     <div className={className}>
       <Timeline>
-        {days.map((day, idx) => (
+        {days?.map((day, idx) => (
           <TimelineItem className="pb-6 h-full">
             <TimelineConnector className="!h-full" />
             <TimelineHeader className="h-auto items-center">
@@ -66,6 +65,40 @@ const Days: React.FC<{ days: TripDay[]; className?: string }> = ({
           </TimelineItem>
         ))}
       </Timeline>
+    </div>
+  );
+};
+
+const Comments: React.FC<{ comments: Comment[]; className?: string }> = ({
+  comments,
+  className,
+}) => {
+  return (
+    <div className={className}>
+      {comments?.map((comment) => (
+        <div className="my-4">
+          <div className="flex flex-row">
+            <Link href={`/user/${comment.registryName}`}>
+              <Flowtext
+                italic
+                className="!text-slate-600 !text-sm md:!text-sm -mt-1 !w-min mr-4"
+              >
+                @{comment.registryName}
+              </Flowtext>
+            </Link>
+            <Flowtext
+              italic
+              className="!text-slate-600 !text-sm md:!text-sm -mt-1"
+            >
+              {formatDateEuropean(comment.created)}
+            </Flowtext>
+          </div>
+
+          <Flowtext bold tightHeight className="tracking-tight !h-min">
+            {comment.text}
+          </Flowtext>
+        </div>
+      ))}
     </div>
   );
 };
@@ -89,8 +122,8 @@ const Post: React.FC<Props> = ({ data, small, loading }) => {
     const response = await createComment({
       text: comment,
       postGuid: data?.guid,
-    })
-  }
+    });
+  };
 
   const handleLikes = async () => {
     const newLikes = await likePost(data.guid);
@@ -150,19 +183,19 @@ const Post: React.FC<Props> = ({ data, small, loading }) => {
               <Flowtext center bold wide uppercase>
                 Kommentare
               </Flowtext>
-              <Input label="New Comment" 
+              <Input
+                label="New Comment"
                 value={comment}
-                onChange={(val) => setComment(val)}>
-
-              </Input>
+                onChange={(val) => setComment(val)}
+              ></Input>
               <Button
                 type="submit"
                 className="text-white w-full"
                 onClick={handleComment}
               >
-                  Save Account Info
+                Post New Comment
               </Button>
-              
+              <Comments comments={data.comments} className="mx-2 mt-6" />
             </>
           )}
         </div>

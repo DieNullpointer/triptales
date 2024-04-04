@@ -53,6 +53,7 @@ export interface TripPost {
   };
   images: string[];
   days: TripDay[];
+  comments: Comment[];
 }
 
 export interface TripDay {
@@ -65,4 +66,12 @@ export interface TripDay {
 export interface TripLocation {
   coordinates: string;
   images: [{ image: string }];
+}
+
+export interface Comment{
+  displayName: string;
+  registryName: string
+  created: any;
+  text: string;
+  user: User;
 }
