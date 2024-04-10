@@ -1,4 +1,4 @@
-import { TripDay, TripPost } from "@/types/types";
+import { TripDay, TripPost, Comment, User } from "@/types/types";
 import React, { useEffect, useState } from "react";
 import Container from "../atoms/Container";
 import Image from "../atoms/Image";
@@ -24,12 +24,14 @@ import ImageCollection from "../molecules/ImageCollection";
 
 import TestImage from "@/resources/DevImages/Antelope Canyon.jpg";
 import Button from "../atoms/Button";
+import Input from "@/components/atoms/Input";
 import { useRouter } from "next/router";
 import IconButton from "../molecules/IconButton";
 import { likePost } from "@/middleware/middleware";
-import { getAuthorized } from "@/helpers/authHelpers";
+import { getAuthorized,getAuthorizedAll } from "@/helpers/authHelpers";
 import Link from "next/link";
 import SmallProfile from "../molecules/SmallProfile";
+import { createComment } from "@/helpers/authHelpers";
 
 export interface Props {
   data: TripPost;
@@ -48,7 +50,7 @@ const Days: React.FC<{ days: TripDay[]; className?: string }> = ({
   return (
     <div className={className}>
       <Timeline>
-        {days.map((day, idx) => (
+        {days?.map((day, idx) => (
           <TimelineItem className="pb-6 h-full">
             <TimelineConnector className="!h-full" />
             <TimelineHeader className="h-auto items-center">
@@ -67,17 +69,65 @@ const Days: React.FC<{ days: TripDay[]; className?: string }> = ({
   );
 };
 
+const Comments: React.FC<{ comments: Comment[]; className?: string }> = ({
+  comments,
+  className,
+}) => {
+  return (
+    <div className={className}>
+      {comments?.map((comment) => (
+        <div className="my-4">
+          <div className="flex flex-row">
+            <Link href={`/user/${comment.registryName}`}>
+              <Flowtext
+                italic
+                className="!text-slate-600 !text-sm md:!text-sm -mt-1 !w-min mr-4"
+              >
+                @{comment.registryName}
+              </Flowtext>
+            </Link>
+            <Flowtext
+              italic
+              className="!text-slate-600 !text-sm md:!text-sm -mt-1"
+            >
+              {formatDateEuropean(comment.created)}
+            </Flowtext>
+          </div>
+
+          <Flowtext bold tightHeight className="tracking-tight !h-min">
+            {comment.text}
+          </Flowtext>
+        </div>
+      ))}
+    </div>
+  );
+};
+
 const Post: React.FC<Props> = ({ data, small, loading }) => {
   const router = useRouter();
   const [likes, setLikes] = useState<number>(0);
   const [liking, setLiking] = useState<boolean>(false);
   const [authorized, setAuthorized] = useState(false);
+  const [comments, setComments] = useState<Comment[]>();
+
 
   const init = async () => {
     setAuthorized(await getAuthorized());
     console.log(data);
     setLikes(data.likes);
     setLiking(data.liking);
+    setComments(data.comments);
+  };
+
+  const [comment, setComment] = useState("");
+
+  const handleComment = async () => {
+    const response = await createComment({
+      text: comment,
+      postGuid: data?.guid,
+    });
+    const user = await getAuthorizedAll();
+    setComments([... comments!, {displayName: user.displayName, registryName: user.username, created: Date.now(), text: comment, user: user}])
   };
 
   const handleLikes = async () => {
@@ -132,6 +182,28 @@ const Post: React.FC<Props> = ({ data, small, loading }) => {
             )}
           </>
         )}
+        <div>
+          {!small && (
+            <>
+              <Flowtext center bold wide uppercase>
+                Kommentare
+              </Flowtext>
+              <Input
+                label="New Comment"
+                value={comment}
+                onChange={(val) => setComment(val)}
+              ></Input>
+              <Button
+                type="submit"
+                className="text-white w-full"
+                onClick={handleComment}
+              >
+                Post New Comment
+              </Button>
+              <Comments comments={comments!} className="mx-2 mt-6" />
+            </>
+          )}
+        </div>
       </div>
       <>
         {small && (
