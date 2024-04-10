@@ -1,4 +1,4 @@
-import { TripDay, TripPost, Comment } from "@/types/types";
+import { TripDay, TripPost, Comment, User } from "@/types/types";
 import React, { useEffect, useState } from "react";
 import Container from "../atoms/Container";
 import Image from "../atoms/Image";
@@ -28,7 +28,7 @@ import Input from "@/components/atoms/Input";
 import { useRouter } from "next/router";
 import IconButton from "../molecules/IconButton";
 import { likePost } from "@/middleware/middleware";
-import { getAuthorized } from "@/helpers/authHelpers";
+import { getAuthorized,getAuthorizedAll } from "@/helpers/authHelpers";
 import Link from "next/link";
 import SmallProfile from "../molecules/SmallProfile";
 import { createComment } from "@/helpers/authHelpers";
@@ -108,12 +108,15 @@ const Post: React.FC<Props> = ({ data, small, loading }) => {
   const [likes, setLikes] = useState<number>(0);
   const [liking, setLiking] = useState<boolean>(false);
   const [authorized, setAuthorized] = useState(false);
+  const [comments, setComments] = useState<Comment[]>();
+
 
   const init = async () => {
     setAuthorized(await getAuthorized());
     console.log(data);
     setLikes(data.likes);
     setLiking(data.liking);
+    setComments(data.comments);
   };
 
   const [comment, setComment] = useState("");
@@ -123,6 +126,8 @@ const Post: React.FC<Props> = ({ data, small, loading }) => {
       text: comment,
       postGuid: data?.guid,
     });
+    const user = await getAuthorizedAll();
+    setComments([... comments!, {displayName: user.displayName, registryName: user.username, created: Date.now(), text: comment, user: user}])
   };
 
   const handleLikes = async () => {
@@ -195,7 +200,7 @@ const Post: React.FC<Props> = ({ data, small, loading }) => {
               >
                 Post New Comment
               </Button>
-              <Comments comments={data.comments} className="mx-2 mt-6" />
+              <Comments comments={comments!} className="mx-2 mt-6" />
             </>
           )}
         </div>
