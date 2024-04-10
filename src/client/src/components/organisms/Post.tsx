@@ -25,7 +25,6 @@ import ImageCollection from "../molecules/ImageCollection";
 import TestImage from "@/resources/DevImages/Antelope Canyon.jpg";
 import Button from "../atoms/Button";
 import Input from "@/components/atoms/Input";
-import Input from "@/components/atoms/Input";
 import { useRouter } from "next/router";
 import IconButton from "../molecules/IconButton";
 import { likePost } from "@/middleware/middleware";
