@@ -29,6 +29,7 @@ export interface User {
   followingCount: number;
   follow?: boolean;
   profilePicture: string;
+  posts?: TripPost[];
 }
 
 export interface ProfileUser {

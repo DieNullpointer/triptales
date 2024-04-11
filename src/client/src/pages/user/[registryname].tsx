@@ -1,10 +1,6 @@
 import { getUserByRegistry } from "@/middleware/middleware";
 import { useRouter } from "next/router";
-import {
-  Flowtext,
-  IconText,
-  Subheading,
-} from "@/components/atoms/Text";
+import { Flowtext, IconText, Subheading } from "@/components/atoms/Text";
 import Loading from "@/components/static/Loading";
 import Spacing from "@/components/atoms/Spacing";
 import Container from "@/components/atoms/Container";
@@ -13,6 +9,7 @@ import { getAuthorized } from "@/helpers/authHelpers";
 import Follow from "@/components/static/Follow";
 import Button from "@/components/atoms/Button";
 import ProfileHeader from "@/components/molecules/ProfileHeader";
+import Post from "@/components/organisms/Post";
 
 export default function User() {
   const router = useRouter();
@@ -27,7 +24,6 @@ export default function User() {
     const loggedInUser = await getAuthorized();
     setAuthorized(loggedInUser ? true : false);
     setOwnProfile(authorized && loggedInUser === user?.registryName);
-
   };
 
   useEffect(() => {
@@ -166,7 +162,21 @@ export default function User() {
       ) : (
         <></>
       )}
-      <Spacing space={8} />
+      <Spacing space={12} />
+      {user?.posts?.[0] ? (
+        <>
+          <Flowtext bold wide uppercase center>
+            posts by {user.displayName}
+          </Flowtext>
+          {user.posts.map((post, idx) => (
+            <Post key={idx} data={post} userGiven={user} small />
+          ))}
+        </>
+      ) : (
+        <Flowtext light italic center>
+          {user.displayName} has not posted anything yet.
+        </Flowtext>
+      )}
     </div>
   ) : (
     <Loading timeout />

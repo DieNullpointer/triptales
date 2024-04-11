@@ -66,7 +66,7 @@ export default function Home() {
         <div>
           {feed[0] ? (
             feed.map((post, idx) => (
-              <div className="m-2 p-2 rounded bg-gray-100">
+              <div key={idx} className="m-2 p-2 rounded bg-gray-100">
                 <Post small data={post} />
               </div>
             ))
