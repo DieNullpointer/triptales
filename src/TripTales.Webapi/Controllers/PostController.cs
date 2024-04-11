@@ -45,8 +45,10 @@ namespace TripTales.Webapi.Controllers
                 h.Created,
                 Comments = h.Comments.Select(c => new
                 {
+                    c.Guid,
                     c.User.RegistryName,
                     c.User.DisplayName,
+                    c.User.ProfilePicture,
                     c.Text,
                     c.Created
                 }),
@@ -102,8 +104,10 @@ namespace TripTales.Webapi.Controllers
                 h.Created,
                 Comments = h.Comments.Select(c => new
                 {
+                    c.Guid,
                     c.User.RegistryName,
                     c.User.DisplayName,
+                    c.User.ProfilePicture,
                     c.Text,
                     c.Created
                 }),
