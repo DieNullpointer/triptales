@@ -1,4 +1,4 @@
-import { TripDay, TripPost, Comment, User } from "@/types/types";
+import { TripDay, TripPost, Comment as CommentType, User } from "@/types/types";
 import React, { useEffect, useState } from "react";
 import Container from "../atoms/Container";
 import Image from "../atoms/Image";
@@ -69,26 +69,95 @@ const Days: React.FC<{ days: TripDay[]; className?: string }> = ({
   );
 };
 
-const Comments: React.FC<{ comments: Comment[]; className?: string }> = ({
-  comments,
-  className,
+const Comment: React.FC<{ comment: CommentType; className?: string }> = ({
+  comment,
 }) => {
   return (
-    <div className={className}>
-      {comments?.map((comment) => (
-        <div className="my-4">
-          <SmallProfile
-            user={{
-              displayName: comment.displayName,
-              registryName: comment.registryName,
-              profilePicture: comment.profilePicture,
-            }}
-          />
-          <Flowtext bold tightHeight className="tracking-tight !h-min ml-28">
-            {comment.text}
-          </Flowtext>
-        </div>
-      ))}
+    <div className="my-4">
+      <SmallProfile
+        inline
+        user={{
+          displayName: comment.displayName,
+          registryName: comment.registryName,
+          profilePicture: comment.profilePicture,
+        }}
+      />
+      <Flowtext tightHeight className="!text-sm ml-16 md:pr-16">
+        {comment.text}
+      </Flowtext>
+    </div>
+  );
+};
+
+const Comments: React.FC<{ comments: CommentType[]; postGuid: string }> = ({
+  comments,
+  postGuid,
+}) => {
+  const [comment, setComment] = useState("");
+  const [commentsArray, setComments] = useState<CommentType[]>(comments);
+  const [error, setError] = useState("");
+
+  const handleComment = async () => {
+    const response: any = await createComment({
+      text: comment,
+      postGuid: postGuid,
+    });
+    if (response.success) {
+      setComment("");
+      const user = await getAuthorizedAll();
+      setComments([
+        {
+          displayName: user.displayName,
+          registryName: user.username,
+          created: Date.now(),
+          text: comment,
+          profilePicture: user.profilePicture,
+        },
+        ...commentsArray!,
+      ]);
+    } else {
+      setError("An error occured. Please try again.")
+    }
+  };
+
+  return (
+    <div className="space-y-2">
+      <Flowtext center bold wide uppercase>
+        Comments
+      </Flowtext>
+      <div className="flex flex-row items-center">
+        <Input
+          label="New Comment"
+          value={comment}
+          onChange={(val) => setComment(val)}
+          onEnterPress={handleComment}
+          bottomText={error}
+        />
+        <IconButton
+          onClick={handleComment}
+          icon={
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="w-7 h-7 text-gray-800 rounded-full m-2 hover:fill-current"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5"
+              />
+            </svg>
+          }
+        />
+      </div>
+      <div>
+        {commentsArray?.map((comment) => (
+          <Comment comment={comment!} className="mx-2 mt-6" />
+        ))}
+      </div>
     </div>
   );
 };
@@ -96,36 +165,11 @@ const Comments: React.FC<{ comments: Comment[]; className?: string }> = ({
 const Post: React.FC<Props> = ({ data, small, loading }) => {
   const router = useRouter();
   const [likes, setLikes] = useState<number>(0);
-  const [liking, setLiking] = useState<boolean>(false);
   const [authorized, setAuthorized] = useState(false);
-  const [comments, setComments] = useState<Comment[]>();
 
   const init = async () => {
     setAuthorized(await getAuthorized());
-    console.log(data);
     setLikes(data.likes);
-    setLiking(data.liking);
-    setComments(data.comments);
-  };
-
-  const [comment, setComment] = useState("");
-
-  const handleComment = async () => {
-    const response = await createComment({
-      text: comment,
-      postGuid: data?.guid,
-    });
-    const user = await getAuthorizedAll();
-    setComments([
-      ...comments!,
-      {
-        displayName: user.displayName,
-        registryName: user.username,
-        created: Date.now(),
-        text: comment,
-        profilePicture: user.profilePicture,
-      },
-    ]);
   };
 
   const handleLikes = async () => {
@@ -134,7 +178,6 @@ const Post: React.FC<Props> = ({ data, small, loading }) => {
   };
 
   useEffect(() => {
-    console.log(data);
     init();
   }, [data]);
 
@@ -180,31 +223,9 @@ const Post: React.FC<Props> = ({ data, small, loading }) => {
             )}
           </>
         )}
-        <div>
-          {!small && (
-            <>
-              <Flowtext center bold wide uppercase>
-                Comments
-              </Flowtext>
-              <Input
-                label="New Comment"
-                value={comment}
-                onChange={(val) => setComment(val)}
-              ></Input>
-              <Button
-                type="submit"
-                className="text-white w-full"
-                onClick={handleComment}
-              >
-                Post New Comment
-              </Button>
-              <Comments comments={comments!} className="mx-2 mt-6" />
-            </>
-          )}
-        </div>
       </div>
       <>
-        {small && (
+        {small ? (
           <div className="w-full flex items-center justify-center pt-4">
             <Button
               transparent
@@ -215,6 +236,8 @@ const Post: React.FC<Props> = ({ data, small, loading }) => {
               </Flowtext>
             </Button>
           </div>
+        ) : (
+          <Comments postGuid={data.guid} comments={data.comments} />
         )}
       </>
     </Container>

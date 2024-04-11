@@ -9,7 +9,8 @@ export interface Props {
   icon?: ReactNode;
   value?: string;
   onChange?: (value: string) => void;
-  placeholder?: string
+  placeholder?: string;
+  onEnterPress?: () => void;
 }
 
 const CustomInput: React.FC<Props> = ({
@@ -20,7 +21,8 @@ const CustomInput: React.FC<Props> = ({
   width = "100%",
   icon,
   onChange,
-  placeholder = ""
+  placeholder = "",
+  onEnterPress,
 }) => {
   return (
     <div style={{ width: width }}>
@@ -33,6 +35,9 @@ const CustomInput: React.FC<Props> = ({
         value={value}
         placeholder={placeholder}
         onChange={(e) => onChange?.(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") onEnterPress?.();
+        }}
       />
       {bottomText && (
         <Typography
