@@ -16,6 +16,7 @@ import { DateValueType } from "react-tailwindcss-datepicker";
 import { createPost } from "@/helpers/authHelpers";
 import { AxiosResponse } from "axios";
 import { useRouter } from "next/router";
+import DragDropImageUploader from "@/components/atoms/DragDrop";
 
 export default function CreatePost() {
   const router = useRouter();
@@ -213,6 +214,10 @@ export default function CreatePost() {
           <></>
         )}
         <Spacing />
+
+
+        <DragDropImageUploader></DragDropImageUploader>
+
         <Button type="submit" onClick={handleUpload}>
           CREATE POST
         </Button>
