@@ -82,7 +82,7 @@ const Comment: React.FC<{ comment: CommentType; className?: string }> = ({
           profilePicture: comment.profilePicture,
         }}
       />
-      <Flowtext tightHeight className="!text-sm ml-16">
+      <Flowtext tightHeight className="!text-sm ml-16 md:pr-16">
         {comment.text}
       </Flowtext>
     </div>
@@ -153,7 +153,6 @@ const Comments: React.FC<{ comments: CommentType[]; postGuid: string }> = ({
           }
         />
       </div>
-
       <div>
         {commentsArray?.map((comment) => (
           <Comment comment={comment!} className="mx-2 mt-6" />
