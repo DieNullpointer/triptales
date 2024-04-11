@@ -28,7 +28,7 @@ import Input from "@/components/atoms/Input";
 import { useRouter } from "next/router";
 import IconButton from "../molecules/IconButton";
 import { likePost } from "@/middleware/middleware";
-import { getAuthorized,getAuthorizedAll } from "@/helpers/authHelpers";
+import { getAuthorized, getAuthorizedAll } from "@/helpers/authHelpers";
 import Link from "next/link";
 import SmallProfile from "../molecules/SmallProfile";
 import { createComment } from "@/helpers/authHelpers";
@@ -77,24 +77,14 @@ const Comments: React.FC<{ comments: Comment[]; className?: string }> = ({
     <div className={className}>
       {comments?.map((comment) => (
         <div className="my-4">
-          <div className="flex flex-row">
-            <Link href={`/user/${comment.registryName}`}>
-              <Flowtext
-                italic
-                className="!text-slate-600 !text-sm md:!text-sm -mt-1 !w-min mr-4"
-              >
-                @{comment.registryName}
-              </Flowtext>
-            </Link>
-            <Flowtext
-              italic
-              className="!text-slate-600 !text-sm md:!text-sm -mt-1"
-            >
-              {formatDateEuropean(comment.created)}
-            </Flowtext>
-          </div>
-
-          <Flowtext bold tightHeight className="tracking-tight !h-min">
+          <SmallProfile
+            user={{
+              displayName: comment.displayName,
+              registryName: comment.registryName,
+              profilePicture: comment.profilePicture,
+            }}
+          />
+          <Flowtext bold tightHeight className="tracking-tight !h-min ml-28">
             {comment.text}
           </Flowtext>
         </div>
@@ -109,7 +99,6 @@ const Post: React.FC<Props> = ({ data, small, loading }) => {
   const [liking, setLiking] = useState<boolean>(false);
   const [authorized, setAuthorized] = useState(false);
   const [comments, setComments] = useState<Comment[]>();
-
 
   const init = async () => {
     setAuthorized(await getAuthorized());
@@ -127,7 +116,16 @@ const Post: React.FC<Props> = ({ data, small, loading }) => {
       postGuid: data?.guid,
     });
     const user = await getAuthorizedAll();
-    setComments([... comments!, {displayName: user.displayName, registryName: user.username, created: Date.now(), text: comment, user: user}])
+    setComments([
+      ...comments!,
+      {
+        displayName: user.displayName,
+        registryName: user.username,
+        created: Date.now(),
+        text: comment,
+        profilePicture: user.profilePicture,
+      },
+    ]);
   };
 
   const handleLikes = async () => {
@@ -186,7 +184,7 @@ const Post: React.FC<Props> = ({ data, small, loading }) => {
           {!small && (
             <>
               <Flowtext center bold wide uppercase>
-                Kommentare
+                Comments
               </Flowtext>
               <Input
                 label="New Comment"

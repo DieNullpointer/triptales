@@ -28,6 +28,7 @@ export interface User {
   followerCount: number;
   followingCount: number;
   follow?: boolean;
+  profilePicture: string;
 }
 
 export interface ProfileUser {
@@ -73,5 +74,5 @@ export interface Comment{
   registryName: string
   created: any;
   text: string;
-  user: User;
+  profilePicture: string;
 }
