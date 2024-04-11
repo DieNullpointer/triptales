@@ -37,6 +37,7 @@ export interface Props {
   data: TripPost;
   small?: boolean;
   loading?: boolean;
+  userGiven?: any;
 }
 
 const Day: React.FC<{ day: TripDay }> = ({ day }) => {
@@ -116,7 +117,7 @@ const Comments: React.FC<{ comments: CommentType[]; postGuid: string }> = ({
         ...commentsArray!,
       ]);
     } else {
-      setError("An error occured. Please try again.")
+      setError("An error occured. Please try again.");
     }
   };
 
@@ -162,14 +163,17 @@ const Comments: React.FC<{ comments: CommentType[]; postGuid: string }> = ({
   );
 };
 
-const Post: React.FC<Props> = ({ data, small, loading }) => {
+const Post: React.FC<Props> = ({ data, small, loading, userGiven }) => {
   const router = useRouter();
   const [likes, setLikes] = useState<number>(0);
   const [authorized, setAuthorized] = useState(false);
+  const [user, setUser] = useState<any>();
 
   const init = async () => {
     setAuthorized(await getAuthorized());
     setLikes(data.likes);
+    if (!userGiven) setUser(data.user);
+    else setUser(userGiven);
   };
 
   const handleLikes = async () => {
@@ -184,7 +188,7 @@ const Post: React.FC<Props> = ({ data, small, loading }) => {
   return !loading ? (
     <Container className={`relative m-12 ${small ? "h-fit" : "min-h-screen"}`}>
       <div className="flex lg:flex-row flex-col lg:items-center items-start lg:justify-between">
-        <SmallProfile user={data.user} />
+        <SmallProfile user={user} />
         <div className="md:m-4 m-2 w-full flex flex-col !text-slate-600 lg:w-auto">
           <div className="flex flex-row justify-center">
             <CalendarDaysIcon className="h-6 w-6 mr-1" />
