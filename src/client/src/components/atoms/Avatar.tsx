@@ -5,7 +5,7 @@ import Image from "./Image";
 
 export interface Props {
   profile?: string;
-  size?: "large" | "small";
+  size?: "large" | "small" | "micro";
   className?: string;
 }
 
@@ -18,8 +18,8 @@ const Avatar: React.FC<Props> = ({
     <Image
       src={profile ? `https://localhost:7174/${profile}` : defaultPfp.src}
       alt=""
-      height={size === "large" ? 110 : 80}
-      width={size === "large" ? 110 : 80}
+      height={size === "large" ? 110 : size === "small" ? 80 : 50}
+      width={size === "large" ? 110 : size === "small" ? 80 : 50}
       className={`rounded-full overflow-hidden ${
         size === "large" ? "ring-8" : "ring-4"
       } ring-white`}
