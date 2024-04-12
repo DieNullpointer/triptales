@@ -8,6 +8,7 @@ export interface Props {
   disabled?: boolean;
   children?: React.ReactNode;
   enabled?: boolean;
+  className?: string;
 }
 
 const IconButton: React.FC<Props> = ({
@@ -16,12 +17,13 @@ const IconButton: React.FC<Props> = ({
   preset = "none",
   disabled = false,
   //children,
-  enabled = false
+  enabled = false,
+  className = ""
 }) => {
-  const [active, setActive] = useState(enabled);
+  const [active, setActive] = useState<boolean>(enabled);
   const classNames =
     (preset === "like" ? (active ? "!text-red-500" : "!text-gray-400") : "") +
-    " !p-2 !rounded-full !bg-inherit shadow-none hover:shadow-none";
+    "!p-2 !rounded-full !bg-inherit shadow-none " + className;
 
   const icon2 =
     preset === "like" ? (
@@ -48,8 +50,8 @@ const IconButton: React.FC<Props> = ({
       className={classNames}
       disabled={disabled}
       onClick={() => {
-        setActive(!active);
         onClick();
+        setActive(!active);
       }}
     >
       {icon2}
