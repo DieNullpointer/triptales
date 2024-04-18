@@ -65,7 +65,7 @@ function DragDropImageUploader(){
             <div className="top">
                 <p>Drag & Drop Image uploading</p>
             </div>
-            <div className="drag-area" onDragOver={onDragOver} onDragLeave={onDragLeave} onDrop={onDrop}>
+            <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 mt-4" onDragOver={onDragOver} onDragLeave={onDragLeave} onDrop={onDrop}>
                 {isDragging ? (
                     <span className="select">
                         Drop Images here
@@ -73,22 +73,22 @@ function DragDropImageUploader(){
                 ) : (
                     <>
                     Drag & Drop Image here or (" ")
-                    <span className="select" role="button" onClick={selectFiles}>
+                    <span className="select cursor-pointer" role="button" onClick={selectFiles}>
                         Browse
                     </span>
                     </>
                 )}
                 <input name="file" type="file" className="file" multiple ref={fileInputRef} onChange={onFileSelect}></input>
             </div>
-            <div className="container">
+            <div className="container mt-4">
                 {images.map((images,index) => (
                     <div className="image" key={index}>
-                        <span className="delete" onClick={() => deleteImage(index)}>&times;</span>
+                        <span className="delete cursor-pointer" onClick={() => deleteImage(index)}>&times;</span>
                     <img src={images.url} alt={images.name} />
                     </div>
                 ))}
             </div>
-            <Button type="button" onClick={uploadImage}>
+            <Button type="button" onClick={uploadImage} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4">
                 Upload
             </Button>
         </div>
