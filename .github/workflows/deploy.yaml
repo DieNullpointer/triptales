@@ -1,1 +1,22 @@
 name: Deployment of TripTales to Github Container Registry
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.repository_owner }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Build the Docker Image
+      working-directory: src
+      run: docker build -t ghcr.io/${{ github.repository_owner }}/triptales:latest
+
+    - name: Push the Docker Image to GitHub Container Registry
+      run: docker push ghcr.io/${{ github.repository_owner }}/triptales:latest
