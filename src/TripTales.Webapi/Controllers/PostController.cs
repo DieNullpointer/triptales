@@ -295,8 +295,8 @@ namespace TripTales.Webapi.Controllers
                 User = new
                 {
                     a.User!.RegistryName,
-                    a.User.DisplayName,
-                    a.User.ProfilePicture
+                    a.User?.DisplayName,
+                    a.User?.ProfilePicture
                 }
             });
             return Ok(export);
