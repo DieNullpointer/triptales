@@ -81,10 +81,10 @@ namespace TripTales.Webapi.Controllers
             var user = await _db.User.FirstOrDefaultAsync(a => a.RegistryName == username);
             if (user is null) { return Unauthorized(); }
             var token = RandomToken();
-            user.ResetToken = token;
+            user.EmailResetToken = token;
             try { await _db.SaveChangesAsync(); }
             catch (DbUpdateException e) { return BadRequest(e.Message); }
-            await _emailSender.SendEmailAsync(user.Email, "TripTales Email Change", $"<p>Beim folgenden Link kann die Email geändert werden: <a href='https://localhost:3000/user/changeEmail/{token}'>https://localhost:3000/user/changeEmail/{token}</a>.</p><br><p>Der Token wird dafür gebraucht: {user.ResetToken}</p>");
+            await _emailSender.SendEmailAsync(user.Email, "TripTales Email Change", $"<p>Beim folgenden Link kann die Email geändert werden: <a href='{_config["RedirectEmailChange"]}{token}'>{_config["RedirectEmailChange"]}{token}</a>.<br><p>Mit freundlichen Grüßen</p><br><p>Ihr TripTales Team</p>");
             return Ok();
         }
 
@@ -92,10 +92,10 @@ namespace TripTales.Webapi.Controllers
         [HttpPost("changeEmail")]
         public async Task<IActionResult> ChangeEmail([FromBody] ChangeEmailCmd change)
         {
-            var user = await _db.User.FirstOrDefaultAsync(a => a.ResetToken == change.token);
+            var user = await _db.User.FirstOrDefaultAsync(a => a.PasswordResetToken == change.token);
             if (user is null) return BadRequest("Token gibt es nicht");
             user.Email = change.email;
-            user.ResetToken = null;
+            user.EmailResetToken = null;
             try
             {
                 await _db.SaveChangesAsync();
@@ -108,9 +108,9 @@ namespace TripTales.Webapi.Controllers
         [HttpPost("resetPassword")]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordCmd reset)
         {
-            var user = await _db.User.FirstOrDefaultAsync(a => a.ResetToken == reset.token);
+            var user = await _db.User.FirstOrDefaultAsync(a => a.PasswordResetToken == reset.token);
             if (user is null) return BadRequest("Token gibt es nicht");
-            user.ResetToken = null;
+            user.PasswordResetToken = null;
             user.SetPassword(reset.password);
             try
             {
@@ -126,13 +126,13 @@ namespace TripTales.Webapi.Controllers
             var user = await _db.User.FirstOrDefaultAsync(a => a.Email == email);
             if (user is null) return BadRequest("User gibt es nicht");
             var token = RandomToken();
-            user.ResetToken = token;
+            user.PasswordResetToken = token;
             try
             {
                 await _db.SaveChangesAsync();
             }
             catch (DbUpdateException e) { return BadRequest(e.Message); }
-            await _emailSender.SendEmailAsync(email, "TripTales Password Reset", $"<p>Beim folgenden Link kann das Password zurückgesetzt werden: <a href='https://localhost:3000/user/resetPassword/{token}'>https://localhost:3000/user/resetPassword/{token}</a>.</p><br><p>Der Token wird dafür gebraucht: {user.ResetToken}</p>");
+            await _emailSender.SendEmailAsync(email, "TripTales Password Reset", $"<p>Beim folgenden Link kann das Password zurückgesetzt werden: <a href='{_config["RedirectPasswordReset"]}{token} '> {_config["RedirectPasswordReset"]}{token}</a>.<br><p>Mit freundlichen Grüßen</p><br><p>Ihr TripTales Team</p>");
             var url = _config["RedirectPasswordReset"];
             return Ok(token);
         }
@@ -140,7 +140,7 @@ namespace TripTales.Webapi.Controllers
         private string RandomToken()
         {
             var token = Convert.ToHexString(RandomNumberGenerator.GetBytes(64));
-            if (_db.User.Any(a => a.ResetToken == token))
+            if (_db.User.Any(a => a.PasswordResetToken == token))
                 return RandomToken();
             return token;
         }

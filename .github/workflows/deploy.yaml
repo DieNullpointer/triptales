@@ -1,5 +1,7 @@
 name: Deployment of TripTales to Github Container Registry
 
+on: workflow_dispatch
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
