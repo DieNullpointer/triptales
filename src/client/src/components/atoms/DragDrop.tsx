@@ -1,30 +1,30 @@
 import Button from "./Button";
-import React, {useRef,useState} from "react";
+import React, { useRef, useState } from "react";
 
 interface Image {
     name: string;
     url: string;
 }
 
-function DragDropImageUploader(){
-    const [images,setImages] = useState<Image[]>([])
+function DragDropImageUploader() {
+    const [images, setImages] = useState<Image[]>([])
     const [isDragging, setIsDragging] = useState(false)
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    function selectFiles(){
+    function selectFiles() {
         if (fileInputRef.current) {
             fileInputRef.current.click();
         }
     }
 
-    function onFileSelect(event: { target: { files: any; }; }){
+    function onFileSelect(event: { target: { files: any; }; }) {
         const files = event?.target.files;
-        if(files.length === 0) return;
-        for(let i = 0; i < files.length; i++){
-            if(files[i].type.split("/")[0] !== "image") continue;
-            if(!images.some((e)=> e.name === files[i].name)){
-                setImages((prevImages)=> [
-                    ...prevImages, 
+        if (files.length === 0) return;
+        for (let i = 0; i < files.length; i++) {
+            if (files[i].type.split("/")[0] !== "image") continue;
+            if (!images.some((e) => e.name === files[i].name)) {
+                setImages((prevImages) => [
+                    ...prevImages,
                     {
                         name: files[i].name,
                         url: URL.createObjectURL(files[i]),
@@ -34,33 +34,44 @@ function DragDropImageUploader(){
         }
     }
 
-    function deleteImage(index: number){
+    function deleteImage(index: number) {
         setImages((prevImages) => prevImages.filter((_, i) => i != index));
     }
 
-    function onDragOver(event: { preventDefault: () => void; dataTransfer: { dropEffect: string; }; }){
+    function onDragOver(event: { preventDefault: () => void; dataTransfer: { dropEffect: string; }; }) {
         event.preventDefault();
         setIsDragging(true)
         event.dataTransfer.dropEffect = "copy"
-
     }
 
-    function onDragLeave(event: { preventDefault: () => void; }){
+    function onDragLeave(event: { preventDefault: () => void; }) {
         event.preventDefault();
         setIsDragging(false)
     }
 
-    function onDrop(event: { preventDefault: () => void; dataTransfer: { files: any; }; }){
+    function onDrop(event: { preventDefault: () => void; dataTransfer: { files: any; }; }) {
         event.preventDefault();
         setIsDragging(false)
         const files = event.dataTransfer.files;
+        for (let i = 0; i < files.length; i++) {
+            if (files[i].type.split("/")[0] !== "image") continue;
+            if (!images.some((e) => e.name === files[i].name)) {
+                setImages((prevImages) => [
+                    ...prevImages,
+                    {
+                        name: files[i].name,
+                        url: URL.createObjectURL(files[i]),
+                    },
+                ]);
+            }
+        }
     }
 
-    function uploadImage(){
+    function uploadImage() {
         console.log("index :", images)
     }
 
-    return(
+    return (
         <div className="card">
             <div className="top">
                 <p>Drag & Drop Image uploading</p>
@@ -72,25 +83,21 @@ function DragDropImageUploader(){
                     </span>
                 ) : (
                     <>
-                    Drag & Drop Image here or (" ")
-                    <span className="select cursor-pointer" role="button" onClick={selectFiles}>
-                        Browse
-                    </span>
+                        <span className="select cursor-pointer" role="button" onClick={selectFiles} >
+                            Select file
+                        </span>
                     </>
                 )}
-                <input name="file" type="file" className="file" multiple ref={fileInputRef} onChange={onFileSelect}></input>
             </div>
+            <input name="file" type="file" className="hidden" multiple ref={fileInputRef} onChange={onFileSelect}></input>
             <div className="container mt-4">
-                {images.map((images,index) => (
+                {images.map((images, index) => (
                     <div className="image" key={index}>
                         <span className="delete cursor-pointer" onClick={() => deleteImage(index)}>&times;</span>
-                    <img src={images.url} alt={images.name} />
+                        <img src={images.url} alt={images.name} />
                     </div>
                 ))}
             </div>
-            <Button type="button" onClick={uploadImage} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4">
-                Upload
-            </Button>
         </div>
     )
 }
