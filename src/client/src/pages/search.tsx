@@ -63,8 +63,8 @@ const Search: React.FC = () => {
           <Flowtext center className="mt-4">No Results</Flowtext>
         ) : (
           <div className="space-y-3 mt-4">
-            {results?.map((user) => (
-              <SmallProfile user={user} />
+            {results && results?.map((user, idx) => (
+              <SmallProfile user={user} key={idx} />
             ))}
           </div>
         )
