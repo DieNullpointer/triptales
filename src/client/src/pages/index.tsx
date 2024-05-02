@@ -64,8 +64,8 @@ export default function Home() {
           <Spacing />
         </div>
         <div>
-          {feed[0] ? (
-            feed.map((post, idx) => (
+          {feed ? (
+            feed?.map((post, idx) => (
               <div key={idx} className="m-2 p-2 rounded bg-gray-100">
                 <Post small data={post} />
               </div>
