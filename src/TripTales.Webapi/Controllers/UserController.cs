@@ -134,7 +134,7 @@ namespace TripTales.Webapi.Controllers
             catch (DbUpdateException e) { return BadRequest(e.Message); }
             await _emailSender.SendEmailAsync(email, "TripTales Password Reset", $"<p>Beim folgenden Link kann das Password zurückgesetzt werden: <a href='{_config["RedirectPasswordReset"]}{token} '> {_config["RedirectPasswordReset"]}{token}</a>.<br><p>Mit freundlichen Grüßen</p><br><p>Ihr TripTales Team</p>");
             var url = _config["RedirectPasswordReset"];
-            return Ok(token);
+            return Ok();
         }
 
         private string RandomToken()
