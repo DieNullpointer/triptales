@@ -85,7 +85,7 @@ export async function likePost(guid: string) {
 export async function forgotPassword(email: string) {
   let data;
   await axios.get(`/user/forgotPassword/${email}`).then((res) => {
-    data = res.data;
+    data = res;
   });
   return data;
 }
@@ -107,7 +107,7 @@ export async function resetPassword(
 export async function emailToken() {
   let data;
   await axios.post(`/user/emailToken`).then((res) => {
-    data = res.data;
+    data = res;
   });
   return data;
 }
