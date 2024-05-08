@@ -92,7 +92,7 @@ namespace TripTales.Webapi.Controllers
         [HttpPost("changeEmail")]
         public async Task<IActionResult> ChangeEmail([FromBody] ChangeEmailCmd change)
         {
-            var user = await _db.User.FirstOrDefaultAsync(a => a.PasswordResetToken == change.token);
+            var user = await _db.User.FirstOrDefaultAsync(a => a.EmailResetToken == change.token);
             if (user is null) return BadRequest("Token gibt es nicht");
             user.Email = change.email;
             user.EmailResetToken = null;
