@@ -108,7 +108,7 @@ export async function emailToken() {
   let data;
   await axios.post(`/user/emailToken`).then((res) => {
     data = res;
-  });
+  }).catch((error) => {});
   return data;
 }
 
