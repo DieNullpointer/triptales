@@ -4,12 +4,13 @@ import { Flowtext, IconText, Subheading } from "@/components/atoms/Text";
 import Loading from "@/components/static/Loading";
 import Spacing from "@/components/atoms/Spacing";
 import Container from "@/components/atoms/Container";
-import { useEffect, useState } from "react";
+import { Key, useEffect, useState } from "react";
 import { getAuthorized } from "@/helpers/authHelpers";
 import Follow from "@/components/static/Follow";
 import Button from "@/components/atoms/Button";
 import ProfileHeader from "@/components/molecules/ProfileHeader";
 import Post from "@/components/organisms/Post";
+import { TripPost } from "@/types/types";
 
 export default function User() {
   const router = useRouter();
@@ -168,8 +169,8 @@ export default function User() {
           <Flowtext bold wide uppercase center>
             posts by {user.displayName}
           </Flowtext>
-          {user.posts.map((post, idx) => (
-            <Post key={idx} data={post} userGiven={user} small />
+          {user.posts.map((post: TripPost, idx: Key | null | undefined) => (
+            <Post key={idx} data={post} userGiven={{profilePicture: profile, ...user}} small />
           ))}
         </>
       ) : (

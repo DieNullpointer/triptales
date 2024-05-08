@@ -4,15 +4,16 @@ import Link from "next/link";
 import Avatar from "../atoms/Avatar";
 
 export interface Props {
-  user: { displayName: string; registryName: string; profilePicture: string };
+  user: { displayName: string; registryName: string; profilePicture: string, profile?: string};
   inline?: boolean;
 }
 
 const SmallProfile: React.FC<Props> = ({ user, inline = false }) => {
+
   return (
     <div className="place-items-center flex flex-row">
       <Avatar
-        profile={user?.profilePicture}
+        profile={user?.profilePicture || user?.profile}
         size={!inline ? "small" : "micro"}
       />
       <div className="p-2 rounded ml-1">
