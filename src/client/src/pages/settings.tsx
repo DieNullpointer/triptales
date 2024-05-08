@@ -7,6 +7,7 @@ import { useEffect, useState, createRef, cache } from "react";
 import Loading from "@/components/static/Loading";
 import {
   forgotPassword,
+  emailToken,
   getSelf,
   getUserByRegistry,
 } from "@/middleware/middleware";
@@ -147,6 +148,11 @@ export default function Settings() {
     router.push(`/recovery/password${response!}`);
   };
 
+  const handleChangeEmail = async () => {
+    const response: any = await emailToken();
+    router.push(`/recovery/email${response!}`);
+  };
+
   return data ? (
     <div className="w-full">
       <Dialog open={mainDialogOpen} handler={handleMainDialogOpen}>
@@ -189,7 +195,7 @@ export default function Settings() {
       </Dialog>
       <Spacing />
       <ProfileHeader banner={updatedBanner} profile={updatedProfile} />
-      <Spacing space={updatedBanner? 14 : 6 } />
+      <Spacing space={updatedBanner ? 14 : 6} />
       <div className="m-4 space-y-4">
         <Input
           label="Username"
@@ -245,7 +251,13 @@ export default function Settings() {
           </Button>
         </div>
         <Spacing />
-        <Button onClick={handleResetPassword}>Reset Password</Button>
+        <Spacing />
+        <div className="flex space-x-4">
+          <Button onClick={handleResetPassword}>Reset Password</Button>
+
+          <Button onClick={handleChangeEmail}>Change Email</Button>
+        </div>
+        <Spacing />
       </div>
     </div>
   ) : (
