@@ -24,7 +24,7 @@ export async function searchUsers(query: string) {
 }
 
 export function getUserByRegistry(registryName: string): {
-  user: User;
+  user: any;
   profile?: string;
   banner?: string;
   error: string;

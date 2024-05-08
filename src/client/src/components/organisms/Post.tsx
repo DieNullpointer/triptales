@@ -155,8 +155,8 @@ const Comments: React.FC<{ comments: CommentType[]; postGuid: string }> = ({
         />
       </div>
       <div>
-        {commentsArray?.map((comment) => (
-          <Comment comment={comment!} className="mx-2 mt-6" />
+        {commentsArray?.map((comment, idx) => (
+          <Comment comment={comment!} key={idx} className="mx-2 mt-6" />
         ))}
       </div>
     </div>
