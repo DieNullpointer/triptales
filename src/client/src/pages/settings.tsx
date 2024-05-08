@@ -7,6 +7,7 @@ import { useEffect, useState, createRef, cache } from "react";
 import Loading from "@/components/static/Loading";
 import {
   forgotPassword,
+  emailToken,
   getSelf,
   getUserByRegistry,
 } from "@/middleware/middleware";
@@ -85,6 +86,9 @@ export default function Settings() {
   // the modal for cropper
   const [mainDialogOpen, setMainDialogOpen] = useState(false);
   const [successDialogOpen, setSuccessDialogOpen] = useState(false);
+  const [resetPasswordDialogOpen, setResetPassworDialogOpen] = useState(false);
+  const [changeEmailDialogOpen, setChangeEmailDialogOpen] = useState(false);
+
 
   const handleMainDialogOpen = () => {
     if (mainDialogOpen) setUploaded(null);
@@ -93,6 +97,14 @@ export default function Settings() {
 
   const handleSuccessDialogOpen = () => {
     setSuccessDialogOpen(!successDialogOpen);
+  };
+
+  const handleResetPasswordDialogOpen = () => {
+    setResetPassworDialogOpen(!resetPasswordDialogOpen);
+  };
+
+  const handleChangeEmailDialogOpen = () => {
+    setChangeEmailDialogOpen(!changeEmailDialogOpen);
   };
 
   const changeProfile: React.ChangeEventHandler<HTMLInputElement> = (e) => {
@@ -144,7 +156,12 @@ export default function Settings() {
 
   const handleResetPassword = async () => {
     const response: any = await forgotPassword(email);
-    router.push(`/recovery/password${response!}`);
+    if (response?.status === 200) handleResetPasswordDialogOpen();
+  };
+
+  const handleChangeEmail = async () => {
+    const response: any = await emailToken();
+    if (response?.status === 200) handleChangeEmailDialogOpen();
   };
 
   return data ? (
@@ -187,9 +204,27 @@ export default function Settings() {
           </Flowtext>
         </DialogBody>
       </Dialog>
+
+      <Dialog open={resetPasswordDialogOpen} handler={handleResetPasswordDialogOpen}>
+        <DialogHeader>E-Mail Sent Successfully</DialogHeader>
+        <DialogBody className="pt-0">
+          <Flowtext>
+            Please open the link in the e-mail to reset your password.
+          </Flowtext>
+        </DialogBody>
+      </Dialog>
+
+      <Dialog open={changeEmailDialogOpen} handler={handleChangeEmailDialogOpen}>
+        <DialogHeader>E-Mail Sent Successfully</DialogHeader>
+        <DialogBody className="pt-0">
+          <Flowtext>
+          Please open the link in the e-mail to change your e-mail.
+          </Flowtext>
+        </DialogBody>
+      </Dialog>
       <Spacing />
       <ProfileHeader banner={updatedBanner} profile={updatedProfile} />
-      <Spacing space={updatedBanner? 14 : 6 } />
+      <Spacing space={updatedBanner ? 14 : 6} />
       <div className="m-4 space-y-4">
         <Input
           label="Username"
@@ -201,7 +236,6 @@ export default function Settings() {
           value={description}
           onChange={(val) => setDescription(val)}
         />
-        <Input label="Email" value={email} onChange={(val) => setEmail(val)} />
         <Input
           label="Origin"
           value={origin}
@@ -245,7 +279,13 @@ export default function Settings() {
           </Button>
         </div>
         <Spacing />
-        <Button onClick={handleResetPassword}>Reset Password</Button>
+        <Spacing />
+        <div className="flex space-x-4">
+          <Button onClick={handleResetPassword}>Reset Password</Button>
+
+          <Button onClick={handleChangeEmail}>Change Email</Button>
+        </div>
+        <Spacing />
       </div>
     </div>
   ) : (
