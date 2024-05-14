@@ -296,7 +296,7 @@ namespace TripTales.Webapi.Controllers
                         p.Begin,
                         p.End,
                         p.Created,
-                        p.Likes.Count,
+                        Likes = p.Likes.Count,
                         Liking = p.Likes.Any(a => a.Guid == user?.Guid),
                     }),
                     Likes = user.Likes.Count,
