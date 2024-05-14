@@ -6,6 +6,7 @@ import { getRandom } from "@/helpers/imgHelpers";
 import Spacing from "@/components/atoms/Spacing";
 import { Flowtext, Heading, Subheading } from "@/components/atoms/Text";
 import Fallbackimg from "@/resources/login_fallback.jpg";
+import Link from "next/link";
 
 export default function Login() {
   const [randomPhoto, setRandomPhoto] = useState<any>();
@@ -61,6 +62,7 @@ export default function Login() {
         >
           Sign In with Microsoft
         </Button>
+        <Flowtext italic bright className="!text-sm" center>Wrong here? <Link href="/" className="underline">Back to Homepage</Link></Flowtext>
       </div>
       {randomPhoto && (
         <Flowtext className="hidden md:inline-block md:absolute bottom-2 right-2 !w-fit text-gray-500 italic !text-sm">
