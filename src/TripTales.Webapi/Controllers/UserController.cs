@@ -275,7 +275,7 @@ namespace TripTales.Webapi.Controllers
                 if (follow is not null)
                     isFollowing = true;
             }
-            var user = await _db.User.Include(a => a.Posts).Include(a => a.FollowerRecipient).ThenInclude(a => a.Sender).Include(a => a.FollowerSender).ThenInclude(a => a.Recipient).FirstOrDefaultAsync(u => u.RegistryName == registryName);
+            var user = await _db.User.Include(a => a.Posts).ThenInclude(a => a.Likes).Include(a => a.FollowerRecipient).ThenInclude(a => a.Sender).Include(a => a.FollowerSender).ThenInclude(a => a.Recipient).FirstOrDefaultAsync(u => u.RegistryName == registryName);
             if (user is null) return BadRequest("User gibt es nicht");
 
             var test = new
@@ -299,7 +299,6 @@ namespace TripTales.Webapi.Controllers
                         Likes = p.Likes.Count,
                         Liking = p.Likes.Any(a => a.Guid == user?.Guid),
                     }),
-                    Likes = user.Likes.Count,
                     Follow = isFollowing,
                     FollowerCount = user.FollowerRecipient.Count,
                     Following = user.FollowerSender.Select(a => new
