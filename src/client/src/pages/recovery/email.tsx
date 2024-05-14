@@ -21,6 +21,8 @@ const Email: React.FC = () => {
     console.log(response);
 
     if (response?.status === 200) {
+      logout();
+      router.push("/landingpage/login?pwchange=true");
     } else setError("An unknown error occured");
   };
 

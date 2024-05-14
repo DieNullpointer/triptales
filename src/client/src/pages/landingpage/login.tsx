@@ -52,7 +52,7 @@ export function Login() {
           </>
         ) : (
           <>
-            <DialogHeader>Your password has been changed!</DialogHeader>
+            <DialogHeader>Your credentials have been changed!</DialogHeader>
             <DialogBody>For security reasons, please log in again.</DialogBody>
           </>
         )}

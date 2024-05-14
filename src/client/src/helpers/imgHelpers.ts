@@ -13,7 +13,6 @@ export async function getRandom(): Promise<{
       withCredentials: false,
       baseURL: "",
     });
-    console.log(response.data);
     return response.data;
   } catch (error: any) {
     console.error("Error fetching random Unsplash photo:", error.message);
