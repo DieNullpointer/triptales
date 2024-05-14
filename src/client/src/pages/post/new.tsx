@@ -27,7 +27,7 @@ export default function CreatePost() {
     startDate: "",
     endDate: "",
   });
-  const [images, setImages] = useState<string[]>([]);
+  const [images, setImages] = useState<File[]>([]);
 
   const [days, setDays] = useState<TripDay[]>([]);
   const [currentDay, setCurrentDay] = useState<TripDay>();
@@ -48,8 +48,7 @@ export default function CreatePost() {
       }),
       begin: date?.startDate,
       end: date?.endDate,
-      images
-    });
+    }, images);
 
     if (response?.status === 200) {
       router.push("/post/" + response.data);
@@ -225,7 +224,7 @@ export default function CreatePost() {
           Images:
         </Flowtext>
         <DragDropImageUploader
-          onChange={(images) => setImages(images.map((img) => img.base64))}
+          onChange={(images) => setImages(images)}
         />
         <Spacing />
         <Button type="submit" onClick={handleUpload}>

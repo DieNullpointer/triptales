@@ -53,7 +53,7 @@ export interface TripPost {
     guid: string;
     profilePicture: string;
   };
-  images: string[];
+  images: {path: string}[];
   days: TripDay[];
   comments: Comment[];
 }

@@ -7,15 +7,15 @@ import { buildFiletoBase64 } from "@/helpers/stringHelpers";
 interface Image {
   name: string;
   url: string;
-  base64: string;
 }
 
 export interface Props {
-  onChange: (images: Image[]) => void;
+  onChange: (images: File[]) => void;
 }
 
 const DragDropImageUploader: React.FC<Props> = ({ onChange }) => {
   const [images, setImages] = useState<Image[]>([]);
+  const [rawFiles, setRawFiles] = useState<File[]>([]);
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [error, setError] = useState<string>("");
@@ -31,22 +31,18 @@ const DragDropImageUploader: React.FC<Props> = ({ onChange }) => {
     for (let i = 0; i < files.length; i++) {
       if (files[i].type.split("/")[0] !== "image") continue;
       if (!images.some((e) => e.name === files[i].name)) {
-        await buildFiletoBase64(files[i])
-          .then((base64) => {
-            setImages((prevImages) => {
-              const changed = [
-                ...prevImages,
-                {
-                  name: files[i].name,
-                  url: URL.createObjectURL(files[i]),
-                  base64: base64 as string,
-                },
-              ];
-              onChange(changed);
-              return changed;
-            });
-          })
-          .catch((err) => setError("Error uploading image"));
+        setImages((prevImages) => [
+          ...prevImages,
+          {
+            name: files[i].name,
+            url: URL.createObjectURL(files[i]),
+          },
+        ]);
+        setRawFiles((raws) => {
+          const changed = [...raws, files[i]];
+          onChange(changed);
+          return changed;
+        });
       }
     }
   }

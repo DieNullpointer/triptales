@@ -1,7 +1,8 @@
 import { useRouter } from "next/router";
 import axios from "axios";
 
-axios.defaults.baseURL = process.env.NODE_ENV == 'production' ? "/api" : "https://localhost:7174/api";
+axios.defaults.baseURL =
+  process.env.NODE_ENV == "production" ? "/api" : "https://localhost:7174/api";
 axios.defaults.withCredentials = true;
 
 export async function getAuthorized() {
@@ -162,11 +163,18 @@ export async function uploadBanner(credentials: { banner: any }) {
   }
 }
 
-export async function createPost(post: any) {
+export async function createPost(post: any, images: File[]) {
+  const formData = new FormData();
+  Object.keys(post).forEach((key) => {
+    formData.append(key, post[key]);
+  });
+
+  images.forEach((img) => {
+    formData.append("images", img);
+  });
   console.log("uploading ...");
-  console.log(post);
   try {
-    const response = await axios.post("/post/add", post, {
+    const response = await axios.post("/post/add", formData, {
       headers: { "Content-Type": "multipart/form-data" },
     });
     return response;
