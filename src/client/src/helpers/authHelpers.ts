@@ -163,12 +163,15 @@ export async function uploadBanner(credentials: { banner: any }) {
 }
 
 export async function createPost(post: any) {
+  console.log("uploading ...");
+  console.log(post);
   try {
     const response = await axios.post("/post/add", post, {
       headers: { "Content-Type": "multipart/form-data" },
     });
     return response;
   } catch (err) {
+    console.log(err);
     return err;
   }
 }
