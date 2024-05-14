@@ -16,7 +16,7 @@ import { DateValueType } from "react-tailwindcss-datepicker";
 import { createPost } from "@/helpers/authHelpers";
 import { AxiosResponse } from "axios";
 import { useRouter } from "next/router";
-import DragDropImageUploader from "@/components/atoms/DragDrop";
+import DragDropImageUploader from "@/components/atoms/DragDropImageUploader";
 
 export default function CreatePost() {
   const router = useRouter();
@@ -27,6 +27,7 @@ export default function CreatePost() {
     startDate: "",
     endDate: "",
   });
+  const [images, setImages] = useState<File[]>([]);
 
   const [days, setDays] = useState<TripDay[]>([]);
   const [currentDay, setCurrentDay] = useState<TripDay>();
@@ -47,8 +48,8 @@ export default function CreatePost() {
       }),
       begin: date?.startDate,
       end: date?.endDate,
-    });
-    
+    }, images);
+
     if (response?.status === 200) {
       router.push("/post/" + response.data);
     } else {
@@ -105,7 +106,9 @@ export default function CreatePost() {
       <Dialog open={dayDialogOpen} handler={handleDayDialog}>
         <DialogHeader className="pb-0 flex-col">
           <Subheading center>
-            {currentlyEditing !== 0 && !currentlyEditing ? "Add a Day" : `Edit Day ${currentlyEditing as number + 1}`}
+            {currentlyEditing !== 0 && !currentlyEditing
+              ? "Add a Day"
+              : `Edit Day ${(currentlyEditing as number) + 1}`}
           </Subheading>
         </DialogHeader>
         <DialogBody className="pt-0 space-y-2">
@@ -165,6 +168,9 @@ export default function CreatePost() {
         <Flowtext italic className="!text-sm">
           Optional Fields
         </Flowtext>
+        <Flowtext light className="!text-sm">
+          Days*:
+        </Flowtext>
         <Container
           sectionMarker
           className="grid md:grid-cols-4 grid-cols-3 gap-2"
@@ -214,14 +220,16 @@ export default function CreatePost() {
           <></>
         )}
         <Spacing />
-
-
-        <DragDropImageUploader></DragDropImageUploader>
-
+        <Flowtext light className="!text-sm">
+          Images:
+        </Flowtext>
+        <DragDropImageUploader
+          onChange={(images) => setImages(images)}
+        />
+        <Spacing />
         <Button type="submit" onClick={handleUpload}>
           CREATE POST
         </Button>
-
         {error ? (
           <Flowtext className="!text-red-500 !text-base">{error}</Flowtext>
         ) : (

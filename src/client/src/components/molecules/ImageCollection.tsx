@@ -13,7 +13,7 @@ const ImageCollection: React.FC<Props> = ({ images, onRemoved }) => {
   return (
     <div className="flex flex-row overflow-x-auto scroll-mt-2 space-x-4">
       {images.map((image) => (
-          <InteractableImage removeable onRemove={(url) => {
+          <InteractableImage key={image} removeable={onRemoved ? true : false} onRemove={(url) => {
             onRemoved?.(url)
           }}
           src={image}

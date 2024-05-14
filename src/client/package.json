@@ -31,5 +31,8 @@
     "tailwindcss": "3.3.3",
     "typescript": "5.2.2",
     "uselocalstoragenextjs": "^1.2.5"
+  },
+  "devDependencies": {
+    "file-base64": "^1.0.0"
   }
 }
