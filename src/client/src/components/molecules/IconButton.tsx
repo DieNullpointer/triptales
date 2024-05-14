@@ -23,7 +23,7 @@ const IconButton: React.FC<Props> = ({
   const [active, setActive] = useState<boolean>(enabled);
   const classNames =
     (preset === "like" ? (active ? "!text-red-500" : "!text-gray-400") : "") +
-    "!p-2 !rounded-full !bg-inherit shadow-none " + className;
+    " !p-2 !rounded-full !bg-inherit shadow-none " + className;
 
   const icon2 =
     preset === "like" ? (
