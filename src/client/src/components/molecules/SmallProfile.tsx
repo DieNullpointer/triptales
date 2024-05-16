@@ -4,7 +4,7 @@ import Link from "next/link";
 import Avatar from "../atoms/Avatar";
 
 export interface Props {
-  user: { displayName: string; registryName: string; profilePicture: string, profile?: string};
+  user: { displayName: string; registryName: string; profilePicture?: string, profile?: string};
   inline?: boolean;
 }
 
