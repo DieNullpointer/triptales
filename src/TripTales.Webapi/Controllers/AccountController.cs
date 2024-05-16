@@ -12,6 +12,7 @@ using System;
 using Microsoft.Extensions.Logging;
 using TripTales.Webapi.Services;
 using System.Linq;
+using Microsoft.Extensions.Configuration;
 
 namespace TripTales.Webapi.Controllers
 {
@@ -22,11 +23,13 @@ namespace TripTales.Webapi.Controllers
     {
         private readonly AzureAdClient _adClient;
         private readonly ILogger<AccountController> _logger;
+        private readonly IConfiguration _config;
 
-        public AccountController(AzureAdClient adClient, ILogger<AccountController> logger)
+        public AccountController(AzureAdClient adClient, ILogger<AccountController> logger, IConfiguration config)
         {
             _adClient = adClient;
             _logger = logger;
+            _config = config;
         }
 
 
@@ -66,7 +69,8 @@ namespace TripTales.Webapi.Controllers
                 Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationDefaults.AuthenticationScheme,
                 new ClaimsPrincipal(claimsIdentity),
                 authProperties);
-            return Redirect("/");
+            var url = _config["RedirectMicrosoftAfterLogin"];
+            return Redirect(url);
         }
 
         [HttpGet("signout")]
