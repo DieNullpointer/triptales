@@ -11,6 +11,7 @@
     <PackageReference Include="Bogus" Version="34.*" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="6.*" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="6.*" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SQLServer" Version="6.*" />
   </ItemGroup>
 
   <ItemGroup>

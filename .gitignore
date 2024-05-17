@@ -14,3 +14,4 @@
 **/build
 **/wwwroot
 **/out
+**/start_container.sh

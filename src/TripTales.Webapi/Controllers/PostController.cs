@@ -14,6 +14,7 @@ using TripTales.Application.Dto;
 using TripTales.Application.Infrastructure;
 using TripTales.Application.Infrastructure.Repositories;
 using TripTales.Application.Model;
+using Directory = System.IO.Directory;
 
 namespace TripTales.Webapi.Controllers
 {
@@ -259,19 +260,11 @@ namespace TripTales.Webapi.Controllers
         [HttpGet("random")]
         public async Task<IActionResult> GetRandom() 
         {
-            var rnd = new Random().Next(5, _db.Posts.Count() - 1);
-            // Get Random Elements of Posts
-            var post = new List<TripPost>();
-            for(int i = 0; i < rnd; i++)
-            {
-                TripPost? posts;
-                do
-                {
-                    int randomIndex = new Random().Next(1, _db.Posts.Count() - 1);
-                    posts = await _db.Posts.Include(a => a.Images).Include(a => a.Comments).Include(a => a.Likes).Include(a => a.Days).ThenInclude(a => a.Locations).Include(a => a.User).Skip(randomIndex).FirstOrDefaultAsync();
-                } while (post.Contains(posts!) && posts is null);
-                post.Add(posts!);
-            }
+            var max = 5;
+            if (_db.Posts.Count() == 0) return Ok(new List<TripPost>());
+            if(_db.Posts.Count() < 5) max = _db.Posts.Count();
+            Random r = new Random();
+            var post = _db.Posts.Include(a => a.Images).Include(a => a.Comments).Include(a => a.Likes).Include(a => a.Days).ThenInclude(a => a.Locations).Include(a => a.User).ToList().AsEnumerable().OrderBy(x => r.Next()).Take(max).ToList();
             var authenticated = HttpContext.User.Identity?.IsAuthenticated ?? false;
             User? user = null;
             if (authenticated)

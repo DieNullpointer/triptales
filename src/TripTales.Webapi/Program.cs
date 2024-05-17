@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
+using System;
 using System.IO;
 using TripTales.Application.Dto;
 using TripTales.Application.Infrastructure;
@@ -15,8 +16,8 @@ using TripTales.Webapi.Services;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 
-builder.Services.AddDbContext<TripTalesContext>(opt =>
-    opt.UseSqlite(builder.Configuration.GetConnectionString("Default") ?? "DataSource=TripTales.db"));
+builder.Services.AddDbContext<TripTalesContext>(opt => opt.UseSqlite(builder.Configuration.GetConnectionString("Default") ?? "DataSource=TripTales.db"));
+//builder.Services.AddDbContext<TripTalesContext>(opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("Default") ?? "Server=db;Database=TripTales;Trusted_Connection=True;"));
 
 builder.Services.AddScoped<PostRepository>();
 builder.Services.AddScoped<UserRepository>();
@@ -99,6 +100,7 @@ if (app.Environment.IsDevelopment())
 }
 app.UseCookiePolicy();
 // if pictures directory does not exist, create it
+Console.WriteLine(Path.Combine(builder.Environment.ContentRootPath, "Pictures"));
 if (!Directory.Exists(Path.Combine(builder.Environment.ContentRootPath, "Pictures")))
 {
     Directory.CreateDirectory(Path.Combine(builder.Environment.ContentRootPath, "Pictures"));
