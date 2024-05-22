@@ -38,7 +38,11 @@ export function getUserByRegistry(registryName: string): {
   return {
     user: data?.user,
     profile: data?.profile ? data?.profile : undefined,
-    banner: data?.banner ? "https://localhost:7174/" + data?.banner : undefined,
+    banner: data?.banner
+      ? process.env.NODE_ENV == "production"
+        ? "/" + data?.banner
+        : "https://localhost:7174/" + data?.banner
+      : undefined,
     error,
     isLoading,
   };
@@ -106,16 +110,16 @@ export async function resetPassword(
 
 export async function emailToken() {
   let data;
-  await axios.post(`/user/emailToken`).then((res) => {
-    data = res;
-  }).catch((error) => {});
+  await axios
+    .post(`/user/emailToken`)
+    .then((res) => {
+      data = res;
+    })
+    .catch((error) => {});
   return data;
 }
 
-export async function changeEmail(
-  token: string | string[],
-  email: string
-) {
+export async function changeEmail(token: string | string[], email: string) {
   let response;
   await axios
     .post(`/user/changeEmail`, { token, email })
@@ -125,5 +129,3 @@ export async function changeEmail(
     .catch((error) => {});
   return response;
 }
-
-

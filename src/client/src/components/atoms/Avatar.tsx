@@ -16,7 +16,13 @@ const Avatar: React.FC<Props> = ({
 }) => {
   return (
     <Image
-      src={profile ? `https://localhost:7174/${profile}` : defaultPfp.src}
+      src={
+        profile
+          ? process.env.NODE_ENV == "production"
+            ? "/" + profile
+            : `https://localhost:7174/${profile}`
+          : defaultPfp.src
+      }
       alt=""
       height={size === "large" ? 110 : size === "small" ? 80 : 50}
       width={size === "large" ? 110 : size === "small" ? 80 : 50}

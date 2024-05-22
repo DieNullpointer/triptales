@@ -222,7 +222,7 @@ const Post: React.FC<Props> = ({ data, small, loading, userGiven }) => {
               <>
                 <Spacing />
                 <Flowtext bold>Images</Flowtext>
-                <ImageCollection images={data.images.map((img) => process.env.NODE_ENV == "production" ? img.path : "https://localhost:7174/" + img.path)} />
+                <ImageCollection images={data.images.map((img) => process.env.NODE_ENV == "production" ? "/" + img.path : "https://localhost:7174/" + img.path)} />
               </>
             )}
           </>
