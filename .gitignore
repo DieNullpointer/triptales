@@ -15,3 +15,5 @@
 **/wwwroot
 **/out
 **/start_container.sh
+**/azure_secrets.txt
+**/deploy_app.sh
