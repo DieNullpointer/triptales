@@ -196,6 +196,15 @@ export async function createPost(post: any, images: File[]) {
   }
 }
 
+export async function deletePost(guid: string) {
+  try {
+    const response = await axios.delete(`/post/delete/${guid}`);
+    return response;
+  } catch (err) {
+    console.log(err);
+  }
+}
+
 export async function createComment(credentials: {
   text: string;
   postGuid: string;
