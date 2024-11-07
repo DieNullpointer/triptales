@@ -168,7 +168,7 @@ export async function createPost(post: any, images: File[]) {
   Object.keys(post).forEach((key) => {
     if (key === "days" && Array.isArray(post[key])) {
       // Einzelne Tage separat hinzufügen
-      post[key].forEach((day, index) => {
+      post[key].forEach((day:any, index:number) => {
         formData.append(`days[${index}].date`, day.date);
         formData.append(`days[${index}].title`, day.title);
         formData.append(`days[${index}].text`, day.text);
