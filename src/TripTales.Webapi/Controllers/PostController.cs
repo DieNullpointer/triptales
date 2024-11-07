@@ -124,7 +124,7 @@ namespace TripTales.Webapi.Controllers
                     d.Title,
                     d.Text,
                     d.Date
-                }),
+                }).OrderBy(a => a.Date),
                 User = new
                 {
                     h.User!.Guid,
