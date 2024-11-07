@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -49,7 +50,7 @@ builder.Services.Configure<CookiePolicyOptions>(options =>
 {
     options.OnAppendCookie = cookieContext =>
     {
-        cookieContext.CookieOptions.Secure = true;
+        cookieContext.CookieOptions.Secure = builder.Environment.IsDevelopment() ? true : false;
         cookieContext.CookieOptions.SameSite = builder.Environment.IsDevelopment() ? SameSiteMode.None : SameSiteMode.Strict;
     };
 });
@@ -73,6 +74,16 @@ builder.Services.AddCors(options =>
             .AllowAnyHeader().AllowAnyMethod().AllowCredentials());
 });
 
+builder.Services.Configure<FormOptions>(options =>
+{
+    options.ValueLengthLimit = int.MaxValue; // Limit on individual form values
+    options.MultipartBodyLengthLimit = long.MaxValue; // Limit on form body size
+    options.MemoryBufferThreshold = int.MaxValue; // Buffering limit
+    options.MultipartHeadersLengthLimit = int.MaxValue; // Limit on the length of headers of individual parts
+});
+
+
+
 var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
@@ -85,6 +96,8 @@ using (var scope = app.Services.CreateScope())
             db.Seed();
     }
 }
+
+
 
 
 app.UseHttpsRedirection();

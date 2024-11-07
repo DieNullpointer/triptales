@@ -84,7 +84,7 @@ namespace TripTales.Webapi.Controllers
             user.EmailResetToken = token;
             try { await _db.SaveChangesAsync(); }
             catch (DbUpdateException e) { return BadRequest(e.Message); }
-            await _emailSender.SendEmailAsync(user.Email, "TripTales Email Change", $"<p>Beim folgenden Link kann die Email geändert werden: <a href='{_config["RedirectEmailChange"]}{token}'>{_config["RedirectEmailChange"]}{token}</a>.<br><p>Mit freundlichen Grüßen</p><br><p>Ihr TripTales Team</p>");
+            await _emailSender.SendEmailAsync(user.Email, "TripTales Email Change", $"<p>Beim folgenden Link kann die Email geï¿½ndert werden: <a href='{_config["RedirectEmailChange"]}{token}'>{_config["RedirectEmailChange"]}{token}</a>.<br><p>Mit freundlichen Grï¿½ï¿½en</p><br><p>Ihr TripTales Team</p>");
             return Ok();
         }
 
@@ -132,7 +132,7 @@ namespace TripTales.Webapi.Controllers
                 await _db.SaveChangesAsync();
             }
             catch (DbUpdateException e) { return BadRequest(e.Message); }
-            await _emailSender.SendEmailAsync(email, "TripTales Password Reset", $"<p>Beim folgenden Link kann das Password zurückgesetzt werden: <a href='{_config["RedirectPasswordReset"]}{token} '> {_config["RedirectPasswordReset"]}{token}</a>.<br><p>Mit freundlichen Grüßen</p><br><p>Ihr TripTales Team</p>");
+            await _emailSender.SendEmailAsync(email, "TripTales Password Reset", $"<p>Beim folgenden Link kann das Password zurï¿½ckgesetzt werden: <a href='{_config["RedirectPasswordReset"]}{token} '> {_config["RedirectPasswordReset"]}{token}</a>.<br><p>Mit freundlichen Grï¿½ï¿½en</p><br><p>Ihr TripTales Team</p>");
             var url = _config["RedirectPasswordReset"];
             return Ok();
         }
@@ -229,7 +229,7 @@ namespace TripTales.Webapi.Controllers
             // If the folder does not exist, create it.
             if(upload.banner is not null)
             {
-                if (upload.banner.Length > 5242880) return BadRequest("Invalid filesize.");
+                if (upload.banner.Length > 10242880) return BadRequest("Invalid filesize.");
                 var extension = new FileInfo(upload.banner.FileName).Extension;
                 if (!_allowedExtensions.Contains(extension)) return BadRequest("Invalid extension.");
                 var filename = Guid.NewGuid().ToString("n") + extension;
@@ -242,7 +242,7 @@ namespace TripTales.Webapi.Controllers
             }
             if(upload.profile is not null)
             {
-                if (upload.profile.Length > 5242880) return BadRequest("Invalid filesize.");
+                if (upload.profile.Length > 10242880) return BadRequest("Invalid filesize.");
                 var extension = new FileInfo(upload.profile.FileName).Extension;
                 if (!_allowedExtensions.Contains(extension)) return BadRequest("Invalid extension.");
                 var filename = Guid.NewGuid().ToString("n") + extension;

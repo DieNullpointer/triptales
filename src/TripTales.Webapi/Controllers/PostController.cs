@@ -148,6 +148,8 @@ namespace TripTales.Webapi.Controllers
 
         [Authorize]
         [HttpPost("add")]
+        [RequestFormLimits(MultipartBodyLengthLimit = 209715200)]
+        [RequestSizeLimit(209715200)]
         public async Task<IActionResult> AddPost([FromForm] RegisterCmd postCmd)
         {
             var authenticated = HttpContext.User.Identity?.IsAuthenticated ?? false;

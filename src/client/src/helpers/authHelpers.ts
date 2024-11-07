@@ -176,6 +176,9 @@ export async function createPost(post: any, images: File[]) {
   try {
     const response = await axios.post("/post/add", formData, {
       headers: { "Content-Type": "multipart/form-data" },
+      timeout: 6000,
+      maxContentLength: Infinity,
+      maxBodyLength: Infinity,
     });
     return response;
   } catch (err) {

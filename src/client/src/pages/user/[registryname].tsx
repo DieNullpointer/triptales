@@ -20,8 +20,8 @@ export default function User() {
   const { user, profile, banner } = getUserByRegistry(registryname);
 
   const init = async () => {
-    caches.delete("admin-profile.jpg");
-    caches.delete("admin-banner.jpg");
+    //caches.delete("admin-profile.jpg");
+    //caches.delete("admin-banner.jpg");
     const loggedInUser = await getAuthorized();
     setAuthorized(loggedInUser ? true : false);
     setOwnProfile(authorized && loggedInUser === user?.registryName);
