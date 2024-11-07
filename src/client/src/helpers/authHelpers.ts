@@ -166,7 +166,16 @@ export async function uploadBanner(credentials: { banner: any }) {
 export async function createPost(post: any, images: File[]) {
   const formData = new FormData();
   Object.keys(post).forEach((key) => {
-    formData.append(key, post[key]);
+    if (key === "days" && Array.isArray(post[key])) {
+      // Einzelne Tage separat hinzufügen
+      post[key].forEach((day, index) => {
+        formData.append(`days[${index}].date`, day.date);
+        formData.append(`days[${index}].title`, day.title);
+        formData.append(`days[${index}].text`, day.text);
+      });
+    } else {
+      formData.append(key, post[key]);
+    }
   });
 
   images.forEach((img) => {
@@ -176,7 +185,7 @@ export async function createPost(post: any, images: File[]) {
   try {
     const response = await axios.post("/post/add", formData, {
       headers: { "Content-Type": "multipart/form-data" },
-      timeout: 6000,
+      //timeout: 30000,
       maxContentLength: Infinity,
       maxBodyLength: Infinity,
     });
