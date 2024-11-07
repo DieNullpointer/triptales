@@ -28,7 +28,11 @@ import Input from "@/components/atoms/Input";
 import { useRouter } from "next/router";
 import IconButton from "../molecules/IconButton";
 import { likePost } from "@/middleware/middleware";
-import { deletePost, getAuthorized, getAuthorizedAll } from "@/helpers/authHelpers";
+import {
+  deletePost,
+  getAuthorized,
+  getAuthorizedAll,
+} from "@/helpers/authHelpers";
 import Link from "next/link";
 import SmallProfile from "../molecules/SmallProfile";
 import { createComment } from "@/helpers/authHelpers";
@@ -56,9 +60,17 @@ const Days: React.FC<{ days: TripDay[]; className?: string }> = ({
             <TimelineConnector className="!h-full" />
             <TimelineHeader className="h-auto items-center">
               {idx >= days.length ? <></> : <TimelineIcon />}
-              <Flowtext bold tightHeight className="tracking-tight !h-min">
-                Day {idx + 1}: {day.title}
-              </Flowtext>
+              <div className="flex flex-row space-x-7 items-center">
+                <Flowtext bold tightHeight className="tracking-tight !h-min">
+                  Day {idx + 1}: {day.title}
+                </Flowtext>
+                <div className="h-min w-min flex flex-row items-center">
+                <CalendarDaysIcon className="h-6 w-6 mr-1" />
+                <Flowtext italic className="">
+                  {formatDateEuropean(day.date)}
+                </Flowtext>
+                </div>
+              </div>
             </TimelineHeader>
             <TimelineBody>
               <Day day={day} />
@@ -183,7 +195,7 @@ const Post: React.FC<Props> = ({ data, small, loading, userGiven }) => {
 
   const handleDelete = async () => {
     deletePost(data.guid);
-    router.replace("/user/" + user?.registryName)
+    router.replace("/user/" + user?.registryName);
   };
 
   useEffect(() => {
@@ -212,7 +224,7 @@ const Post: React.FC<Props> = ({ data, small, loading, userGiven }) => {
               />
               <Flowtext className="w-fit ml-1">{likes}</Flowtext>
             </div>
-            {!small && (authorized === user?.registryName) ? (
+            {!small && authorized === user?.registryName ? (
               <IconButton
                 icon={
                   <svg

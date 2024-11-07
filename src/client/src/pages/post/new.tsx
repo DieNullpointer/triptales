@@ -17,6 +17,7 @@ import { createPost } from "@/helpers/authHelpers";
 import { AxiosResponse } from "axios";
 import { useRouter } from "next/router";
 import DragDropImageUploader from "@/components/atoms/DragDropImageUploader";
+import Loading from "@/components/static/Loading";
 
 export default function CreatePost() {
   const router = useRouter();
@@ -36,10 +37,11 @@ export default function CreatePost() {
   );
 
   const [dayDialogOpen, setDayDialogOpen] = useState(false);
-
+  const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
 
   const handleUpload = async () => {
+    setUploading(true);
     const response: any = await createPost({
       title,
       text,
@@ -50,8 +52,9 @@ export default function CreatePost() {
       end: date?.endDate,
     }, images);
 
+    setUploading(false);
     if (response?.status === 200) {
-      router.push("/post/" + response.data);
+      router.replace("/post/" + response.data);
     } else {
       console.log(response?.response?.data?.errors?.[0]);
       setError("");
@@ -102,6 +105,7 @@ export default function CreatePost() {
   };
 
   return (
+    uploading ? <Loading /> :
     <>
       <Dialog open={dayDialogOpen} handler={handleDayDialog}>
         <DialogHeader className="pb-0 flex-col">
